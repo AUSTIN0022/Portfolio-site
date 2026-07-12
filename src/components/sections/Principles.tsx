@@ -27,7 +27,7 @@ export function Principles() {
   return (
     <section
       id="principles"
-      style={{ background: '#e5e7eb', padding: 'var(--section-y) var(--gutter)' }}
+      style={{ background: 'var(--color-canvas-mist)', padding: 'var(--section-y) var(--gutter)' }}
     >
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         <div style={{ marginBottom: '48px' }}>
@@ -40,7 +40,7 @@ export function Principles() {
               fontSize: 'var(--fs-display)',
               lineHeight: 0.9,
               letterSpacing: '-0.03em',
-              color: '#000000',
+              color: 'var(--color-ink-black)',
               marginTop: '16px',
             }}
           >
@@ -52,7 +52,7 @@ export function Principles() {
               fontWeight: 400,
               fontSize: '16px',
               lineHeight: 1.33,
-              color: '#444444',
+              color: 'var(--color-graphite)',
               letterSpacing: '-0.32px',
               marginTop: '16px',
               maxWidth: '520px',
@@ -74,7 +74,7 @@ export function Principles() {
                   fontSize: 'var(--fs-display-md)',
                   lineHeight: 0.95,
                   letterSpacing: '-0.03em',
-                  color: '#000000',
+                  color: 'var(--color-ink-black)',
                 }}
               >
                 {p.title}
@@ -85,7 +85,7 @@ export function Principles() {
                   fontWeight: 400,
                   fontSize: '15px',
                   lineHeight: 1.4,
-                  color: '#444444',
+                  color: 'var(--color-graphite)',
                   letterSpacing: '-0.3px',
                 }}
               >

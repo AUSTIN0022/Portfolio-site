@@ -20,7 +20,7 @@ export function About() {
   return (
     <section
       id="about"
-      style={{ background: '#e5e7eb', padding: 'var(--section-y) var(--gutter)' }}
+      style={{ background: 'var(--color-canvas-mist)', padding: 'var(--section-y) var(--gutter)' }}
     >
       <div
         style={{
@@ -42,7 +42,7 @@ export function About() {
               fontSize: 'var(--fs-display)',
               lineHeight: 0.9,
               letterSpacing: '-0.03em',
-              color: '#000000',
+              color: 'var(--color-ink-black)',
               marginTop: '16px',
               textWrap: 'balance',
             }}
@@ -58,7 +58,7 @@ export function About() {
               fontWeight: 400,
               fontSize: '20px',
               lineHeight: 1.25,
-              color: '#000000',
+              color: 'var(--color-ink-black)',
               letterSpacing: '-0.22px',
               marginBottom: '24px',
             }}
@@ -73,7 +73,7 @@ export function About() {
               fontWeight: 400,
               fontSize: '16px',
               lineHeight: 1.33,
-              color: '#000000',
+              color: 'var(--color-ink-black)',
               letterSpacing: '-0.32px',
               marginBottom: '40px',
             }}

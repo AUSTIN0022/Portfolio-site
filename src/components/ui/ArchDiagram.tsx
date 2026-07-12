@@ -54,7 +54,7 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
   return (
     <div
       style={{
-        background: '#ffffff',
+        background: 'var(--color-pure-white)',
         borderRadius: '24px',
         padding: 'clamp(24px, 5vw, 40px)',
         marginBottom: '32px',
@@ -67,7 +67,7 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
             fontSize: '12px',
-            color: '#979797',
+            color: 'var(--color-muted-on-light)',
             letterSpacing: '-0.36px',
             marginBottom: '8px',
           }}
@@ -81,7 +81,7 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
             fontSize: '28px',
             lineHeight: 1.0,
             letterSpacing: '-0.84px',
-            color: '#000000',
+            color: 'var(--color-ink-black)',
           }}
         >
           {title}
@@ -93,7 +93,7 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
               fontWeight: 400,
               fontSize: '14px',
               lineHeight: 1.5,
-              color: '#979797',
+              color: 'var(--color-muted-on-light)',
               letterSpacing: '-0.28px',
               marginTop: '8px',
             }}
@@ -106,7 +106,7 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
       {/* Diagram render area */}
       <div
         style={{
-          background: '#f3f3f3',
+          background: 'var(--color-surface-mist)',
           borderRadius: '12px',
           padding: '32px',
           overflowX: 'auto',
@@ -121,7 +121,7 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '11px',
-              color: '#444444',
+              color: 'var(--color-graphite)',
               whiteSpace: 'pre-wrap',
               wordBreak: 'break-word',
               lineHeight: 1.6,

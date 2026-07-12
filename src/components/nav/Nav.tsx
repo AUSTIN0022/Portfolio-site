@@ -42,7 +42,7 @@ export function Nav() {
           top: 'max(16px, env(safe-area-inset-top))',
           left: '50%',
           zIndex: 50,
-          background: '#ffffff',
+          background: 'var(--color-pure-white)',
           borderRadius: '48px',
           display: 'flex',
           alignItems: 'center',
@@ -58,7 +58,7 @@ export function Nav() {
             fontFamily: 'var(--font-suisseintl)',
             fontWeight: 500,
             fontSize: '16px',
-            color: '#000000',
+            color: 'var(--color-ink-black)',
             letterSpacing: '-0.02em',
             textDecoration: 'none',
             paddingLeft: '8px',
@@ -76,7 +76,7 @@ export function Nav() {
                 fontFamily: 'var(--font-suisseintl)',
                 fontWeight: 500,
                 fontSize: '14px',
-                color: '#444444',
+                color: 'var(--color-graphite)',
                 letterSpacing: '-0.028px',
                 textDecoration: 'none',
               }}
@@ -91,8 +91,8 @@ export function Nav() {
           href="#contact"
           className="nav-cta"
           style={{
-            background: '#000000',
-            color: '#ffffff',
+            background: 'var(--color-ink-black)',
+            color: 'var(--color-pure-white)',
             fontFamily: 'var(--font-suisseintl)',
             fontWeight: 450,
             fontSize: '14px',
@@ -115,12 +115,12 @@ export function Nav() {
           style={{
             alignItems: 'center',
             justifyContent: 'center',
-            width: '40px',
-            height: '40px',
+            width: '44px',
+            height: '44px',
             border: 'none',
             background: 'transparent',
             cursor: 'pointer',
-            color: '#000000',
+            color: 'var(--color-ink-black)',
             borderRadius: '50%',
           }}
         >
@@ -200,7 +200,7 @@ export function Nav() {
                 left: '50%',
                 zIndex: 49,
                 width: 'min(360px, calc(100vw - 24px))',
-                background: '#ffffff',
+                background: 'var(--color-pure-white)',
                 borderRadius: '24px',
                 padding: '12px',
                 display: 'flex',
@@ -217,7 +217,7 @@ export function Nav() {
                     fontFamily: 'var(--font-suisseintl)',
                     fontWeight: 500,
                     fontSize: '16px',
-                    color: '#000000',
+                    color: 'var(--color-ink-black)',
                     letterSpacing: '-0.02em',
                     textDecoration: 'none',
                     padding: '14px 16px',
@@ -231,8 +231,8 @@ export function Nav() {
                 href="#contact"
                 onClick={() => setOpen(false)}
                 style={{
-                  background: '#000000',
-                  color: '#ffffff',
+                  background: 'var(--color-ink-black)',
+                  color: 'var(--color-pure-white)',
                   fontFamily: 'var(--font-suisseintl)',
                   fontWeight: 500,
                   fontSize: '15px',

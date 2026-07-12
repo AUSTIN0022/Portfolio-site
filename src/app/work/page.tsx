@@ -22,14 +22,14 @@ export default function WorkPage() {
       <main id="main-content">
 
       {/* A: Dark hero header */}
-      <div style={{ background: '#000000' }}>
+      <div style={{ background: 'var(--color-ink-black)' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: 'clamp(96px, 16vw, 120px) var(--gutter) var(--section-y)' }}>
           <Link
             href="/"
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '12px',
-              color: '#979797',
+              color: 'var(--color-steel-gray)',
               textDecoration: 'none',
               letterSpacing: '-0.36px',
               display: 'inline-flex',
@@ -45,7 +45,7 @@ export default function WorkPage() {
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '12px',
-              color: '#979797',
+              color: 'var(--color-steel-gray)',
               letterSpacing: '-0.36px',
               marginBottom: '16px',
             }}
@@ -60,7 +60,7 @@ export default function WorkPage() {
               fontSize: 'var(--fs-display)',
               lineHeight: 0.9,
               letterSpacing: '-0.03em',
-              color: '#ffffff',
+              color: 'var(--color-pure-white)',
               maxWidth: '640px',
               textWrap: 'balance',
             }}
@@ -71,7 +71,7 @@ export default function WorkPage() {
       </div>
 
       {/* B: Stats bar */}
-      <div style={{ background: '#000000', borderTop: '1px solid #222', padding: '48px var(--gutter)' }}>
+      <div style={{ background: 'var(--color-ink-black)', borderTop: '1px solid #222', padding: '48px var(--gutter)' }}>
         <div
           style={{
             maxWidth: '1280px',
@@ -89,7 +89,7 @@ export default function WorkPage() {
                   fontSize: 'var(--fs-display-md)',
                   lineHeight: 0.9,
                   letterSpacing: '-0.03em',
-                  color: '#ffffff',
+                  color: 'var(--color-pure-white)',
                 }}
               >
                 {stat.number}
@@ -98,7 +98,7 @@ export default function WorkPage() {
                 style={{
                   fontFamily: 'var(--font-suisseintlmono)',
                   fontSize: '12px',
-                  color: '#979797',
+                  color: 'var(--color-steel-gray)',
                   letterSpacing: '-0.36px',
                   marginTop: '8px',
                 }}
@@ -111,7 +111,7 @@ export default function WorkPage() {
       </div>
 
       {/* C: Project cards */}
-      <div style={{ background: '#e5e7eb', padding: 'var(--section-y) var(--gutter)' }}>
+      <div style={{ background: 'var(--color-canvas-mist)', padding: 'var(--section-y) var(--gutter)' }}>
         <div
           style={{
             maxWidth: '1280px',
@@ -128,13 +128,13 @@ export default function WorkPage() {
       </div>
 
       {/* D: Bottom CTA strip */}
-      <div style={{ background: '#e5e7eb', padding: '0 var(--gutter) var(--section-y)' }}>
+      <div style={{ background: 'var(--color-canvas-mist)', padding: '0 var(--gutter) var(--section-y)' }}>
         <div
           className="workcta"
           style={{
             maxWidth: '1280px',
             margin: '0 auto',
-            background: '#000000',
+            background: 'var(--color-ink-black)',
             borderRadius: '32px',
             padding: 'clamp(40px, 7vw, 64px)',
           }}
@@ -144,7 +144,7 @@ export default function WorkPage() {
               style={{
                 fontFamily: 'var(--font-suisseintlmono)',
                 fontSize: '12px',
-                color: '#979797',
+                color: 'var(--color-steel-gray)',
                 letterSpacing: '-0.36px',
                 marginBottom: '12px',
               }}
@@ -158,7 +158,7 @@ export default function WorkPage() {
                 fontSize: 'var(--fs-display-md)',
                 lineHeight: 0.9,
                 letterSpacing: '-0.03em',
-                color: '#ffffff',
+                color: 'var(--color-pure-white)',
                 textWrap: 'balance',
               }}
             >
@@ -171,8 +171,8 @@ export default function WorkPage() {
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                background: '#ffffff',
-                color: '#000000',
+                background: 'var(--color-pure-white)',
+                color: 'var(--color-ink-black)',
                 fontFamily: 'var(--font-suisseintl)',
                 fontWeight: 500,
                 fontSize: '14px',
@@ -189,7 +189,7 @@ export default function WorkPage() {
               href="mailto:hello@austinmakasare.site"
               style={{
                 background: 'transparent',
-                color: '#ffffff',
+                color: 'var(--color-pure-white)',
                 border: '1px solid var(--color-border-on-dark)',
                 fontFamily: 'var(--font-suisseintl)',
                 fontWeight: 500,

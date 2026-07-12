@@ -12,8 +12,8 @@ export function SkillTag({
       style={{
         fontFamily: 'var(--font-suisseintlmono)',
         fontSize: '12px',
-        color: '#000000',
-        background: active ? '#d1ffca' : '#f3f3f3',
+        color: 'var(--color-ink-black)',
+        background: active ? 'var(--color-mint-pulse)' : 'var(--color-surface-mist)',
         borderRadius: '20px',
         padding: '6px 12px',
         letterSpacing: '-0.36px',
@@ -22,10 +22,10 @@ export function SkillTag({
         transition: 'background 0.2s ease',
       }}
       onMouseEnter={(e) => {
-        if (!active) e.currentTarget.style.background = '#d1ffca'
+        if (!active) e.currentTarget.style.background = 'var(--color-mint-pulse)'
       }}
       onMouseLeave={(e) => {
-        if (!active) e.currentTarget.style.background = '#f3f3f3'
+        if (!active) e.currentTarget.style.background = 'var(--color-surface-mist)'
       }}
     >
       {children}

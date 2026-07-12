@@ -28,8 +28,20 @@ const columns = [
 
 export function Skills() {
   return (
-    <section id="skills" style={{ background: '#000000', padding: 'var(--section-y) var(--gutter)' }}>
+    <section
+      id="skills"
+      aria-labelledby="skills-heading"
+      style={{ background: 'var(--color-ink-black)', padding: 'var(--section-y) var(--gutter)' }}
+    >
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+        {/* Visually hidden: the three column headings below carry the visual
+            design (no kicker/title here by design, matching the Dayos
+            reference layout), but the section still needs an accessible
+            name and a real h2 so heading navigation doesn't jump from
+            other sections' h2s straight to these h3 columns. */}
+        <h2 id="skills-heading" className="sr-only">
+          Skills
+        </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'var(--skills-cols)', gap: 'var(--skills-gap)' }}>
           {columns.map((col, i) => (
             <div key={i}>
@@ -46,10 +58,10 @@ export function Skills() {
                 style={{
                   fontFamily: 'var(--font-suisseintlcond)',
                   fontWeight: 700,
-                  fontSize: 'var(--fs-display)',
+                  fontSize: 'var(--fs-display-md)',
                   lineHeight: 0.9,
                   letterSpacing: '-0.03em',
-                  color: '#ffffff',
+                  color: 'var(--color-pure-white)',
                   marginBottom: '24px',
                 }}
               >
@@ -61,7 +73,7 @@ export function Skills() {
                   fontWeight: 400,
                   fontSize: '16px',
                   lineHeight: 1.33,
-                  color: '#979797',
+                  color: 'var(--color-steel-gray)',
                   letterSpacing: '-0.32px',
                 }}
               >

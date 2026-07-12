@@ -10,7 +10,7 @@ export default function NotFound() {
     <main
       id="main-content"
       style={{
-        background: '#000000',
+        background: 'var(--color-ink-black)',
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
@@ -23,7 +23,7 @@ export default function NotFound() {
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
             fontSize: '12px',
-            color: '#979797',
+            color: 'var(--color-steel-gray)',
             letterSpacing: '-0.36px',
             marginBottom: '24px',
           }}
@@ -38,12 +38,12 @@ export default function NotFound() {
             fontSize: 'var(--fs-display)',
             lineHeight: 0.9,
             letterSpacing: '-0.03em',
-            color: '#ffffff',
+            color: 'var(--color-pure-white)',
             marginBottom: '24px',
             textWrap: 'balance',
           }}
         >
-          THIS PAGE <span style={{ color: '#fff100' }}>404&apos;D</span>.
+          THIS PAGE <span style={{ color: 'var(--color-electric-yellow)' }}>404&apos;D</span>.
         </h1>
 
         <p
@@ -52,7 +52,7 @@ export default function NotFound() {
             fontWeight: 400,
             fontSize: '18px',
             lineHeight: 1.4,
-            color: '#979797',
+            color: 'var(--color-steel-gray)',
             letterSpacing: '-0.18px',
             maxWidth: '440px',
             marginBottom: '40px',
@@ -66,8 +66,8 @@ export default function NotFound() {
           <Link
             href="/"
             style={{
-              background: '#ffffff',
-              color: '#000000',
+              background: 'var(--color-pure-white)',
+              color: 'var(--color-ink-black)',
               fontFamily: 'var(--font-suisseintl)',
               fontWeight: 500,
               fontSize: '14px',
@@ -83,8 +83,8 @@ export default function NotFound() {
             href="/work"
             style={{
               background: 'transparent',
-              color: '#ffffff',
-              border: '1px solid #ffffff',
+              color: 'var(--color-pure-white)',
+              border: '1px solid var(--color-pure-white)',
               fontFamily: 'var(--font-suisseintl)',
               fontWeight: 500,
               fontSize: '14px',

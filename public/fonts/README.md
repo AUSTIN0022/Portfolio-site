@@ -11,7 +11,7 @@ a close visual match.
 
 If you've licensed Suisse Int'l from https://www.swisstypefaces.com, export
 `.woff2` files and drop them into **this folder** (`public/fonts/`) with these
-exact names — `src/app/globals.css` already references them via `@font-face`:
+exact names:
 
 | File                             | Family          | Weight | Role                          |
 | -------------------------------- | --------------- | ------ | ----------------------------- |
@@ -20,6 +20,45 @@ exact names — `src/app/globals.css` already references them via `@font-face`:
 | `SuisseIntlCond-Bold.woff2`      | SuisseIntlCond  | 700    | Display headlines             |
 | `SuisseIntlMono-Regular.woff2`   | SuisseIntlMono  | 400    | Kickers, tags, labels         |
 
-No code change is needed — once the files exist at these paths, the `@font-face`
-rules resolve, the per-load 404s stop, and the real Suisse identity renders.
-The Google fallbacks stay as the graceful degradation if a file is missing.
+There are currently no `@font-face` rules in `src/app/globals.css` for these —
+they were removed because, with no files present, every page load fired 4
+guaranteed-404 requests (8 with the dev double-fetch) for fonts that could
+never resolve. Once the files above actually exist in this folder, paste this
+block back into `src/app/globals.css` (right above the `html { scroll-behavior: smooth; }`
+rule, where the comment explaining their absence lives) to wire them back up:
+
+```css
+@font-face {
+  font-family: 'SuisseIntl';
+  src: local('SuisseIntl'), url('/fonts/SuisseIntl-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SuisseIntl';
+  src: local('SuisseIntl'), url('/fonts/SuisseIntl-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SuisseIntlCond';
+  src: local('SuisseIntlCond'), url('/fonts/SuisseIntlCond-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SuisseIntlMono';
+  src: local('SuisseIntlMono'), url('/fonts/SuisseIntlMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+```
+
+No other code change is needed — the `--font-suisseintl*` custom properties
+in `globals.css` already list `'SuisseIntl'`/`'SuisseIntlCond'`/`'SuisseIntlMono'`
+as the first family, so adding the `@font-face` rules back is enough for the
+real Suisse identity to take over from the Google-Fonts fallback everywhere.

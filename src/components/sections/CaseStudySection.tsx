@@ -12,7 +12,7 @@ export function CaseStudySection({ id, kicker, heading, children }: CaseStudySec
         style={{
           fontFamily: 'var(--font-suisseintlmono)',
           fontSize: '12px',
-          color: '#979797',
+          color: 'var(--color-muted-on-light)',
           letterSpacing: '-0.36px',
           marginBottom: '12px',
         }}
@@ -26,7 +26,7 @@ export function CaseStudySection({ id, kicker, heading, children }: CaseStudySec
           fontSize: 'var(--fs-display-md)',
           lineHeight: 0.9,
           letterSpacing: '-0.03em',
-          color: '#000000',
+          color: 'var(--color-ink-black)',
           marginBottom: '40px',
           textWrap: 'balance',
         }}

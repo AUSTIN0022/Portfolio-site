@@ -35,7 +35,7 @@ const linkColumns = [
 
 export function Footer() {
   return (
-    <footer id="contact" style={{ background: '#000000', padding: 'var(--section-y) var(--gutter) 40px' }}>
+    <footer id="contact" style={{ background: 'var(--color-ink-black)', padding: 'var(--section-y) var(--gutter) 40px' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         <div
           style={{
@@ -52,7 +52,7 @@ export function Footer() {
                 fontFamily: 'var(--font-suisseintl)',
                 fontWeight: 500,
                 fontSize: '20px',
-                color: '#ffffff',
+                color: 'var(--color-pure-white)',
                 marginBottom: '8px',
               }}
             >
@@ -63,7 +63,7 @@ export function Footer() {
                 fontFamily: 'var(--font-suisseintl)',
                 fontWeight: 500,
                 fontSize: '16px',
-                color: '#ffffff',
+                color: 'var(--color-pure-white)',
                 marginBottom: '24px',
               }}
             >
@@ -74,7 +74,7 @@ export function Footer() {
                 fontFamily: 'var(--font-suisseintl)',
                 fontWeight: 400,
                 fontSize: '14px',
-                color: '#979797',
+                color: 'var(--color-steel-gray)',
                 marginBottom: '8px',
               }}
             >
@@ -85,15 +85,15 @@ export function Footer() {
                 fontFamily: 'var(--font-suisseintl)',
                 fontWeight: 400,
                 fontSize: '14px',
-                color: '#979797',
+                color: 'var(--color-steel-gray)',
               }}
             >
               Drop a line →{' '}
               <a
                 href="mailto:hello@austinmakasare.site"
                 style={{
-                  color: '#000000',
-                  background: '#d1ffca',
+                  color: 'var(--color-ink-black)',
+                  background: 'var(--color-mint-pulse)',
                   padding: '1px 4px',
                   borderRadius: '2px',
                   textDecoration: 'none',
@@ -128,7 +128,7 @@ export function Footer() {
                       fontFamily: 'var(--font-suisseintl)',
                       fontWeight: 400,
                       fontSize: '14px',
-                      color: '#979797',
+                      color: 'var(--color-steel-gray)',
                       textDecoration: 'none',
                       marginBottom: '8px',
                       letterSpacing: '-0.28px',

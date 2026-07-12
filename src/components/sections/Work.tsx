@@ -17,7 +17,7 @@ export function Work() {
   return (
     <section
       id="work"
-      style={{ background: '#e5e7eb', padding: 'var(--section-y) 0', overflow: 'hidden' }}
+      style={{ background: 'var(--color-canvas-mist)', padding: 'var(--section-y) 0', overflow: 'hidden' }}
     >
       <div style={{ maxWidth: '1280px', margin: '0 auto 48px', padding: '0 var(--gutter)' }}>
         <MonoKicker>// SELECTED WORK</MonoKicker>
@@ -29,7 +29,7 @@ export function Work() {
             fontSize: 'var(--fs-display)',
             lineHeight: 0.9,
             letterSpacing: '-0.03em',
-            color: '#000000',
+            color: 'var(--color-ink-black)',
             marginTop: '16px',
           }}
         >
@@ -77,7 +77,7 @@ export function Work() {
             flexShrink: 0,
             width: '48px',
             height: '48px',
-            border: '1px solid #000',
+            border: '1px solid var(--color-ink-black)',
             borderRadius: '50%',
             background: 'transparent',
             cursor: 'pointer',
@@ -98,7 +98,7 @@ export function Work() {
             flexShrink: 0,
             width: '48px',
             height: '48px',
-            border: '1px solid #000',
+            border: '1px solid var(--color-ink-black)',
             borderRadius: '50%',
             background: 'transparent',
             cursor: 'pointer',
@@ -115,7 +115,7 @@ export function Work() {
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
             fontSize: '12px',
-            color: '#444444',
+            color: 'var(--color-graphite)',
             letterSpacing: '-0.36px',
             textDecoration: 'none',
             display: 'inline-flex',

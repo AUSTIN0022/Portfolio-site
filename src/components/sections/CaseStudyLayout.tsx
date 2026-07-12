@@ -34,16 +34,16 @@ export function CaseStudyLayout({ children, sidebarLinks, projectName, category 
   }, [sidebarLinks])
 
   return (
-    <div style={{ background: '#e5e7eb', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--color-canvas-mist)', minHeight: '100vh' }}>
       {/* Top bar */}
-      <div style={{ background: '#000000' }}>
+      <div style={{ background: 'var(--color-ink-black)' }}>
         <div style={{ padding: 'clamp(96px, 16vw, 120px) var(--gutter) var(--section-y)', maxWidth: '1280px', margin: '0 auto' }}>
           <Link
             href="/#work"
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '12px',
-              color: '#979797',
+              color: 'var(--color-steel-gray)',
               textDecoration: 'none',
               letterSpacing: '-0.36px',
               display: 'inline-flex',
@@ -58,7 +58,7 @@ export function CaseStudyLayout({ children, sidebarLinks, projectName, category 
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '12px',
-              color: '#979797',
+              color: 'var(--color-steel-gray)',
               letterSpacing: '-0.36px',
               marginBottom: '16px',
             }}
@@ -72,7 +72,7 @@ export function CaseStudyLayout({ children, sidebarLinks, projectName, category 
               fontSize: 'var(--fs-display)',
               lineHeight: 0.9,
               letterSpacing: '-0.03em',
-              color: '#ffffff',
+              color: 'var(--color-pure-white)',
               textWrap: 'balance',
             }}
           >
@@ -108,7 +108,7 @@ export function CaseStudyLayout({ children, sidebarLinks, projectName, category 
                 fontFamily: 'var(--font-suisseintlmono)',
                 fontSize: '12px',
                 letterSpacing: '-0.36px',
-                color: activeId === id ? '#000000' : '#979797',
+                color: activeId === id ? 'var(--color-ink-black)' : 'var(--color-muted-on-light)',
                 textDecoration: 'none',
                 padding: '6px 0',
                 transition: 'color 0.2s ease',

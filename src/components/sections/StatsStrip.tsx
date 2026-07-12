@@ -6,7 +6,7 @@ const stats = [
 
 export function StatsStrip() {
   return (
-    <section style={{ background: '#000000', padding: 'var(--section-y) var(--gutter)' }}>
+    <section style={{ background: 'var(--color-ink-black)', padding: 'var(--section-y) var(--gutter)' }}>
       <div
         style={{
           maxWidth: '1280px',
@@ -25,7 +25,7 @@ export function StatsStrip() {
                 fontSize: 'var(--fs-display)',
                 lineHeight: 0.9,
                 letterSpacing: '-0.03em',
-                color: '#ffffff',
+                color: 'var(--color-pure-white)',
               }}
             >
               {stat.number}
@@ -34,7 +34,7 @@ export function StatsStrip() {
               style={{
                 fontFamily: 'var(--font-suisseintlmono)',
                 fontSize: '12px',
-                color: '#979797',
+                color: 'var(--color-steel-gray)',
                 letterSpacing: '-0.36px',
                 marginTop: '12px',
               }}

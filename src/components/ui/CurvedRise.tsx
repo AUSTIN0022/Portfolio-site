@@ -19,7 +19,7 @@ export function CurvedRise({
   overlap = 64,
   inset = 48,
   radius = 48,
-  behind = '#e5e7eb',
+  behind = 'var(--color-canvas-mist)',
 }: {
   children: React.ReactNode
   /** How far the panel is pulled up over the previous section (px). */

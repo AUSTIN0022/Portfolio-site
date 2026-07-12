@@ -16,6 +16,12 @@
   --color-muted-on-dark: #808080;   /* text — 5.3:1 on #000 */
   --color-border-on-dark: #616161;  /* UI borders — 3.4:1 on #000 */
 
+  /* Muted foreground for light surfaces. Steel Gray (#979797) reads at only
+     ~2.9:1 on white and ~2.4:1 on canvas-mist and fails WCAG AA; this passes
+     both. Use on white/canvas-mist backgrounds where steel-gray labels
+     (kickers, meta, captions) were previously hard-coded. */
+  --color-muted-on-light: #666666;  /* text — 4.6:1 on #fff, 4.6:1 on #e5e7eb */
+
   --font-suisseintl: 'SuisseIntl', var(--font-suisseintl-fallback), ui-sans-serif, system-ui, sans-serif;
   --font-suisseintlcond: 'SuisseIntlCond', var(--font-suisseintlcond-fallback), ui-sans-serif, system-ui, sans-serif;
   --font-suisseintlmono: 'SuisseIntlMono', var(--font-suisseintlmono-fallback), ui-monospace, SFMono-Regular, monospace;
@@ -67,28 +73,28 @@
   --gutter: 20px;          /* horizontal page padding */
   --section-y: 56px;       /* vertical section padding */
 
-  --hero-cols: 1fr;
+  --hero-cols: minmax(0, 1fr);
   --hero-min-h: auto;
   --hero-canvas-h: 340px;
 
-  --stats-cols: 1fr;
-  --about-cols: 1fr;
+  --stats-cols: minmax(0, 1fr);
+  --about-cols: minmax(0, 1fr);
   --about-gap: 40px;
-  --skills-cols: 1fr;
+  --skills-cols: minmax(0, 1fr);
   --skills-gap: 48px;
-  --cta-cols: 1fr;
+  --cta-cols: minmax(0, 1fr);
 
-  --footer-cols: 1fr;
+  --footer-cols: minmax(0, 1fr);
   --footer-gap: 48px;
-  --footer-links-cols: 1fr 1fr;
+  --footer-links-cols: minmax(0, 1fr) minmax(0, 1fr);
 
-  --now-main-cols: 1fr;
+  --now-main-cols: minmax(0, 1fr);
   --now-gap: 40px;
 
-  --case-cols: 1fr;
+  --case-cols: minmax(0, 1fr);
   --case-gap: 48px;
 
-  --workcard-cols: 1fr;
+  --workcard-cols: minmax(0, 1fr);
   --workcard-h: auto;
   --workcard-media-h: 260px;
 
@@ -106,8 +112,8 @@
 
 @media (min-width: 640px) {
   :root {
-    --stats-cols: 1fr 1fr 1fr;
-    --footer-links-cols: repeat(4, 1fr);
+    --stats-cols: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    --footer-links-cols: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -115,11 +121,11 @@
   :root {
     --gutter: 40px;
     --section-y: 80px;
-    --skills-cols: 1fr 1fr 1fr;
-    --cta-cols: 1fr 1fr;
-    --now-main-cols: 40fr 60fr;
-    --case-cols: 180px 1fr;
-    --workcard-cols: 45fr 55fr;
+    --skills-cols: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    --cta-cols: minmax(0, 1fr) minmax(0, 1fr);
+    --now-main-cols: minmax(0, 40fr) minmax(0, 60fr);
+    --case-cols: 180px minmax(0, 1fr);
+    --workcard-cols: minmax(0, 45fr) minmax(0, 55fr);
     --workcard-h: 480px;
   }
 }
@@ -128,13 +134,13 @@
   :root {
     --gutter: 64px;
     --section-y: 96px;
-    --hero-cols: 48fr 52fr;
+    --hero-cols: minmax(0, 48fr) minmax(0, 52fr);
     --hero-min-h: 100vh;
     --hero-canvas-h: min(100vh, 780px);
-    --about-cols: 55fr 45fr;
+    --about-cols: minmax(0, 55fr) minmax(0, 45fr);
     --about-gap: 80px;
     --skills-gap: 64px;
-    --footer-cols: 300px 1fr;
+    --footer-cols: 300px minmax(0, 1fr);
     --footer-gap: 80px;
     --now-gap: 64px;
     --case-gap: 80px;
@@ -164,40 +170,18 @@ html {
 
 body {
   font-family: var(--font-suisseintl);
-  background-color: #000000;
-  color: #000000;
+  background-color: var(--color-ink-black);
+  color: var(--color-ink-black);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-@font-face {
-  font-family: 'SuisseIntl';
-  src: local('SuisseIntl'), url('/fonts/SuisseIntl-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'SuisseIntl';
-  src: local('SuisseIntl'), url('/fonts/SuisseIntl-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'SuisseIntlCond';
-  src: local('SuisseIntlCond'), url('/fonts/SuisseIntlCond-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'SuisseIntlMono';
-  src: local('SuisseIntlMono'), url('/fonts/SuisseIntlMono-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
+/* No @font-face rules here: Suisse Int'l is a licensed typeface not present
+   in public/fonts/ (see public/fonts/README.md). The --font-suisseintl*
+   custom properties above already list the Google-Fonts fallback as the
+   second family, so removing the @font-face declarations for the missing
+   files is a pure win — same rendered fallback, zero wasted 404 requests
+   per page load. Re-add them (see the README) once the real files ship. */
 
 /* CTA tile diagonal reveal — yellow grows from center along the diagonal
    to the opposite corners on hover, and retracts back on hover-out. */
@@ -213,7 +197,7 @@ body {
   left: 50%;
   width: 200%;
   height: 200%;
-  background: #fff100;
+  background: var(--color-electric-yellow);
   transform: translate(-50%, -50%) rotate(45deg) scale(0);
   transform-origin: center center;
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -242,6 +226,12 @@ body {
   }
 }
 
+/* white-space: nowrap keeps the label atomic — without it, a squeezed flex
+   parent wraps between the per-character spans instead of overflowing the
+   word as a whole, fracturing "Work" into "Wor"/"k" mid-word. */
+.wave-text {
+  white-space: nowrap;
+}
 .wave-text span {
   display: inline-block;
 }
@@ -282,7 +272,7 @@ a:hover > .wave-text span,
 
 /* CTA tiles: divider flips from bottom (stacked) to right (side-by-side). */
 .cta-tile {
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-canvas-mist);
 }
 .cta-tile:last-child {
   border-bottom: none;
@@ -295,7 +285,7 @@ a:hover > .wave-text span,
     border-bottom: none;
   }
   .cta-tile:not(:last-child) {
-    border-right: 1px solid #e5e7eb;
+    border-right: 1px solid var(--color-canvas-mist);
   }
 }
 
@@ -395,7 +385,7 @@ a:hover > .wave-text span,
   bottom: 14px;
   width: 4px;
   border-radius: 4px;
-  background: #fff100;
+  background: var(--color-electric-yellow);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -405,7 +395,7 @@ a:hover > .wave-text span,
 }
 .principle-row:hover .principle-num,
 .principle-row:focus-within .principle-num {
-  color: #000000;
+  color: var(--color-ink-black);
 }
 .principle-row:hover::before,
 .principle-row:focus-within::before {
@@ -454,7 +444,7 @@ a:hover > .wave-text span,
   transition: color 0.2s ease;
 }
 .case-nav-link[data-active='true'] .case-nav-num {
-  color: #000000;
+  color: var(--color-ink-black);
 }
 
 /* ============================================================
@@ -486,7 +476,7 @@ a:hover > .wave-text span,
   left: 0;
   height: 100%;
   border-radius: 999px;
-  background: #000000;
+  background: var(--color-ink-black);
   transition: background 0.2s ease;
 }
 .card-scrollbar:hover .card-scrollbar-thumb {
@@ -525,8 +515,8 @@ a:hover > .wave-text span,
   top: -100px;
   left: 12px;
   z-index: 60;
-  background: #fff100;
-  color: #000000;
+  background: var(--color-electric-yellow);
+  color: var(--color-ink-black);
   font-family: var(--font-suisseintl), sans-serif;
   font-weight: 500;
   font-size: 14px;
@@ -537,7 +527,7 @@ a:hover > .wave-text span,
 }
 .skip-link:focus {
   top: max(12px, env(safe-area-inset-top));
-  outline: 2px solid #000000;
+  outline: 2px solid var(--color-ink-black);
   outline-offset: 2px;
 }
 

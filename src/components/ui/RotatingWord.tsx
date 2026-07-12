@@ -44,8 +44,8 @@ export function RotatingWord() {
     <span
       style={{
         display: 'inline-block',
-        background: '#fff100',
-        color: '#000000',
+        background: 'var(--color-electric-yellow)',
+        color: 'var(--color-ink-black)',
         lineHeight: 1, // decoupled from the h1's tight 0.9 leading so the
         // box hugs the glyphs instead of bleeding into the lines above/below
         padding: '0.08em 0.14em',

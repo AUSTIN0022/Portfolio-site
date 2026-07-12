@@ -10,7 +10,7 @@ const rows = [
 
 export function Now() {
   return (
-    <section id="now" style={{ background: '#e5e7eb', padding: 'var(--section-y) var(--gutter)' }}>
+    <section id="now" style={{ background: 'var(--color-canvas-mist)', padding: 'var(--section-y) var(--gutter)' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         <MonoKicker>// NOW</MonoKicker>
         <div
@@ -27,17 +27,17 @@ export function Now() {
               key={i}
               style={{
                 display: 'grid',
-                gridTemplateColumns: '120px 1fr',
+                gridTemplateColumns: '120px minmax(0, 1fr)',
                 gap: '24px',
                 padding: '24px 0',
-                borderBottom: '1px solid #000000',
+                borderBottom: '1px solid var(--color-ink-black)',
               }}
             >
               <div
                 style={{
                   fontFamily: 'var(--font-suisseintlmono)',
                   fontSize: '12px',
-                  color: '#444444',
+                  color: 'var(--color-graphite)',
                   letterSpacing: '-0.36px',
                   display: 'flex',
                   alignItems: 'center',
@@ -53,7 +53,7 @@ export function Now() {
                   fontWeight: 400,
                   fontSize: '16px',
                   lineHeight: 1.33,
-                  color: '#000000',
+                  color: 'var(--color-ink-black)',
                   letterSpacing: '-0.32px',
                 }}
               >
@@ -68,7 +68,7 @@ export function Now() {
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '12px',
-              color: '#444444',
+              color: 'var(--color-graphite)',
               letterSpacing: '-0.36px',
               textDecoration: 'none',
               display: 'inline-flex',

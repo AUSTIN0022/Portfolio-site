@@ -7,7 +7,7 @@ export function P({ children }: { children: React.ReactNode }) {
         fontWeight: 400,
         fontSize: '16px',
         lineHeight: 1.6,
-        color: '#000000',
+        color: 'var(--color-ink-black)',
         letterSpacing: '-0.32px',
         marginBottom: '20px',
       }}
@@ -26,7 +26,7 @@ export function Lead({ children }: { children: React.ReactNode }) {
         fontWeight: 400,
         fontSize: '20px',
         lineHeight: 1.4,
-        color: '#000000',
+        color: 'var(--color-ink-black)',
         letterSpacing: '-0.22px',
         marginBottom: '32px',
       }}
@@ -41,7 +41,7 @@ export function Callout({ label, children }: { label: string; children: React.Re
   return (
     <div
       style={{
-        background: '#ffffff',
+        background: 'var(--color-pure-white)',
         borderRadius: '24px',
         padding: '32px',
         marginBottom: '24px',
@@ -51,7 +51,7 @@ export function Callout({ label, children }: { label: string; children: React.Re
         style={{
           fontFamily: 'var(--font-suisseintlmono)',
           fontSize: '12px',
-          color: '#979797',
+          color: 'var(--color-muted-on-light)',
           letterSpacing: '-0.36px',
           marginBottom: '12px',
         }}
@@ -64,7 +64,7 @@ export function Callout({ label, children }: { label: string; children: React.Re
           fontWeight: 400,
           fontSize: '16px',
           lineHeight: 1.5,
-          color: '#000000',
+          color: 'var(--color-ink-black)',
           letterSpacing: '-0.32px',
         }}
       >
@@ -85,7 +85,7 @@ export function Metric({ value, label }: { value: string; label: string }) {
           fontSize: 'var(--fs-display-lg)',
           lineHeight: 0.9,
           letterSpacing: '-0.03em',
-          color: '#000000',
+          color: 'var(--color-ink-black)',
           marginBottom: '8px',
         }}
       >
@@ -95,7 +95,7 @@ export function Metric({ value, label }: { value: string; label: string }) {
         style={{
           fontFamily: 'var(--font-suisseintlmono)',
           fontSize: '12px',
-          color: '#979797',
+          color: 'var(--color-muted-on-light)',
           letterSpacing: '-0.36px',
         }}
       >
@@ -113,7 +113,7 @@ export function MetricGrid({ children }: { children: React.ReactNode }) {
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
         gap: 'clamp(24px, 4vw, 48px)',
-        background: '#ffffff',
+        background: 'var(--color-pure-white)',
         borderRadius: '24px',
         padding: 'clamp(28px, 5vw, 48px)',
         marginBottom: '40px',
@@ -141,12 +141,12 @@ export function DecisionCard({
   return (
     <div
       style={{
-        background: '#ffffff',
+        background: 'var(--color-pure-white)',
         borderRadius: '24px',
         padding: '32px',
         marginBottom: '24px',
         display: 'grid',
-        gridTemplateColumns: '48px 1fr',
+        gridTemplateColumns: '48px minmax(0, 1fr)',
         gap: '24px',
       }}
     >
@@ -156,7 +156,7 @@ export function DecisionCard({
           fontWeight: 700,
           fontSize: '48px',
           lineHeight: 0.9,
-          color: '#e5e7eb',
+          color: 'var(--color-canvas-mist)',
           letterSpacing: '-1.44px',
         }}
       >
@@ -168,8 +168,8 @@ export function DecisionCard({
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '12px',
-              color: shipped ? '#000000' : '#979797',
-              background: shipped ? '#d1ffca' : '#f3f3f3',
+              color: shipped ? 'var(--color-ink-black)' : 'var(--color-muted-on-light)',
+              background: shipped ? 'var(--color-mint-pulse)' : 'var(--color-surface-mist)',
               borderRadius: '20px',
               padding: '3px 10px',
               letterSpacing: '-0.36px',
@@ -182,7 +182,7 @@ export function DecisionCard({
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
             fontSize: '12px',
-            color: '#979797',
+            color: 'var(--color-muted-on-light)',
             letterSpacing: '-0.36px',
             marginBottom: '6px',
           }}
@@ -195,7 +195,7 @@ export function DecisionCard({
             fontWeight: 500,
             fontSize: '16px',
             lineHeight: 1.4,
-            color: '#000000',
+            color: 'var(--color-ink-black)',
             letterSpacing: '-0.32px',
             marginBottom: '20px',
           }}
@@ -206,7 +206,7 @@ export function DecisionCard({
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
             fontSize: '12px',
-            color: '#979797',
+            color: 'var(--color-muted-on-light)',
             letterSpacing: '-0.36px',
             marginBottom: '6px',
           }}
@@ -219,7 +219,7 @@ export function DecisionCard({
             fontWeight: 400,
             fontSize: '15px',
             lineHeight: 1.5,
-            color: '#444444',
+            color: 'var(--color-graphite)',
             letterSpacing: '-0.32px',
             marginBottom: '20px',
           }}
@@ -230,7 +230,7 @@ export function DecisionCard({
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
             fontSize: '12px',
-            color: '#979797',
+            color: 'var(--color-muted-on-light)',
             letterSpacing: '-0.36px',
             marginBottom: '6px',
           }}
@@ -243,7 +243,7 @@ export function DecisionCard({
             fontWeight: 400,
             fontSize: '15px',
             lineHeight: 1.5,
-            color: '#444444',
+            color: 'var(--color-graphite)',
             letterSpacing: '-0.32px',
           }}
         >

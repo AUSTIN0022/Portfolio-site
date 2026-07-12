@@ -9,7 +9,7 @@ export function Hero() {
   return (
     <section
       className="hero-section"
-      style={{ background: '#e5e7eb', minHeight: 'var(--hero-min-h)' }}
+      style={{ background: 'var(--color-canvas-mist)', minHeight: 'var(--hero-min-h)' }}
     >
       <div
         className="hero-inner"
@@ -28,7 +28,7 @@ export function Hero() {
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '12px',
-              color: '#444444',
+              color: 'var(--color-graphite)',
               letterSpacing: '-0.36px',
             }}
           >
@@ -48,7 +48,7 @@ export function Hero() {
             fontSize: 'clamp(38px, 7vw, 68px)',
             lineHeight: 0.9,
             letterSpacing: '-0.03em',
-            color: '#000000',
+            color: 'var(--color-ink-black)',
             maxWidth: '680px',
             marginBottom: '32px',
             textWrap: 'balance',
@@ -63,7 +63,7 @@ export function Hero() {
             fontWeight: 400,
             fontSize: '18px',
             lineHeight: 1.25,
-            color: '#444444',
+            color: 'var(--color-graphite)',
             maxWidth: '480px',
             letterSpacing: '-0.18px',
             marginBottom: '40px',
@@ -76,8 +76,8 @@ export function Hero() {
           <a
             href="#work"
             style={{
-              background: '#000000',
-              color: '#ffffff',
+              background: 'var(--color-ink-black)',
+              color: 'var(--color-pure-white)',
               fontFamily: 'var(--font-suisseintl)',
               fontWeight: 500,
               fontSize: '14px',
@@ -94,8 +94,8 @@ export function Hero() {
             rel="noopener noreferrer"
             style={{
               background: 'transparent',
-              color: '#000000',
-              border: '1px solid #000000',
+              color: 'var(--color-ink-black)',
+              border: '1px solid var(--color-ink-black)',
               fontFamily: 'var(--font-suisseintl)',
               fontWeight: 500,
               fontSize: '14px',

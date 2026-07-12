@@ -30,12 +30,20 @@ const stackGroups = [
   },
 ]
 
-const kickerStyle: React.CSSProperties = {
+// Two variants: this page reuses the same kicker style on both the black
+// hero/stack sections and the white content cards, and steel-gray only
+// clears WCAG AA contrast on the dark surface.
+const kickerStyleDark: React.CSSProperties = {
   fontFamily: 'var(--font-suisseintlmono)',
   fontSize: '12px',
-  color: '#979797',
+  color: 'var(--color-steel-gray)',
   letterSpacing: '-0.36px',
   marginBottom: '16px',
+}
+
+const kickerStyleLight: React.CSSProperties = {
+  ...kickerStyleDark,
+  color: 'var(--color-muted-on-light)',
 }
 
 const blockHeadingStyle: React.CSSProperties = {
@@ -44,7 +52,7 @@ const blockHeadingStyle: React.CSSProperties = {
   fontSize: 'var(--fs-display-md)',
   lineHeight: 0.9,
   letterSpacing: '-0.03em',
-  color: '#000000',
+  color: 'var(--color-ink-black)',
   marginBottom: '20px',
 }
 
@@ -53,7 +61,7 @@ const blockBodyStyle: React.CSSProperties = {
   fontWeight: 400,
   fontSize: '16px',
   lineHeight: 1.6,
-  color: '#000000',
+  color: 'var(--color-ink-black)',
   letterSpacing: '-0.32px',
 }
 
@@ -64,14 +72,14 @@ export default function NowPage() {
       <main id="main-content">
 
       {/* A: Dark hero header */}
-      <div style={{ background: '#000000' }}>
+      <div style={{ background: 'var(--color-ink-black)' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: 'clamp(96px, 16vw, 120px) var(--gutter) var(--section-y)' }}>
           <Link
             href="/"
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '12px',
-              color: '#979797',
+              color: 'var(--color-steel-gray)',
               textDecoration: 'none',
               letterSpacing: '-0.36px',
               display: 'inline-flex',
@@ -83,7 +91,7 @@ export default function NowPage() {
             ← austinmakasare.site
           </Link>
 
-          <div style={{ ...kickerStyle }}>// NOW</div>
+          <div style={{ ...kickerStyleDark }}>// NOW</div>
 
           <h1
             style={{
@@ -92,7 +100,7 @@ export default function NowPage() {
               fontSize: 'var(--fs-display)',
               lineHeight: 0.9,
               letterSpacing: '-0.03em',
-              color: '#ffffff',
+              color: 'var(--color-pure-white)',
               maxWidth: '640px',
               marginBottom: '32px',
               textWrap: 'balance',
@@ -107,7 +115,7 @@ export default function NowPage() {
               fontWeight: 400,
               fontSize: '18px',
               lineHeight: 1.4,
-              color: '#979797',
+              color: 'var(--color-steel-gray)',
               letterSpacing: '-0.18px',
               maxWidth: '480px',
             }}
@@ -119,7 +127,7 @@ export default function NowPage() {
       </div>
 
       {/* B: Two-column main content */}
-      <div style={{ background: '#e5e7eb', padding: 'var(--section-y) var(--gutter)' }}>
+      <div style={{ background: 'var(--color-canvas-mist)', padding: 'var(--section-y) var(--gutter)' }}>
         <div
           style={{
             maxWidth: '1280px',
@@ -134,7 +142,7 @@ export default function NowPage() {
           <div
             className="now-aside"
             style={{
-              background: '#ffffff',
+              background: 'var(--color-pure-white)',
               borderRadius: '32px',
               padding: 'clamp(24px, 5vw, 40px)',
             }}
@@ -143,7 +151,7 @@ export default function NowPage() {
               style={{
                 fontFamily: 'var(--font-suisseintlmono)',
                 fontSize: '12px',
-                color: '#979797',
+                color: 'var(--color-muted-on-light)',
                 letterSpacing: '-0.36px',
                 marginBottom: '24px',
               }}
@@ -156,17 +164,17 @@ export default function NowPage() {
                 key={i}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '100px 1fr',
+                  gridTemplateColumns: '100px minmax(0, 1fr)',
                   gap: '16px',
                   padding: '20px 0',
-                  borderBottom: i < arr.length - 1 ? '1px solid #e5e7eb' : 'none',
+                  borderBottom: i < arr.length - 1 ? '1px solid var(--color-canvas-mist)' : 'none',
                 }}
               >
                 <div
                   style={{
                     fontFamily: 'var(--font-suisseintlmono)',
                     fontSize: '12px',
-                    color: '#979797',
+                    color: 'var(--color-muted-on-light)',
                     letterSpacing: '-0.36px',
                     display: 'flex',
                     alignItems: 'flex-start',
@@ -183,7 +191,7 @@ export default function NowPage() {
                     fontWeight: 400,
                     fontSize: '15px',
                     lineHeight: 1.4,
-                    color: '#000000',
+                    color: 'var(--color-ink-black)',
                     letterSpacing: '-0.3px',
                   }}
                 >
@@ -192,11 +200,11 @@ export default function NowPage() {
               </div>
             ))}
 
-            <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #e5e7eb' }}>
+            <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--color-canvas-mist)' }}>
               <span
                 style={{
-                  background: '#d1ffca',
-                  color: '#000000',
+                  background: 'var(--color-mint-pulse)',
+                  color: 'var(--color-ink-black)',
                   fontFamily: 'var(--font-suisseintlmono)',
                   fontSize: '12px',
                   borderRadius: '48px',
@@ -212,7 +220,7 @@ export default function NowPage() {
                   fontWeight: 400,
                   fontSize: '13px',
                   lineHeight: 1.4,
-                  color: '#979797',
+                  color: 'var(--color-muted-on-light)',
                   letterSpacing: '-0.28px',
                   marginTop: '12px',
                 }}
@@ -226,13 +234,13 @@ export default function NowPage() {
           <div>
             <div
               style={{
-                background: '#ffffff',
+                background: 'var(--color-pure-white)',
                 borderRadius: '24px',
                 padding: 'clamp(24px, 5vw, 40px)',
                 marginBottom: '24px',
               }}
             >
-              <div style={{ ...kickerStyle }}>// BUILDING</div>
+              <div style={{ ...kickerStyleLight }}>// BUILDING</div>
               <h2 style={{ ...blockHeadingStyle }}>SMARTFORMFLOW.</h2>
               <p style={{ ...blockBodyStyle }}>
                 Adding Stripe payment flows, multi-step conditional logic, and a real-time
@@ -246,13 +254,13 @@ export default function NowPage() {
 
             <div
               style={{
-                background: '#ffffff',
+                background: 'var(--color-pure-white)',
                 borderRadius: '24px',
                 padding: 'clamp(24px, 5vw, 40px)',
                 marginBottom: '24px',
               }}
             >
-              <div style={{ ...kickerStyle }}>// LEARNING</div>
+              <div style={{ ...kickerStyleLight }}>// LEARNING</div>
               <h2 style={{ ...blockHeadingStyle }}>DISTRIBUTED SYSTEMS.</h2>
               <p style={{ ...blockBodyStyle }}>
                 Reading Designing Data-Intensive Applications by Martin Kleppmann — working
@@ -278,13 +286,13 @@ export default function NowPage() {
 
             <div
               style={{
-                background: '#ffffff',
+                background: 'var(--color-pure-white)',
                 borderRadius: '24px',
                 padding: 'clamp(24px, 5vw, 40px)',
                 marginBottom: '24px',
               }}
             >
-              <div style={{ ...kickerStyle }}>// STATUS</div>
+              <div style={{ ...kickerStyleLight }}>// STATUS</div>
               <h2 style={{ ...blockHeadingStyle }}>OPEN TO ROLES.</h2>
               <p style={{ ...blockBodyStyle }}>
                 Completing my MSc in Computer Science (June–July 2026), with 1.5 years of
@@ -297,7 +305,7 @@ export default function NowPage() {
                 style={{
                   marginTop: '24px',
                   paddingTop: '24px',
-                  borderTop: '1px solid #e5e7eb',
+                  borderTop: '1px solid var(--color-canvas-mist)',
                   display: 'flex',
                   gap: '12px',
                 }}
@@ -307,8 +315,8 @@ export default function NowPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
-                    background: '#000000',
-                    color: '#ffffff',
+                    background: 'var(--color-ink-black)',
+                    color: 'var(--color-pure-white)',
                     fontFamily: 'var(--font-suisseintl)',
                     fontWeight: 500,
                     fontSize: '14px',
@@ -326,8 +334,8 @@ export default function NowPage() {
                   rel="noopener noreferrer"
                   style={{
                     background: 'transparent',
-                    color: '#000000',
-                    border: '1px solid #000000',
+                    color: 'var(--color-ink-black)',
+                    border: '1px solid var(--color-ink-black)',
                     fontFamily: 'var(--font-suisseintl)',
                     fontWeight: 500,
                     fontSize: '14px',
@@ -346,9 +354,9 @@ export default function NowPage() {
       </div>
 
       {/* C: Dark stack strip */}
-      <div style={{ background: '#000000', padding: 'var(--section-y) var(--gutter)' }}>
+      <div style={{ background: 'var(--color-ink-black)', padding: 'var(--section-y) var(--gutter)' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-          <div style={{ ...kickerStyle }}>// CURRENT STACK</div>
+          <div style={{ ...kickerStyleDark }}>// CURRENT STACK</div>
 
           <h2
             style={{
@@ -357,7 +365,7 @@ export default function NowPage() {
               fontSize: 'var(--fs-display-md)',
               lineHeight: 0.9,
               letterSpacing: '-0.03em',
-              color: '#ffffff',
+              color: 'var(--color-pure-white)',
               marginBottom: '40px',
             }}
           >
@@ -384,8 +392,8 @@ export default function NowPage() {
                     style={{
                       fontFamily: 'var(--font-suisseintlmono)',
                       fontSize: '12px',
-                      color: '#000000',
-                      background: '#ffffff',
+                      color: 'var(--color-ink-black)',
+                      background: 'var(--color-pure-white)',
                       borderRadius: '20px',
                       padding: '6px 12px',
                       letterSpacing: '-0.36px',

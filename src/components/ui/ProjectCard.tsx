@@ -15,7 +15,7 @@ export function ProjectCard({ project }: { project: Project }) {
     <article
       data-gsap="card"
       style={{
-        background: '#ffffff',
+        background: 'var(--color-pure-white)',
         borderRadius: '32px',
         padding: '0',
         width: 'min(480px, 84vw)',
@@ -23,7 +23,7 @@ export function ProjectCard({ project }: { project: Project }) {
         overflow: 'hidden',
       }}
     >
-      <div style={{ background: '#e5e7eb', height: '280px', position: 'relative' }}>
+      <div style={{ background: 'var(--color-canvas-mist)', height: '280px', position: 'relative' }}>
         <LazyCanvas camera={{ position: [0, 0, 5], fov: 50 }} style={{ width: '100%', height: '100%' }}>
           <ambientLight intensity={0.7} />
           <directionalLight position={[2, 3, 2]} intensity={1} />
@@ -36,7 +36,7 @@ export function ProjectCard({ project }: { project: Project }) {
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
             fontSize: '12px',
-            color: '#444444',
+            color: 'var(--color-graphite)',
             letterSpacing: '-0.36px',
             marginBottom: '8px',
           }}
@@ -50,7 +50,7 @@ export function ProjectCard({ project }: { project: Project }) {
             fontSize: 'var(--fs-display-md)',
             lineHeight: 0.9,
             letterSpacing: '-0.03em',
-            color: '#000000',
+            color: 'var(--color-ink-black)',
             marginBottom: '12px',
           }}
         >
@@ -62,7 +62,7 @@ export function ProjectCard({ project }: { project: Project }) {
             fontWeight: 400,
             fontSize: '14px',
             lineHeight: 1.3,
-            color: '#444444',
+            color: 'var(--color-graphite)',
             letterSpacing: '-0.28px',
             marginBottom: '16px',
           }}
@@ -81,8 +81,8 @@ export function ProjectCard({ project }: { project: Project }) {
             fontFamily: 'var(--font-suisseintl)',
             fontWeight: 500,
             fontSize: '14px',
-            color: '#000000',
-            border: '1px solid #000000',
+            color: 'var(--color-ink-black)',
+            border: '1px solid var(--color-ink-black)',
             borderRadius: '4px',
             padding: '10px 20px',
             textDecoration: 'none',

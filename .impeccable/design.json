@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-12T10:00:41.401Z",
+  "title": "Design System: Austin Makasare Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "canvas-mist": { "role": "neutral", "displayName": "Canvas Mist", "canonical": "oklch(92.5% 0.005 255)", "tonalRamp": ["oklch(15% 0.005 255)", "oklch(28% 0.005 255)", "oklch(42% 0.005 255)", "oklch(56% 0.005 255)", "oklch(70% 0.005 255)", "oklch(82% 0.005 255)", "oklch(92.5% 0.005 255)", "oklch(97% 0.005 255)"] },
+      "pure-white": { "role": "neutral", "displayName": "Pure White", "canonical": "oklch(100% 0 0)", "tonalRamp": ["oklch(15% 0 0)", "oklch(30% 0 0)", "oklch(45% 0 0)", "oklch(60% 0 0)", "oklch(75% 0 0)", "oklch(88% 0 0)", "oklch(96% 0 0)", "oklch(100% 0 0)"] },
+      "surface-mist": { "role": "neutral", "displayName": "Surface Mist", "canonical": "oklch(96% 0 0)", "tonalRamp": ["oklch(15% 0 0)", "oklch(28% 0 0)", "oklch(42% 0 0)", "oklch(56% 0 0)", "oklch(70% 0 0)", "oklch(84% 0 0)", "oklch(93% 0 0)", "oklch(96% 0 0)"] },
+      "ink-black": { "role": "neutral", "displayName": "Ink Black", "canonical": "oklch(0% 0 0)", "tonalRamp": ["oklch(0% 0 0)", "oklch(15% 0 0)", "oklch(30% 0 0)", "oklch(45% 0 0)", "oklch(60% 0 0)", "oklch(75% 0 0)", "oklch(88% 0 0)", "oklch(97% 0 0)"] },
+      "steel-gray": { "role": "neutral", "displayName": "Steel Gray", "canonical": "oklch(68% 0 0)", "tonalRamp": ["oklch(15% 0 0)", "oklch(28% 0 0)", "oklch(42% 0 0)", "oklch(55% 0 0)", "oklch(68% 0 0)", "oklch(78% 0 0)", "oklch(88% 0 0)", "oklch(96% 0 0)"] },
+      "graphite": { "role": "neutral", "displayName": "Graphite", "canonical": "oklch(35% 0 0)", "tonalRamp": ["oklch(10% 0 0)", "oklch(20% 0 0)", "oklch(28% 0 0)", "oklch(35% 0 0)", "oklch(48% 0 0)", "oklch(62% 0 0)", "oklch(78% 0 0)", "oklch(90% 0 0)"] },
+      "mint-pulse": { "role": "primary", "displayName": "Mint Pulse", "canonical": "oklch(93% 0.09 155)", "tonalRamp": ["oklch(25% 0.06 155)", "oklch(38% 0.08 155)", "oklch(52% 0.1 155)", "oklch(66% 0.1 155)", "oklch(79% 0.1 155)", "oklch(87% 0.095 155)", "oklch(93% 0.09 155)", "oklch(97% 0.05 155)"] },
+      "electric-yellow": { "role": "primary", "displayName": "Electric Yellow", "canonical": "oklch(95% 0.19 100)", "tonalRamp": ["oklch(30% 0.1 100)", "oklch(45% 0.14 100)", "oklch(60% 0.17 100)", "oklch(75% 0.19 100)", "oklch(85% 0.2 100)", "oklch(91% 0.195 100)", "oklch(95% 0.19 100)", "oklch(98% 0.12 100)"] },
+      "slate-steel": { "role": "neutral", "displayName": "Slate Steel", "canonical": "oklch(60% 0 0)", "tonalRamp": ["oklch(12% 0 0)", "oklch(24% 0 0)", "oklch(36% 0 0)", "oklch(48% 0 0)", "oklch(60% 0 0)", "oklch(72% 0 0)", "oklch(84% 0 0)", "oklch(94% 0 0)"] },
+      "iron-line": { "role": "neutral", "displayName": "Iron Line", "canonical": "oklch(46% 0 0)", "tonalRamp": ["oklch(10% 0 0)", "oklch(20% 0 0)", "oklch(30% 0 0)", "oklch(38% 0 0)", "oklch(46% 0 0)", "oklch(58% 0 0)", "oklch(72% 0 0)", "oklch(88% 0 0)"] },
+      "deep-graphite": { "role": "neutral", "displayName": "Deep Graphite", "canonical": "oklch(48% 0 0)", "tonalRamp": ["oklch(10% 0 0)", "oklch(20% 0 0)", "oklch(30% 0 0)", "oklch(40% 0 0)", "oklch(48% 0 0)", "oklch(60% 0 0)", "oklch(75% 0 0)", "oklch(90% 0 0)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero headline only — the single largest commitment on the page." },
+      "headline": { "displayName": "Headline", "purpose": "Section-opener headings (About, Work, Now, CTA tiles)." },
+      "title": { "displayName": "Title", "purpose": "Card and subsection headings." },
+      "body": { "displayName": "Body", "purpose": "Paragraph copy and descriptions." },
+      "label": { "displayName": "Label", "purpose": "Mono kickers, tags, chips, and PROBLEM/APPROACH/OUTCOME meta labels — the most-used text style in the system." }
+    },
+    "shadows": [
+      { "name": "floating-menu", "value": "0 24px 60px rgba(0,0,0,0.25)", "purpose": "The mobile nav dropdown only — the sole shadow in the codebase, reserved for a genuinely floating overlay." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Default entrance/reveal easing across framer-motion transitions (nav slide-in, hero rise, mobile menu drop)." },
+      { "name": "curved-rise-overlap", "value": "-64px margin-top pull with a clip-path inset(0 48px 0 48px round 48px 48px 0 0) relaxing to inset(0 0 0 0) on scroll", "purpose": "The scroll-driven rising-panel transition between contrasting sections (see CurvedRise component)." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "480px" },
+      { "name": "md", "value": "640px" },
+      { "name": "lg", "value": "768px" },
+      { "name": "xl", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Filled ink-black CTA. Used for the hero's 'View My Work', the nav pill's 'Hire Me', and case-study CTAs.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">View My Work</a>",
+      "css": ".ds-btn-primary { display: inline-block; background: var(--color-ink-black, #000); color: var(--color-pure-white, #fff); font-family: 'SuisseIntl', Inter, sans-serif; font-weight: 500; font-size: 14px; letter-spacing: -0.028px; border-radius: 4px; padding: 12px 24px; text-decoration: none; } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-electric-yellow, #fff100); outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Transparent-fill secondary CTA with a 1px ink-black border. Used for 'Book a Call' and 'View Case Study' links.",
+      "html": "<a class=\"ds-btn-ghost\" href=\"#\">Book a Call</a>",
+      "css": ".ds-btn-ghost { display: inline-block; background: transparent; color: var(--color-ink-black, #000); border: 1px solid var(--color-ink-black, #000); font-family: 'SuisseIntl', Inter, sans-serif; font-weight: 500; font-size: 14px; letter-spacing: -0.028px; border-radius: 4px; padding: 12px 24px; text-decoration: none; } .ds-btn-ghost:focus-visible { outline: 2px solid var(--color-electric-yellow, #fff100); outline-offset: 2px; }"
+    },
+    {
+      "name": "Skill Tag",
+      "kind": "chip",
+      "refersTo": "skill-tag",
+      "description": "Inline mono chip for tech-stack labels. Rests on surface-mist, hovers/actives to mint-pulse.",
+      "html": "<span class=\"ds-skill-tag\">Node.js</span>",
+      "css": ".ds-skill-tag { display: inline-block; font-family: 'SuisseIntlMono', 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: -0.36px; color: var(--color-ink-black, #000); background: var(--color-surface-mist, #f3f3f3); border-radius: 20px; padding: 6px 12px; cursor: default; transition: background 0.2s ease; } .ds-skill-tag:hover { background: var(--color-mint-pulse, #d1ffca); }"
+    },
+    {
+      "name": "Available Pill",
+      "kind": "chip",
+      "refersTo": "skill-tag-hover",
+      "description": "Mint-filled status pill next to the hero mono kicker. The one place mint is a resting fill, not a hover state.",
+      "html": "<span class=\"ds-available-pill\">Available for Work</span>",
+      "css": ".ds-available-pill { display: inline-block; font-family: 'SuisseIntlMono', 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: -0.36px; color: var(--color-ink-black, #000); background: var(--color-mint-pulse, #d1ffca); border-radius: 48px; padding: 4px 12px; }"
+    },
+    {
+      "name": "Mono Kicker",
+      "kind": "custom",
+      "description": "The '// SECTION' label that precedes section headings and card meta. Color must switch between Steel Gray (dark bg) and Deep Graphite (light bg) — see the Split-Gray Rule.",
+      "html": "<div class=\"ds-kicker\">// SECTION NAME</div>",
+      "css": ".ds-kicker { font-family: 'SuisseIntlMono', 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: -0.36px; line-height: 1.3; color: var(--color-deep-graphite, #666); }"
+    },
+    {
+      "name": "Project Card",
+      "kind": "card",
+      "refersTo": "project-card",
+      "description": "White surface, 32px radius, no shadow. 3D-render crop on top, mono label, condensed name, description, tag row, ghost CTA below.",
+      "html": "<article class=\"ds-project-card\"><div class=\"ds-project-card__media\"></div><div class=\"ds-project-card__body\"><div class=\"ds-kicker\">BACKEND · 2024</div><h3 class=\"ds-project-card__title\">QUIZ PLATFORM</h3><p class=\"ds-project-card__desc\">Real-time monitoring for 10,000 concurrent exam takers.</p><a class=\"ds-btn-ghost\" href=\"#\">View Case Study →</a></div></article>",
+      "css": ".ds-project-card { background: var(--color-pure-white, #fff); border-radius: 32px; overflow: hidden; width: 340px; } .ds-project-card__media { background: var(--color-canvas-mist, #e5e7eb); height: 200px; } .ds-project-card__body { padding: 24px; } .ds-project-card__title { font-family: 'SuisseIntlCond', 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 32px; line-height: 0.9; letter-spacing: -0.03em; color: var(--color-ink-black, #000); margin: 12px 0; } .ds-project-card__desc { font-family: 'SuisseIntl', Inter, sans-serif; font-size: 14px; line-height: 1.3; color: var(--color-graphite, #444); letter-spacing: -0.28px; margin-bottom: 16px; }"
+    },
+    {
+      "name": "Floating Nav Pill",
+      "kind": "nav",
+      "refersTo": "nav-pill",
+      "description": "Fixed, centered, pure-white pill nav. Collapses to a 44×44px hamburger toggle under 768px.",
+      "html": "<nav class=\"ds-nav-pill\"><a class=\"ds-nav-pill__mark\" href=\"#\">A·M</a><div class=\"ds-nav-pill__links\"><a href=\"#\">Work</a><a href=\"#\">About</a></div><a class=\"ds-btn-primary\" href=\"#\">Hire Me</a></nav>",
+      "css": ".ds-nav-pill { display: flex; align-items: center; gap: 32px; background: var(--color-pure-white, #fff); border-radius: 48px; padding: 10px 16px; } .ds-nav-pill__mark { font-family: 'SuisseIntl', Inter, sans-serif; font-weight: 500; font-size: 16px; color: var(--color-ink-black, #000); text-decoration: none; letter-spacing: -0.02em; } .ds-nav-pill__links { display: flex; align-items: center; gap: 24px; } .ds-nav-pill__links a { font-family: 'SuisseIntl', Inter, sans-serif; font-weight: 500; font-size: 14px; color: var(--color-graphite, #444); text-decoration: none; letter-spacing: -0.028px; transition: color 0.2s ease; } .ds-nav-pill__links a:hover { color: var(--color-ink-black, #000); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Print Spread That Learned to Scroll",
+    "overview": "This portfolio runs a Swiss-editorial system: massive ultra-condensed display type set tight (0.90 line-height, -3% tracking), a restrained grotesque for body copy, and a tiny mono voice reserved for kickers and tags. The page reads like a print spread — one dominant typographic statement per section — separated by generous whitespace and flat tonal surfaces rather than dividers, cards-on-cards, or shadows. Color is almost entirely absent from UI chrome and concentrated instead in two deliberate accents: a soft mint (availability status, active tag state) and an electric yellow (the one accent word in the hero headline, hover states, the focus ring). Everything else is ink black, pure white, or one of three grays tuned per background — the palette is disciplined on purpose; the 3D hero illustration is where color is allowed to be loud. This system explicitly rejects the SaaS-landing-page playbook: no gradient text, no glassmorphism, no hero-metric-with-gradient-accent cards, no identical icon-heading-text card grids. Sections alternate between the canvas-gray ground and full-bleed black not as a light/dark theme switch but as a fixed layout rhythm — there is no user-facing theme toggle.",
+    "keyCharacteristics": [
+      "Condensed, tight-set display type as the primary visual instrument",
+      "Two accent colors used sparingly and specifically (mint = status/active, yellow = emphasis/hover)",
+      "Flat surfaces; depth comes from a scroll-driven rising panel, not shadows",
+      "One named mono-kicker system (`// SECTION`) used consistently, not as decorative filler",
+      "Black and canvas-gray sections alternate as fixed layout rhythm, not theme"
+    ],
+    "rules": [
+      { "name": "The Split-Gray Rule", "body": "No single muted gray works on every background this system uses. Steel Gray and Slate Steel are dark-surface-only; Deep Graphite is light-surface-only. Never reuse Steel Gray's hex on a light background — it fails AA there even though it's the \"brand gray.\"", "section": "colors" },
+      { "name": "The Two-Accent Rule", "body": "Mint and yellow are the entire accent palette. Neither is ever used as a full-section background — both stay confined to pills, hover states, and single emphasized words.", "section": "colors" },
+      { "name": "The Fluid-Display Rule", "body": "Every display/headline/title size is a clamp(), not a fixed px value — condensed type at a fixed size either overflows on mobile or looks timid on desktop.", "section": "typography" },
+      { "name": "The Graceful-Degradation Rule", "body": "SuisseIntl is a licensed typeface not committed to the repo. There are no @font-face rules for it until the real files are licensed — the Google-Fonts fallback is the actual rendered typography today, and it must stay a close visual match.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Cards, pills, and section surfaces never get a shadow. Separation comes from background-color contrast (the tonal stack) alone.", "section": "elevation" },
+      { "name": "The Rising-Panel Rule", "body": "Where a black section needs to visually rise over the section before it, wrap it in the CurvedRise component. This is the system's only \"elevation\" gesture, and it's motion-driven, not shadow-driven.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do set every display/headline/title size as a clamp(), never a fixed px value.",
+      "Do use var(--color-*) custom properties for chrome colors — the tokens are the single source of truth; component files should reference them, not hardcode hex.",
+      "Do use Steel Gray / Slate Steel only on black backgrounds, and Deep Graphite only on white/canvas-mist backgrounds — check the actual rendered background before picking a muted-gray token.",
+      "Do wrap every WebGL scene in LazyCanvas and honor prefers-reduced-motion for every animation, including the nav's hover-wave and the CTA-tile diagonal fill.",
+      "Do keep the // SECTION mono kicker format consistent wherever it appears — it's a deliberate, named brand system, not decorative scaffolding."
+    ],
+    "donts": [
+      "Don't add drop shadows, gradients, or glassmorphism to any card, pill, or nav surface — see the Flat-By-Default Rule.",
+      "Don't use #fff100 or #d1ffca as a full-section background — both are accents, never surfaces.",
+      "Don't add a third accent color. Mint and yellow are the complete accent palette.",
+      "Don't set display/headline/title type below 32px (the Title floor) or use a fixed px size at any display tier.",
+      "Don't assume the hero section is black — it currently renders on Canvas Mist with a black headline; only the stats strip, skills, footer, and the header block of the Now/Work pages are full-bleed black.",
+      "Don't add a light/dark theme toggle without a real design decision behind it — the black/canvas alternation is fixed layout rhythm, not a switchable mode, and there is no toggle UI anywhere in the code today.",
+      "Don't let nav or button label text wrap mid-word — any text wrapped in WaveText's per-character spans needs white-space: nowrap on its container, or a squeezed flex parent will break words between individual character spans."
+    ]
+  }
+}

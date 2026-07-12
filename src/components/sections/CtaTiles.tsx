@@ -1,6 +1,6 @@
 export function CtaTiles() {
   return (
-    <section style={{ background: '#ffffff' }}>
+    <section style={{ background: 'var(--color-pure-white)' }}>
       <div
         style={{
           maxWidth: '1280px',
@@ -37,7 +37,7 @@ export function CtaTiles() {
                 fontSize: 'var(--fs-display-lg)',
                 lineHeight: 0.9,
                 letterSpacing: '-0.03em',
-                color: '#000000',
+                color: 'var(--color-ink-black)',
               }}
             >
               BOOK A CALL
@@ -46,7 +46,7 @@ export function CtaTiles() {
               style={{
                 width: '48px',
                 height: '48px',
-                border: '1px solid #000000',
+                border: '1px solid var(--color-ink-black)',
                 borderRadius: '4px',
                 display: 'flex',
                 alignItems: 'center',
@@ -64,7 +64,7 @@ export function CtaTiles() {
               fontWeight: 400,
               fontSize: '14px',
               lineHeight: 1.3,
-              color: '#444444',
+              color: 'var(--color-graphite)',
               letterSpacing: '-0.28px',
             }}
           >
@@ -95,7 +95,7 @@ export function CtaTiles() {
                 fontSize: 'var(--fs-display-lg)',
                 lineHeight: 0.9,
                 letterSpacing: '-0.03em',
-                color: '#000000',
+                color: 'var(--color-ink-black)',
               }}
             >
               VIEW RESUME
@@ -104,7 +104,7 @@ export function CtaTiles() {
               style={{
                 width: '48px',
                 height: '48px',
-                border: '1px solid #000000',
+                border: '1px solid var(--color-ink-black)',
                 borderRadius: '4px',
                 display: 'flex',
                 alignItems: 'center',
@@ -122,7 +122,7 @@ export function CtaTiles() {
               fontWeight: 400,
               fontSize: '14px',
               lineHeight: 1.3,
-              color: '#444444',
+              color: 'var(--color-graphite)',
               letterSpacing: '-0.28px',
             }}
           >

@@ -1,0 +1,574 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas-mist: #e5e7eb;
+  --color-pure-white: #ffffff;
+  --color-surface-mist: #f3f3f3;
+  --color-ink-black: #000000;
+  --color-steel-gray: #979797;
+  --color-graphite: #444444;
+  --color-mint-pulse: #d1ffca;
+  --color-electric-yellow: #fff100;
+
+  /* Muted foreground for dark surfaces. Graphite (#444) reads at only
+     ~2.3:1 on black and fails WCAG AA; these pass. Use on black/ink
+     backgrounds where graphite was previously hard-coded. */
+  --color-muted-on-dark: #808080;   /* text — 5.3:1 on #000 */
+  --color-border-on-dark: #616161;  /* UI borders — 3.4:1 on #000 */
+
+  --font-suisseintl: 'SuisseIntl', var(--font-suisseintl-fallback), ui-sans-serif, system-ui, sans-serif;
+  --font-suisseintlcond: 'SuisseIntlCond', var(--font-suisseintlcond-fallback), ui-sans-serif, system-ui, sans-serif;
+  --font-suisseintlmono: 'SuisseIntlMono', var(--font-suisseintlmono-fallback), ui-monospace, SFMono-Regular, monospace;
+
+  --text-caption: 12px;
+  --text-body-sm: 14px;
+  --text-body: 16px;
+  --text-subheading: 20px;
+  --text-heading-sm: 28px;
+  --text-heading: 40px;
+  --text-heading-lg: 48px;
+  --text-display: 80px;
+  --text-display-xl: 130px;
+
+  --spacing-8: 8px;
+  --spacing-16: 16px;
+  --spacing-24: 24px;
+  --spacing-40: 40px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-96: 96px;
+
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-3xl-2: 32px;
+  --radius-full: 48px;
+  --radius-full-2: 64px;
+}
+
+:root {
+  --radius-tags: 20px;
+  --radius-cards: 32px;
+  --radius-buttons: 4px;
+  --radius-nav-pill: 48px;
+  --radius-button-pill: 8px;
+  --radius-cards-large: 64px;
+  --page-max-width: 1280px;
+  --section-gap: 80px;
+
+  /* ============================================================
+     Responsive layout system — breakpoint-driven custom props.
+     Mobile-first: base values are phone; each min-width query
+     layers desktop back on. Inline styles reference these via
+     var(), so the whole page reflows from one place.
+     ============================================================ */
+  --gutter: 20px;          /* horizontal page padding */
+  --section-y: 56px;       /* vertical section padding */
+
+  --hero-cols: 1fr;
+  --hero-min-h: auto;
+  --hero-canvas-h: 340px;
+
+  --stats-cols: 1fr;
+  --about-cols: 1fr;
+  --about-gap: 40px;
+  --skills-cols: 1fr;
+  --skills-gap: 48px;
+  --cta-cols: 1fr;
+
+  --footer-cols: 1fr;
+  --footer-gap: 48px;
+  --footer-links-cols: 1fr 1fr;
+
+  --now-main-cols: 1fr;
+  --now-gap: 40px;
+
+  --case-cols: 1fr;
+  --case-gap: 48px;
+
+  --workcard-cols: 1fr;
+  --workcard-h: auto;
+  --workcard-media-h: 260px;
+
+  /* Fluid display type — condensed headlines scale with viewport
+     but never exceed their original ceiling. letter-spacing moves
+     to em so tracking scales with the shrinking size. */
+  --fs-display: clamp(2.75rem, 10vw, 5rem);      /* was 80px */
+  --fs-display-lg: clamp(2.4rem, 8.5vw, 4rem);   /* was 64px */
+  --fs-display-md: clamp(2rem, 6.5vw, 3rem);     /* was 48px */
+}
+
+@media (min-width: 480px) {
+  :root { --gutter: 24px; }
+}
+
+@media (min-width: 640px) {
+  :root {
+    --stats-cols: 1fr 1fr 1fr;
+    --footer-links-cols: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 40px;
+    --section-y: 80px;
+    --skills-cols: 1fr 1fr 1fr;
+    --cta-cols: 1fr 1fr;
+    --now-main-cols: 40fr 60fr;
+    --case-cols: 180px 1fr;
+    --workcard-cols: 45fr 55fr;
+    --workcard-h: 480px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 64px;
+    --section-y: 96px;
+    --hero-cols: 48fr 52fr;
+    --hero-min-h: 100vh;
+    --hero-canvas-h: min(100vh, 780px);
+    --about-cols: 55fr 45fr;
+    --about-gap: 80px;
+    --skills-gap: 64px;
+    --footer-cols: 300px 1fr;
+    --footer-gap: 80px;
+    --now-gap: 64px;
+    --case-gap: 80px;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Keyboard focus ring. Electric yellow reads clearly on both the black
+   and the light-gray surfaces, so one accent covers the whole site.
+   :focus-visible keeps it to keyboard users only — no ring on mouse click. */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-electric-yellow, #fff100);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-suisseintl);
+  background-color: #000000;
+  color: #000000;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@font-face {
+  font-family: 'SuisseIntl';
+  src: local('SuisseIntl'), url('/fonts/SuisseIntl-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SuisseIntl';
+  src: local('SuisseIntl'), url('/fonts/SuisseIntl-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SuisseIntlCond';
+  src: local('SuisseIntlCond'), url('/fonts/SuisseIntlCond-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'SuisseIntlMono';
+  src: local('SuisseIntlMono'), url('/fonts/SuisseIntlMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* CTA tile diagonal reveal — yellow grows from center along the diagonal
+   to the opposite corners on hover, and retracts back on hover-out. */
+.cta-tile {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.cta-tile-fill {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  background: #fff100;
+  transform: translate(-50%, -50%) rotate(45deg) scale(0);
+  transform-origin: center center;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cta-tile:hover .cta-tile-fill {
+  transform: translate(-50%, -50%) rotate(45deg) scale(1);
+}
+
+.cta-tile-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Nav text wave hover — each character lifts in a staggered sequence,
+   like a wave passing through the word. */
+@keyframes nav-wave-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.wave-text span {
+  display: inline-block;
+}
+
+a:hover > .wave-text span,
+.wave-text:hover span {
+  animation: nav-wave-bounce 0.5s ease-in-out;
+}
+
+/* ============================================================
+   Responsive helper classes — structural swaps that CSS custom
+   properties alone can't express (dividers changing axis, the
+   nav collapsing to a hamburger, cards giving their 3D canvas a
+   real height once the row stacks).
+   ============================================================ */
+
+/* Stat cells: stacked rows get a top rule; the horizontal row
+   (>=640px) gets a left rule and left padding instead. */
+.stat-cell {
+  padding: 20px 0;
+  border-top: 1px solid #222;
+}
+.stat-cell:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+@media (min-width: 640px) {
+  .stat-cell {
+    padding: 0 0 0 var(--gutter);
+    border-top: none;
+    border-left: 1px solid #222;
+  }
+  .stat-cell:first-child {
+    padding-left: 0;
+    border-left: none;
+  }
+}
+
+/* CTA tiles: divider flips from bottom (stacked) to right (side-by-side). */
+.cta-tile {
+  border-bottom: 1px solid #e5e7eb;
+}
+.cta-tile:last-child {
+  border-bottom: none;
+}
+.cta-tile-head {
+  margin-bottom: clamp(56px, 12vw, 120px);
+}
+@media (min-width: 768px) {
+  .cta-tile {
+    border-bottom: none;
+  }
+  .cta-tile:not(:last-child) {
+    border-right: 1px solid #e5e7eb;
+  }
+}
+
+/* Work-page CTA strip: stacks on mobile, spreads on desktop. */
+.workcta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+@media (min-width: 768px) {
+  .workcta {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+/* Work-page card media panel: needs an explicit height when the
+   card stacks (a 100% height of an auto-height parent collapses
+   the WebGL canvas to zero). */
+.workcard-media {
+  height: var(--workcard-media-h);
+}
+@media (min-width: 768px) {
+  .workcard-media {
+    height: 100%;
+  }
+}
+
+/* Case-study side nav: a horizontal scroll strip on mobile,
+   a sticky column on desktop. */
+.case-sidebar {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+@media (min-width: 768px) {
+  .case-sidebar {
+    position: sticky;
+    top: 80px;
+    flex-direction: column;
+    gap: 0;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+}
+
+/* Now-page aside card: sticky only once there's a second column. */
+.now-aside {
+  position: static;
+}
+@media (min-width: 768px) {
+  .now-aside {
+    position: sticky;
+    top: 80px;
+  }
+}
+
+/* ============================================================
+   Principles list — the numbered "first principles" rows. Each row
+   is a number / title / description grid that stacks on mobile and
+   spreads across three columns on desktop. Hovering (or keyboard
+   focus) lifts the row: the muted number goes solid black, a tinted
+   panel fades in, and an electric-yellow accent bar marks the edge.
+   ============================================================ */
+.principle-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px 24px;
+  align-items: start;
+  padding: 24px 20px;
+  border-top: 1px solid #d0d3d7;
+  border-radius: 12px;
+  position: relative;
+  transition: background 0.3s ease;
+}
+.principle-row:last-child {
+  border-bottom: 1px solid #d0d3d7;
+}
+.principle-num {
+  font-family: var(--font-suisseintlcond);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 7vw, 3.25rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  color: #b4b9c0;
+  transition: color 0.3s ease;
+}
+.principle-row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 4px;
+  border-radius: 4px;
+  background: #fff100;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.principle-row:hover,
+.principle-row:focus-within {
+  background: #dbdee2;
+}
+.principle-row:hover .principle-num,
+.principle-row:focus-within .principle-num {
+  color: #000000;
+}
+.principle-row:hover::before,
+.principle-row:focus-within::before {
+  opacity: 1;
+}
+@media (min-width: 768px) {
+  .principle-row {
+    grid-template-columns: 110px minmax(0, 1fr) minmax(0, 340px);
+    gap: 32px;
+    align-items: center;
+    padding: 30px 24px;
+  }
+}
+
+/* ============================================================
+   Case-study chapter numbering — mirrors the Principles list. A CSS
+   counter on the existing [data-section] markers stamps a big muted
+   two-digit number above each section heading; the counter resets
+   per case-study main so every page starts at 01. Pure CSS, so both
+   case studies (and any future one) number themselves automatically.
+   ============================================================ */
+.case-main {
+  counter-reset: case-section;
+}
+.case-main [data-section] {
+  counter-increment: case-section;
+}
+.case-main [data-section]::before {
+  content: counter(case-section, decimal-leading-zero);
+  display: block;
+  font-family: var(--font-suisseintlcond);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 7vw, 3.25rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  color: #b4b9c0;
+  margin-bottom: 16px;
+}
+
+/* Numbered sidebar TOC index — the two-digit number that leads each
+   case-study nav link. Muted by default, solid black on the active
+   section, matching the chapter number it points to. */
+.case-nav-num {
+  font-variant-numeric: tabular-nums;
+  color: #b4b9c0;
+  transition: color 0.2s ease;
+}
+.case-nav-link[data-active='true'] .case-nav-num {
+  color: #000000;
+}
+
+/* ============================================================
+   Custom horizontal scrollbar — the work-card track. The native
+   scrollbar is hidden and replaced by an always-visible, draggable
+   pill indicator (.card-scrollbar) below the cards that mirrors and
+   drives the track's horizontal scroll position.
+   ============================================================ */
+.card-track {
+  scrollbar-width: none; /* Firefox */
+}
+.card-track::-webkit-scrollbar {
+  display: none; /* WebKit/Blink */
+}
+
+/* Custom draggable scroll indicator that sits below the cards and
+   reflects (and drives) the track's horizontal scroll position. */
+.card-scrollbar {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: #cbced3;
+  cursor: pointer;
+  touch-action: none;
+}
+.card-scrollbar-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: #000000;
+  transition: background 0.2s ease;
+}
+.card-scrollbar:hover .card-scrollbar-thumb {
+  background: #222222;
+}
+
+/* ============================================================
+   Reduced motion. Honors the OS "reduce motion" setting for the
+   CSS layer — the nav-wave hover, the CTA diagonal fill, hamburger
+   morph, tag/color transitions, and smooth scroll all settle
+   instantly. Framer-motion is handled by <MotionConfig> and the
+   GSAP / Three.js loops check the same media query in JS.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+  /* Keep the CTA fill fully retracted rather than mid-wipe. */
+  .cta-tile:hover .cta-tile-fill {
+    transform: translate(-50%, -50%) rotate(45deg) scale(0);
+  }
+}
+
+/* Skip link: hidden until keyboard-focused, then pinned top-left above
+   the nav so keyboard users can jump straight to the main content. */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 12px;
+  z-index: 60;
+  background: #fff100;
+  color: #000000;
+  font-family: var(--font-suisseintl), sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: max(12px, env(safe-area-inset-top));
+  outline: 2px solid #000000;
+  outline-offset: 2px;
+}
+
+/* Hero inner grid: top padding clears the fixed nav while stacked;
+   at desktop it becomes a full-height centered two-column split. */
+.hero-inner {
+  padding: 104px var(--gutter) var(--section-y);
+  min-height: var(--hero-min-h);
+}
+@media (min-width: 1024px) {
+  .hero-inner {
+    padding: 0 var(--gutter);
+  }
+}
+
+/* Navigation: desktop link row + CTA vs. mobile hamburger toggle. */
+.nav-links,
+.nav-cta {
+  display: none;
+}
+.nav-toggle {
+  display: inline-flex;
+}
+@media (min-width: 768px) {
+  .nav-links {
+    display: flex;
+  }
+  .nav-cta {
+    display: inline-flex;
+  }
+  .nav-toggle {
+    display: none;
+  }
+}

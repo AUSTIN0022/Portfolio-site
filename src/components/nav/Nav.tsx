@@ -20,6 +20,21 @@ const islandSpring = { type: 'spring' as const, stiffness: 380, damping: 32, mas
 // snappy spring — no bounce, gentle deceleration, so it doesn't jump in/out.
 const menuGlide = { type: 'tween' as const, duration: 0.4, ease: [0.16, 1, 0.3, 1] as const }
 
+// As the island grows in height, its rows cascade in top-to-bottom (fade +
+// slide-up) so the vertical axis reveals with the same life as the width.
+const menuList = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.05, delayChildren: 0.08 } },
+}
+const menuRow = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] as const },
+  },
+}
+
 type TipState = { label: string; text: string; x: number } | null
 
 export function Nav() {
@@ -408,8 +423,12 @@ export function Nav() {
               }}
             >
               {/* Fixed-width content — held at the final width and centered so
-                  it doesn't reflow while the card box is still growing. */}
-              <div
+                  it doesn't reflow while the card box is still growing. Its rows
+                  cascade in top-to-bottom as the island opens. */}
+              <motion.div
+                variants={menuList}
+                initial="hidden"
+                animate="visible"
                 style={{
                   width: cardWidth,
                   flexShrink: 0,
@@ -420,7 +439,8 @@ export function Nav() {
                 }}
               >
               {/* Header row — mirrors the closed pill (A·M + toggle). */}
-              <div
+              <motion.div
+                variants={menuRow}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -484,49 +504,51 @@ export function Nav() {
                     />
                   </span>
                 </button>
-              </div>
+              </motion.div>
 
               {navLinks.map(({ label, href, tip: itemTip }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  onClick={() => setOpen(false)}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '3px',
-                    textDecoration: 'none',
-                    padding: '10px 12px',
-                    borderRadius: '14px',
-                  }}
-                >
-                  <span
+                <motion.div key={label} variants={menuRow}>
+                  <Link
+                    href={href}
+                    onClick={() => setOpen(false)}
                     style={{
-                      fontFamily: 'var(--font-suisseintl)',
-                      fontWeight: 500,
-                      fontSize: '16px',
-                      color: 'var(--color-ink-black)',
-                      letterSpacing: '-0.02em',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '3px',
+                      textDecoration: 'none',
+                      padding: '10px 12px',
+                      borderRadius: '14px',
                     }}
                   >
-                    {label}
-                  </span>
-                  {/* The desktop tooltip text, surfaced as a subtitle since
-                      touch has no hover. */}
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-suisseintl)',
-                      fontWeight: 450,
-                      fontSize: '12px',
-                      color: 'var(--color-graphite)',
-                      letterSpacing: '-0.01em',
-                    }}
-                  >
-                    {itemTip}
-                  </span>
-                </Link>
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-suisseintl)',
+                        fontWeight: 500,
+                        fontSize: '16px',
+                        color: 'var(--color-ink-black)',
+                        letterSpacing: '-0.02em',
+                      }}
+                    >
+                      {label}
+                    </span>
+                    {/* The desktop tooltip text, surfaced as a subtitle since
+                        touch has no hover. */}
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-suisseintl)',
+                        fontWeight: 450,
+                        fontSize: '12px',
+                        color: 'var(--color-graphite)',
+                        letterSpacing: '-0.01em',
+                      }}
+                    >
+                      {itemTip}
+                    </span>
+                  </Link>
+                </motion.div>
               ))}
-              <a
+              <motion.a
+                variants={menuRow}
                 href="#contact"
                 onClick={() => setOpen(false)}
                 style={{
@@ -544,8 +566,8 @@ export function Nav() {
                 }}
               >
                 Hire Me
-              </a>
-              </div>
+              </motion.a>
+              </motion.div>
             </motion.div>
           </>
         )}

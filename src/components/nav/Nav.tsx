@@ -1,20 +1,65 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { WaveText } from '@/components/ui/WaveText'
 
-const navLinks: { label: string; href: string }[] = [
-  { label: 'Work', href: '/work' },
-  { label: 'About', href: '/#about' },
-  { label: 'Skills', href: '/#skills' },
-  { label: 'Now', href: '/now' },
-  { label: 'Contact', href: '/#contact' },
+const navLinks: { label: string; href: string; tip: string }[] = [
+  { label: 'Work', href: '/work', tip: 'Selected projects & case studies' },
+  { label: 'About', href: '/#about', tip: 'Who I am & how I work' },
+  { label: 'Skills', href: '/#skills', tip: 'The stack I build with' },
+  { label: 'Now', href: '/now', tip: "What I'm focused on right now" },
+  { label: 'Contact', href: '/#contact', tip: "Let's build something" },
 ]
+
+// Spring tuned to feel like the iOS Dynamic Island — quick, slightly springy,
+// no overshoot wobble.
+const islandSpring = { type: 'spring' as const, stiffness: 380, damping: 32, mass: 0.9 }
+
+type TipState = { label: string; text: string; x: number } | null
 
 export function Nav() {
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const [hovered, setHovered] = useState(false)
+  const [tip, setTip] = useState<TipState>(null)
+
+  // The island is "expanded" at the top of the page or whenever the pointer
+  // is over it; it contracts once the user scrolls into the rest of the page.
+  const expanded = !scrolled || hovered
+
+  const navRef = useRef<HTMLElement>(null)
+
+  // Measure the natural width of the links cluster so we can collapse it to 0
+  // and grow it back without any layout jump. Re-measure after fonts load so
+  // the measurement isn't short (which would clip the last link).
+  const linksRef = useRef<HTMLDivElement>(null)
+  const [linksWidth, setLinksWidth] = useState(0)
+  useLayoutEffect(() => {
+    const measure = () => {
+      if (linksRef.current) {
+        setLinksWidth(Math.ceil(linksRef.current.getBoundingClientRect().width) + 2)
+      }
+    }
+    measure()
+    const raf = requestAnimationFrame(measure)
+    if (typeof document !== 'undefined' && document.fonts?.ready) {
+      document.fonts.ready.then(measure)
+    }
+    window.addEventListener('resize', measure)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', measure)
+    }
+  }, [])
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 48)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   // Close the mobile menu on Escape, and whenever the viewport grows
   // past the breakpoint where the full nav returns.
@@ -31,23 +76,54 @@ export function Nav() {
     }
   }, [open])
 
+  // Show a tooltip anchored under the hovered item. The x is measured relative
+  // to the nav so the bubble can live OUTSIDE the overflow-clipped links track.
+  const showTip = (e: React.SyntheticEvent, label: string, text: string) => {
+    const navEl = navRef.current
+    const target = e.currentTarget as HTMLElement
+    if (!navEl) return
+    const r = target.getBoundingClientRect()
+    const nr = navEl.getBoundingClientRect()
+    setTip({ label, text, x: r.left + r.width / 2 - nr.left })
+  }
+  const hideTip = (label: string) =>
+    setTip((t) => (t && t.label === label ? null : t))
+
   return (
     <>
       <motion.nav
+        ref={navRef}
+        onHoverStart={() => setHovered(true)}
+        onHoverEnd={() => {
+          setHovered(false)
+          setTip(null)
+        }}
         initial={{ x: '-50%', y: -20, opacity: 0 }}
-        animate={{ x: '-50%', y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        animate={{
+          x: '-50%',
+          y: 0,
+          opacity: 1,
+          scale: expanded ? 1 : 0.92,
+          paddingLeft: expanded ? 16 : 12,
+          paddingRight: expanded ? 16 : 12,
+          paddingTop: expanded ? 10 : 8,
+          paddingBottom: expanded ? 10 : 8,
+          boxShadow: expanded
+            ? '0 10px 30px rgba(0,0,0,0.10)'
+            : '0 6px 20px rgba(0,0,0,0.18)',
+        }}
+        transition={islandSpring}
         style={{
           position: 'fixed',
           top: 'max(16px, env(safe-area-inset-top))',
           left: '50%',
+          transformOrigin: 'center top',
           zIndex: 50,
           background: 'var(--color-pure-white)',
           borderRadius: '48px',
           display: 'flex',
           alignItems: 'center',
-          gap: '32px',
-          padding: '10px 16px',
+          columnGap: '18px',
           maxWidth: 'calc(100vw - 24px)',
         }}
       >
@@ -62,30 +138,51 @@ export function Nav() {
             letterSpacing: '-0.02em',
             textDecoration: 'none',
             paddingLeft: '8px',
+            flexShrink: 0,
           }}
         >
           <WaveText>A·M</WaveText>
         </Link>
 
-        <div className="nav-links" style={{ alignItems: 'center', gap: '24px' }}>
-          {navLinks.map(({ label, href }) => (
-            <Link
-              key={label}
-              href={href}
-              style={{
-                fontFamily: 'var(--font-suisseintl)',
-                fontWeight: 500,
-                fontSize: '14px',
-                color: 'var(--color-graphite)',
-                letterSpacing: '-0.028px',
-                textDecoration: 'none',
-              }}
-              className="hover:text-black transition-colors duration-200"
-            >
-              <WaveText>{label}</WaveText>
-            </Link>
-          ))}
-        </div>
+        {/* Collapsible island content — the links cluster morphs to 0 width
+            when the island contracts, then springs back on hover / at top. */}
+        <motion.div
+          aria-hidden={!expanded}
+          animate={{
+            width: expanded ? linksWidth : 0,
+            opacity: expanded ? 1 : 0,
+          }}
+          transition={islandSpring}
+          style={{ overflow: 'hidden', flexShrink: 0 }}
+        >
+          <div
+            ref={linksRef}
+            className="nav-links"
+            style={{ alignItems: 'center', gap: '24px', width: 'max-content' }}
+          >
+            {navLinks.map(({ label, href, tip: itemTip }) => (
+              <Link
+                key={label}
+                href={href}
+                onMouseEnter={(e) => showTip(e, label, itemTip)}
+                onMouseLeave={() => hideTip(label)}
+                onFocus={(e) => showTip(e, label, itemTip)}
+                onBlur={() => hideTip(label)}
+                style={{
+                  fontFamily: 'var(--font-suisseintl)',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  color: 'var(--color-graphite)',
+                  letterSpacing: '-0.028px',
+                  textDecoration: 'none',
+                }}
+                className="hover:text-black transition-colors duration-200"
+              >
+                <WaveText>{label}</WaveText>
+              </Link>
+            ))}
+          </div>
+        </motion.div>
 
         <a
           href="#contact"
@@ -96,10 +193,11 @@ export function Nav() {
             fontFamily: 'var(--font-suisseintl)',
             fontWeight: 450,
             fontSize: '14px',
-            borderRadius: '4px',
+            borderRadius: '999px',
             padding: '10px 20px',
             letterSpacing: '-0.028px',
             textDecoration: 'none',
+            flexShrink: 0,
           }}
         >
           <WaveText>Hire Me</WaveText>
@@ -122,6 +220,7 @@ export function Nav() {
             cursor: 'pointer',
             color: 'var(--color-ink-black)',
             borderRadius: '50%',
+            flexShrink: 0,
           }}
         >
           <span aria-hidden style={{ position: 'relative', display: 'block', width: '18px', height: '12px' }}>
@@ -166,6 +265,60 @@ export function Nav() {
             />
           </span>
         </button>
+
+        {/* Tooltip lives at the nav level (overflow visible) so it can spill
+            below the island like a Dynamic Island detaching a bubble. */}
+        <AnimatePresence>
+          {tip && expanded && (
+            <motion.span
+              key={tip.label}
+              role="tooltip"
+              // Centering (x: '-50%') must go through framer, not a CSS
+              // transform — framer owns the `transform` property and would
+              // otherwise clobber a plain translateX(-50%).
+              initial={{ opacity: 0, x: '-50%', y: -6, scale: 0.8 }}
+              animate={{ opacity: 1, x: '-50%', y: 0, scale: 1 }}
+              exit={{ opacity: 0, x: '-50%', y: -6, scale: 0.85 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              style={{
+                position: 'absolute',
+                top: '100%',
+                left: tip.x,
+                marginTop: '14px',
+                transformOrigin: 'center top',
+                background: 'var(--color-ink-black)',
+                color: 'var(--color-pure-white)',
+                fontFamily: 'var(--font-suisseintl)',
+                fontWeight: 450,
+                fontSize: '12px',
+                letterSpacing: '-0.01em',
+                lineHeight: 1,
+                whiteSpace: 'nowrap',
+                padding: '8px 12px',
+                borderRadius: '999px',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.28)',
+                pointerEvents: 'none',
+              }}
+            >
+              {/* little pointer notch, like the island detaching a bubble */}
+              <span
+                aria-hidden
+                style={{
+                  position: 'absolute',
+                  bottom: '100%',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: 0,
+                  height: 0,
+                  borderLeft: '5px solid transparent',
+                  borderRight: '5px solid transparent',
+                  borderBottom: '6px solid var(--color-ink-black)',
+                }}
+              />
+              {tip.text}
+            </motion.span>
+          )}
+        </AnimatePresence>
       </motion.nav>
 
       <AnimatePresence>

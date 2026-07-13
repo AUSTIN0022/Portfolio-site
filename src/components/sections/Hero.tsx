@@ -125,6 +125,7 @@ export function Hero() {
           alt="Illustration of stacked backend infrastructure blocks — servers, queues, and databases"
           fill
           priority
+          unoptimized
           sizes="(max-width: 1024px) 90vw, 45vw"
           style={{ objectFit: 'contain' }}
         />

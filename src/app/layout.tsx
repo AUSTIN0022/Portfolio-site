@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Barlow_Condensed, JetBrains_Mono, Inter } from 'next/font/google'
 import { Providers } from './providers'
+import { ServiceWorkerCleanup } from '@/components/util/ServiceWorkerCleanup'
 import './globals.css'
 
 const suisseCondFallback = Barlow_Condensed({
@@ -55,7 +56,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${suisseCondFallback.variable} ${suisseMonoFallback.variable} ${suisseFallback.variable}`}
     >
-      <body>
+      {/* suppressHydrationWarning: browser extensions (Grammarly etc.) mutate
+          <body> with data-gr-* attributes before React hydrates, which is
+          otherwise reported as a hydration mismatch we can't control. */}
+      <body suppressHydrationWarning>
+        <ServiceWorkerCleanup />
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>

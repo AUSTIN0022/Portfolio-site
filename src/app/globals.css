@@ -9,6 +9,11 @@
   --color-graphite: #444444;
   --color-mint-pulse: #d1ffca;
   --color-electric-yellow: #fff100;
+  --color-purple: #7a00fb;
+  --color-pink: #ff7df1;
+  --color-green: #44f87a;
+  --color-cyan: #22d3f5;
+  --color-cider-orange: #ff6924;
 
   /* Muted foreground for dark surfaces. Graphite (#444) reads at only
      ~2.3:1 on black and fails WCAG AA; these pass. Use on black/ink
@@ -170,7 +175,10 @@ html {
 
 body {
   font-family: var(--font-suisseintl);
-  background-color: var(--color-ink-black);
+  /* Shows during the initial blank window before the page paints (before CSS/
+     JS finishes loading) — electric yellow instead of black so that gap reads
+     as branded, not broken. Sections then layer their own backgrounds on top. */
+  background-color: var(--color-electric-yellow);
   color: var(--color-ink-black);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

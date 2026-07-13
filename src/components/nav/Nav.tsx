@@ -403,7 +403,21 @@ export function Nav() {
               id="mobile-menu"
               initial={{ opacity: 0, x: '-50%', width: 132, height: 52, borderRadius: 26 }}
               animate={{ opacity: 1, x: '-50%', width: cardWidth, height: 'auto', borderRadius: 28 }}
-              exit={{ opacity: 0, x: '-50%', width: 132, height: 52, borderRadius: 26 }}
+              // Closing mirrors the open: the box shrinks back to the pill on a
+              // symmetric ease, and the fade is held back (own easing) so the
+              // shrink stays visible instead of the card vanishing instantly.
+              exit={{
+                opacity: 0,
+                x: '-50%',
+                width: 132,
+                height: 52,
+                borderRadius: 26,
+                transition: {
+                  duration: 0.4,
+                  ease: [0.4, 0, 0.2, 1],
+                  opacity: { duration: 0.4, ease: [0.5, 0, 0.9, 1] },
+                },
+              }}
               transition={menuGlide}
               style={{
                 position: 'fixed',

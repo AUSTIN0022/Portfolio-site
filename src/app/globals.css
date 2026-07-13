@@ -543,22 +543,17 @@ a:hover > .wave-text span,
   }
 }
 
-/* Navigation: desktop link row + CTA vs. mobile hamburger toggle. */
-.nav-links,
+/* Navigation: the link row lives inside the collapsible island on every
+   breakpoint (it morphs to 0 width when contracted). The CTA is desktop-only;
+   the hamburger toggle's visibility is driven from JS (contracted / open). */
+.nav-links {
+  display: flex;
+}
 .nav-cta {
   display: none;
 }
-.nav-toggle {
-  display: inline-flex;
-}
 @media (min-width: 768px) {
-  .nav-links {
-    display: flex;
-  }
   .nav-cta {
     display: inline-flex;
-  }
-  .nav-toggle {
-    display: none;
   }
 }

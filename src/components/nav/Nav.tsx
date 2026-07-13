@@ -23,17 +23,30 @@ export function Nav() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [hovered, setHovered] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const [tip, setTip] = useState<TipState>(null)
 
-  // The island is "expanded" at the top of the page or whenever the pointer
-  // is over it; it contracts once the user scrolls into the rest of the page.
-  const expanded = !scrolled || hovered
+  // The island is "expanded" (links shown inline) at the top of the page.
+  // Desktop also expands on hover; mobile stays contracted once the menu is
+  // open (the vertical menu takes over) or once the user scrolls.
+  const expanded = isMobile ? !scrolled && !open : !scrolled || hovered
+  // On mobile the hamburger only appears once the island has closed (scrolled)
+  // or the menu is open — at the very top the links are shown inline instead.
+  const showToggle = isMobile && (scrolled || open)
 
   const navRef = useRef<HTMLElement>(null)
 
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    const update = () => setIsMobile(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+
   // Measure the natural width of the links cluster so we can collapse it to 0
-  // and grow it back without any layout jump. Re-measure after fonts load so
-  // the measurement isn't short (which would clip the last link).
+  // and grow it back without any layout jump. Re-measure when the breakpoint
+  // changes (font size differs) and after fonts load so it isn't short.
   const linksRef = useRef<HTMLDivElement>(null)
   const [linksWidth, setLinksWidth] = useState(0)
   useLayoutEffect(() => {
@@ -52,7 +65,7 @@ export function Nav() {
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', measure)
     }
-  }, [])
+  }, [isMobile])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 48)
@@ -76,9 +89,9 @@ export function Nav() {
     }
   }, [open])
 
-  // Show a tooltip anchored under the hovered item. The x is measured relative
-  // to the nav so the bubble can live OUTSIDE the overflow-clipped links track.
+  // Tooltips are a desktop pointer affordance only.
   const showTip = (e: React.SyntheticEvent, label: string, text: string) => {
+    if (isMobile) return
     const navEl = navRef.current
     const target = e.currentTarget as HTMLElement
     if (!navEl) return
@@ -88,6 +101,9 @@ export function Nav() {
   }
   const hideTip = (label: string) =>
     setTip((t) => (t && t.label === label ? null : t))
+
+  const linkFontSize = isMobile ? '12px' : '14px'
+  const padX = expanded ? (isMobile ? 12 : 16) : isMobile ? 10 : 12
 
   return (
     <>
@@ -103,9 +119,9 @@ export function Nav() {
           x: '-50%',
           y: 0,
           opacity: 1,
-          scale: expanded ? 1 : 0.92,
-          paddingLeft: expanded ? 16 : 12,
-          paddingRight: expanded ? 16 : 12,
+          scale: expanded || open ? 1 : 0.92,
+          paddingLeft: padX,
+          paddingRight: padX,
           paddingTop: expanded ? 10 : 8,
           paddingBottom: expanded ? 10 : 8,
           boxShadow: expanded
@@ -123,7 +139,7 @@ export function Nav() {
           borderRadius: '48px',
           display: 'flex',
           alignItems: 'center',
-          columnGap: '18px',
+          columnGap: isMobile ? '10px' : '18px',
           maxWidth: 'calc(100vw - 24px)',
         }}
       >
@@ -158,12 +174,17 @@ export function Nav() {
           <div
             ref={linksRef}
             className="nav-links"
-            style={{ alignItems: 'center', gap: '24px', width: 'max-content' }}
+            style={{
+              alignItems: 'center',
+              gap: isMobile ? '13px' : '24px',
+              width: 'max-content',
+            }}
           >
             {navLinks.map(({ label, href, tip: itemTip }) => (
               <Link
                 key={label}
                 href={href}
+                onClick={() => setOpen(false)}
                 onMouseEnter={(e) => showTip(e, label, itemTip)}
                 onMouseLeave={() => hideTip(label)}
                 onFocus={(e) => showTip(e, label, itemTip)}
@@ -171,7 +192,7 @@ export function Nav() {
                 style={{
                   fontFamily: 'var(--font-suisseintl)',
                   fontWeight: 500,
-                  fontSize: '14px',
+                  fontSize: linkFontSize,
                   color: 'var(--color-graphite)',
                   letterSpacing: '-0.028px',
                   textDecoration: 'none',
@@ -211,10 +232,11 @@ export function Nav() {
           aria-controls="mobile-menu"
           onClick={() => setOpen((v) => !v)}
           style={{
+            display: showToggle ? 'inline-flex' : 'none',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '44px',
-            height: '44px',
+            width: '40px',
+            height: '40px',
             border: 'none',
             background: 'transparent',
             cursor: 'pointer',
@@ -341,20 +363,22 @@ export function Nav() {
                 cursor: 'pointer',
               }}
             />
+            {/* Menu grows out of the island like a Dynamic Island expanding. */}
             <motion.div
               id="mobile-menu"
-              initial={{ opacity: 0, x: '-50%', y: -12 }}
-              animate={{ opacity: 1, x: '-50%', y: 0 }}
-              exit={{ opacity: 0, x: '-50%', y: -12 }}
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, x: '-50%', y: -10, scale: 0.85 }}
+              animate={{ opacity: 1, x: '-50%', y: 0, scale: 1 }}
+              exit={{ opacity: 0, x: '-50%', y: -10, scale: 0.9 }}
+              transition={islandSpring}
               style={{
                 position: 'fixed',
-                top: 'calc(max(16px, env(safe-area-inset-top)) + 64px)',
+                top: 'calc(max(16px, env(safe-area-inset-top)) + 60px)',
                 left: '50%',
+                transformOrigin: 'center top',
                 zIndex: 49,
                 width: 'min(360px, calc(100vw - 24px))',
                 background: 'var(--color-pure-white)',
-                borderRadius: '24px',
+                borderRadius: '28px',
                 padding: '12px',
                 display: 'flex',
                 flexDirection: 'column',
@@ -374,7 +398,7 @@ export function Nav() {
                     letterSpacing: '-0.02em',
                     textDecoration: 'none',
                     padding: '14px 16px',
-                    borderRadius: '12px',
+                    borderRadius: '14px',
                   }}
                 >
                   {label}
@@ -389,7 +413,7 @@ export function Nav() {
                   fontFamily: 'var(--font-suisseintl)',
                   fontWeight: 500,
                   fontSize: '15px',
-                  borderRadius: '12px',
+                  borderRadius: '999px',
                   padding: '14px 16px',
                   letterSpacing: '-0.02em',
                   textDecoration: 'none',

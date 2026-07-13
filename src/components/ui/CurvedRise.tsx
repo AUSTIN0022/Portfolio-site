@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
-import { motion, useScroll, useTransform, useMotionTemplate } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 
 /**
  * CurvedRise — the scroll-driven "card rising over the section above it"
@@ -10,6 +10,11 @@ import { motion, useScroll, useTransform, useMotionTemplate } from 'framer-motio
  * section behind the rounded corners); on scroll the inset relaxes to zero so
  * the edges travel out to touch the viewport sides. The section is also pulled
  * up over the one above it so the rounded top overlaps like a rising panel.
+ *
+ * The corners are rendered with a real `border-radius` + `overflow: hidden`
+ * (which the browser anti-aliases) rather than a `clip-path: … round …` whose
+ * animated corners render jagged/stair-stepped. The panel's horizontal margins
+ * animate the inset, so the rounded top edges travel outward smoothly.
  *
  * Wrap a section whose background contrasts with the one above it (e.g. a dark
  * section rising over a light one) for the effect to read.
@@ -20,6 +25,7 @@ export function CurvedRise({
   inset = 48,
   radius = 48,
   behind = 'var(--color-canvas-mist)',
+  panel = 'var(--color-ink-black)',
 }: {
   children: React.ReactNode
   /** How far the panel is pulled up over the previous section (px). */
@@ -34,6 +40,12 @@ export function CurvedRise({
    * body behind it.
    */
   behind?: string
+  /**
+   * The panel's own background. It fills any area the growing content hasn't
+   * reached yet, so the content can scale up from small without exposing a gap
+   * behind it. Defaults to the ink-black both wrapped sections use.
+   */
+  panel?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
 
@@ -45,24 +57,45 @@ export function CurvedRise({
   })
 
   const sideInset = useTransform(scrollYProgress, [0, 1], [inset, 0])
-  const clipPath = useMotionTemplate`inset(0px ${sideInset}px 0px ${sideInset}px round ${radius}px ${radius}px 0px 0px)`
 
-  // The clip-path crops the panel's own box — it does not reflow what's inside
-  // it. Without this, content sitting near the edge (e.g. a stat number right
-  // after the section's gutter padding) gets hard-clipped by the inset rather
-  // than shrinking to fit, since the inset can be wider than the content's own
-  // padding on narrow viewports. Scaling the content down in lockstep with the
-  // inset keeps it inside the visible region, then grows it back to full size
-  // as the inset relaxes to 0.
-  const contentScale = useTransform(scrollYProgress, [0, 1], [0.9, 1])
+  // The content grows from small to full size in lockstep with the panel —
+  // the "rising card fills with its content" read. Starting at 0.82 also keeps
+  // edge content (a stat number sitting right after the gutter) clear of the
+  // inset on narrow viewports instead of being hard-clipped by it.
+  const contentScale = useTransform(scrollYProgress, [0, 1], [0.82, 1])
 
   return (
     // Outer layer is NOT clipped: it carries the previous section's colour and
-    // is pulled up over it, so the gap the clip-path opens beside the panel
+    // is pulled up over it, so the gap the margins open beside the panel
     // reveals this colour instead of the page body.
     <div ref={ref} style={{ position: 'relative', zIndex: 2, marginTop: -overlap, background: behind }}>
-      <motion.div style={{ clipPath, willChange: 'clip-path' }}>
-        <motion.div style={{ scale: contentScale, willChange: 'transform' }}>{children}</motion.div>
+      <motion.div
+        style={{
+          overflow: 'hidden',
+          borderTopLeftRadius: radius,
+          borderTopRightRadius: radius,
+          marginLeft: sideInset,
+          marginRight: sideInset,
+          background: panel,
+        }}
+      >
+        {/* A fixed full-viewport block centred on screen: the narrowing panel
+            clips it symmetrically without reflowing its contents, and it scales
+            up as the panel settles so the content grows into place. Gaps left
+            by the scale are covered by the panel's own background above. */}
+        <motion.div
+          style={{
+            width: '100vw',
+            position: 'relative',
+            left: '50%',
+            x: '-50%',
+            scale: contentScale,
+            transformOrigin: 'center top',
+            willChange: 'transform',
+          }}
+        >
+          {children}
+        </motion.div>
       </motion.div>
     </div>
   )

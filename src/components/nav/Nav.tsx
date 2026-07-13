@@ -16,6 +16,9 @@ const navLinks: { label: string; href: string; tip: string }[] = [
 // Spring tuned to feel like the iOS Dynamic Island — quick, slightly springy,
 // no overshoot wobble.
 const islandSpring = { type: 'spring' as const, stiffness: 380, damping: 32, mass: 0.9 }
+// The mobile menu glides open/closed on a soft eased tween instead of the
+// snappy spring — no bounce, gentle deceleration, so it doesn't jump in/out.
+const menuGlide = { type: 'tween' as const, duration: 0.4, ease: [0.16, 1, 0.3, 1] as const }
 
 type TipState = { label: string; text: string; x: number } | null
 
@@ -24,7 +27,11 @@ export function Nav() {
   const [scrolled, setScrolled] = useState(false)
   const [hovered, setHovered] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [vw, setVw] = useState(0)
   const [tip, setTip] = useState<TipState>(null)
+
+  // Target width the menu card grows into (the pill morphs up to this).
+  const cardWidth = Math.min(360, (vw || 375) - 24)
 
   // The island is "expanded" (links shown inline) at the top of the page.
   // Desktop also expands on hover; mobile stays contracted once the menu is
@@ -39,9 +46,15 @@ export function Nav() {
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)')
     const update = () => setIsMobile(mq.matches)
+    const updateVw = () => setVw(window.innerWidth)
     update()
+    updateVw()
     mq.addEventListener('change', update)
-    return () => mq.removeEventListener('change', update)
+    window.addEventListener('resize', updateVw)
+    return () => {
+      mq.removeEventListener('change', update)
+      window.removeEventListener('resize', updateVw)
+    }
   }, [])
 
   // Measure the natural width of the links cluster so we can collapse it to 0
@@ -118,20 +131,18 @@ export function Nav() {
         animate={{
           x: '-50%',
           y: 0,
-          opacity: 1,
-          scale: expanded || open ? 1 : 0.92,
+          // When the mobile menu opens, the pill fades as the card glides in
+          // from the same spot — the card becomes the expanded island, so
+          // there's no jarring pill-width snap.
+          opacity: isMobile && open ? 0 : 1,
+          scale: isMobile && open ? 0.96 : expanded ? 1 : 0.92,
           paddingLeft: padX,
           paddingRight: padX,
           paddingTop: expanded ? 10 : 8,
           paddingBottom: expanded ? 10 : 8,
-          // No shadow while the menu is open — the pill sits flush on top of
-          // the menu card (both white) so they read as one connected island;
-          // the card provides the single shared shadow.
-          boxShadow: open
-            ? 'none'
-            : expanded
-              ? '0 10px 30px rgba(0,0,0,0.10)'
-              : '0 6px 20px rgba(0,0,0,0.18)',
+          boxShadow: expanded
+            ? '0 10px 30px rgba(0,0,0,0.10)'
+            : '0 6px 20px rgba(0,0,0,0.18)',
         }}
         transition={islandSpring}
         style={{
@@ -141,15 +152,12 @@ export function Nav() {
           transformOrigin: 'center top',
           zIndex: 50,
           background: 'var(--color-pure-white)',
-          // When the menu is open the pill widens to the card width and its
-          // corners match the card so the two merge into a single shape.
-          borderRadius: isMobile && open ? '28px' : '48px',
-          width: isMobile && open ? 'min(360px, calc(100vw - 24px))' : undefined,
+          borderRadius: '48px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: isMobile && open ? 'space-between' : undefined,
           columnGap: isMobile ? '10px' : '18px',
           maxWidth: 'calc(100vw - 24px)',
+          pointerEvents: isMobile && open ? 'none' : 'auto',
         }}
       >
         <Link
@@ -372,48 +380,150 @@ export function Nav() {
                 cursor: 'pointer',
               }}
             />
-            {/* Menu grows out of the island like a Dynamic Island expanding. */}
+            {/* The island morphs: the card's box grows from the pill's
+                footprint (small, pill-radius) up to the full card, while the
+                pill fades. overflow:hidden clips the fixed-width content so it
+                is revealed as the box expands — the real Dynamic Island move. */}
             <motion.div
               id="mobile-menu"
-              initial={{ opacity: 0, x: '-50%', y: -10, scale: 0.85 }}
-              animate={{ opacity: 1, x: '-50%', y: 0, scale: 1 }}
-              exit={{ opacity: 0, x: '-50%', y: -10, scale: 0.9 }}
-              transition={islandSpring}
+              initial={{ opacity: 0, x: '-50%', width: 132, height: 52, borderRadius: 26 }}
+              animate={{ opacity: 1, x: '-50%', width: cardWidth, height: 'auto', borderRadius: 28 }}
+              exit={{ opacity: 0, x: '-50%', width: 132, height: 52, borderRadius: 26 }}
+              transition={menuGlide}
               style={{
                 position: 'fixed',
-                // Start at the pill's own top so the card sits directly behind
-                // it — the pill becomes the card's header row, one connected
-                // island. Top padding clears that header (pill is ~52px tall).
+                // Sits exactly where the pill was so the growth feels
+                // continuous — the pill appears to expand into this card.
                 top: 'max(16px, env(safe-area-inset-top))',
                 left: '50%',
                 transformOrigin: 'center top',
                 zIndex: 49,
-                width: 'min(360px, calc(100vw - 24px))',
                 background: 'var(--color-pure-white)',
-                borderRadius: '28px',
-                padding: '58px 12px 12px',
-                display: 'flex',
-                flexDirection: 'column',
                 boxShadow: '0 24px 60px rgba(0,0,0,0.22)',
+                overflow: 'hidden',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                maxWidth: 'calc(100vw - 24px)',
               }}
             >
-              {navLinks.map(({ label, href }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  onClick={() => setOpen(false)}
+              {/* Fixed-width content — held at the final width and centered so
+                  it doesn't reflow while the card box is still growing. */}
+              <div
+                style={{
+                  width: cardWidth,
+                  flexShrink: 0,
+                  boxSizing: 'border-box',
+                  padding: '8px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+              {/* Header row — mirrors the closed pill (A·M + toggle). */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 12px 10px',
+                }}
+              >
+                <span
                   style={{
                     fontFamily: 'var(--font-suisseintl)',
                     fontWeight: 500,
                     fontSize: '16px',
                     color: 'var(--color-ink-black)',
                     letterSpacing: '-0.02em',
+                  }}
+                >
+                  A·M
+                </span>
+                <button
+                  type="button"
+                  aria-label="Close menu"
+                  onClick={() => setOpen(false)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '36px',
+                    height: '36px',
+                    border: 'none',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    color: 'var(--color-ink-black)',
+                    borderRadius: '50%',
+                    marginRight: '-6px',
+                  }}
+                >
+                  <span aria-hidden style={{ position: 'relative', display: 'block', width: '16px', height: '16px' }}>
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '7px',
+                        left: 0,
+                        width: '16px',
+                        height: '2px',
+                        background: 'currentColor',
+                        borderRadius: '2px',
+                        transform: 'rotate(45deg)',
+                      }}
+                    />
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '7px',
+                        left: 0,
+                        width: '16px',
+                        height: '2px',
+                        background: 'currentColor',
+                        borderRadius: '2px',
+                        transform: 'rotate(-45deg)',
+                      }}
+                    />
+                  </span>
+                </button>
+              </div>
+
+              {navLinks.map(({ label, href, tip: itemTip }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '3px',
                     textDecoration: 'none',
-                    padding: '14px 16px',
+                    padding: '10px 12px',
                     borderRadius: '14px',
                   }}
                 >
-                  {label}
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-suisseintl)',
+                      fontWeight: 500,
+                      fontSize: '16px',
+                      color: 'var(--color-ink-black)',
+                      letterSpacing: '-0.02em',
+                    }}
+                  >
+                    {label}
+                  </span>
+                  {/* The desktop tooltip text, surfaced as a subtitle since
+                      touch has no hover. */}
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-suisseintl)',
+                      fontWeight: 450,
+                      fontSize: '12px',
+                      color: 'var(--color-graphite)',
+                      letterSpacing: '-0.01em',
+                    }}
+                  >
+                    {itemTip}
+                  </span>
                 </Link>
               ))}
               <a
@@ -430,11 +540,12 @@ export function Nav() {
                   letterSpacing: '-0.02em',
                   textDecoration: 'none',
                   textAlign: 'center',
-                  marginTop: '4px',
+                  marginTop: '6px',
                 }}
               >
                 Hire Me
               </a>
+              </div>
             </motion.div>
           </>
         )}

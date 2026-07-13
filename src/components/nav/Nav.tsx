@@ -124,9 +124,14 @@ export function Nav() {
           paddingRight: padX,
           paddingTop: expanded ? 10 : 8,
           paddingBottom: expanded ? 10 : 8,
-          boxShadow: expanded
-            ? '0 10px 30px rgba(0,0,0,0.10)'
-            : '0 6px 20px rgba(0,0,0,0.18)',
+          // No shadow while the menu is open — the pill sits flush on top of
+          // the menu card (both white) so they read as one connected island;
+          // the card provides the single shared shadow.
+          boxShadow: open
+            ? 'none'
+            : expanded
+              ? '0 10px 30px rgba(0,0,0,0.10)'
+              : '0 6px 20px rgba(0,0,0,0.18)',
         }}
         transition={islandSpring}
         style={{
@@ -136,9 +141,13 @@ export function Nav() {
           transformOrigin: 'center top',
           zIndex: 50,
           background: 'var(--color-pure-white)',
-          borderRadius: '48px',
+          // When the menu is open the pill widens to the card width and its
+          // corners match the card so the two merge into a single shape.
+          borderRadius: isMobile && open ? '28px' : '48px',
+          width: isMobile && open ? 'min(360px, calc(100vw - 24px))' : undefined,
           display: 'flex',
           alignItems: 'center',
+          justifyContent: isMobile && open ? 'space-between' : undefined,
           columnGap: isMobile ? '10px' : '18px',
           maxWidth: 'calc(100vw - 24px)',
         }}
@@ -372,17 +381,20 @@ export function Nav() {
               transition={islandSpring}
               style={{
                 position: 'fixed',
-                top: 'calc(max(16px, env(safe-area-inset-top)) + 60px)',
+                // Start at the pill's own top so the card sits directly behind
+                // it — the pill becomes the card's header row, one connected
+                // island. Top padding clears that header (pill is ~52px tall).
+                top: 'max(16px, env(safe-area-inset-top))',
                 left: '50%',
                 transformOrigin: 'center top',
                 zIndex: 49,
                 width: 'min(360px, calc(100vw - 24px))',
                 background: 'var(--color-pure-white)',
                 borderRadius: '28px',
-                padding: '12px',
+                padding: '58px 12px 12px',
                 display: 'flex',
                 flexDirection: 'column',
-                boxShadow: '0 24px 60px rgba(0,0,0,0.25)',
+                boxShadow: '0 24px 60px rgba(0,0,0,0.22)',
               }}
             >
               {navLinks.map(({ label, href }) => (

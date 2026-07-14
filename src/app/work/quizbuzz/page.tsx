@@ -3,6 +3,7 @@ import { CaseStudySection } from '@/components/sections/CaseStudySection'
 import { P, Lead, Callout, Metric, MetricGrid, DecisionCard } from '@/components/ui/CaseStudyProse'
 import { ArchDiagram } from '@/components/ui/ArchDiagram'
 import { ArchitectureJourney } from '@/components/ui/ArchitectureJourney'
+import { InfraScaleSimulator } from '@/components/ui/InfraScaleSimulator'
 import { SkillTag } from '@/components/ui/SkillTag'
 import { Nav } from '@/components/nav/Nav'
 
@@ -15,6 +16,7 @@ const sidebarLinks = [
     { id: 'overview', label: 'OVERVIEW' },
     { id: 'problem', label: 'PROBLEM' },
     { id: 'journey', label: 'THE JOURNEY' },
+    { id: 'scale', label: 'AT SCALE' },
     { id: 'system', label: 'INFRASTRUCTURE' },
     { id: 'architecture', label: 'DEEP DIVE' },
     { id: 'decisions', label: 'IMPLEMENTATION' },
@@ -128,6 +130,40 @@ export default function QuizBuzzPage() {
                         diagrams and decisions that follow are the proof.
                     </Lead>
                     <ArchitectureJourney />
+                </div>
+
+                <div id="scale" data-section style={{ marginBottom: '96px', scrollMarginTop: '80px' }}>
+                    <div
+                        style={{
+                            fontFamily: 'var(--font-suisseintlmono)',
+                            fontSize: '12px',
+                            color: 'var(--color-muted-on-light)',
+                            letterSpacing: '-0.36px',
+                            marginBottom: '12px',
+                        }}
+                    >
+                        {'// PRODUCTION ENGINEERING — TAKE THE CONTROLS'}
+                    </div>
+                    <h2
+                        style={{
+                            fontFamily: 'var(--font-suisseintlcond)',
+                            fontWeight: 700,
+                            fontSize: 'var(--fs-display-md)',
+                            lineHeight: 0.9,
+                            letterSpacing: '-0.03em',
+                            color: 'var(--color-ink-black)',
+                            marginBottom: '16px',
+                            textWrap: 'balance',
+                        }}
+                    >
+                        FROM ONE USER TO TEN THOUSAND.
+                    </h2>
+                    <Lead>
+                        The Journey showed how QuizBuzz works. This shows how it survives. Scroll to watch a
+                        single idle instance meet a live contest — CPU pins, Auto Scaling launches capacity, the
+                        load balancer spreads it out — then take the controls and push the system yourself.
+                    </Lead>
+                    <InfraScaleSimulator />
                 </div>
 
                 <CaseStudySection id="system" kicker="// INFRASTRUCTURE" heading="DUAL-MODE INFRA.">

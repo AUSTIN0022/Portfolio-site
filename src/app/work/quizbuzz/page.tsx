@@ -2,6 +2,7 @@ import { CaseStudyLayout } from '@/components/sections/CaseStudyLayout'
 import { CaseStudySection } from '@/components/sections/CaseStudySection'
 import { P, Lead, Callout, Metric, MetricGrid, DecisionCard } from '@/components/ui/CaseStudyProse'
 import { ArchDiagram } from '@/components/ui/ArchDiagram'
+import { ArchitectureJourney } from '@/components/ui/ArchitectureJourney'
 import { SkillTag } from '@/components/ui/SkillTag'
 import { Nav } from '@/components/nav/Nav'
 
@@ -13,9 +14,10 @@ export const metadata = {
 const sidebarLinks = [
     { id: 'overview', label: 'OVERVIEW' },
     { id: 'problem', label: 'PROBLEM' },
-    { id: 'system', label: 'SYSTEM DESIGN' },
-    { id: 'architecture', label: 'ARCHITECTURE' },
-    { id: 'decisions', label: 'DECISIONS' },
+    { id: 'journey', label: 'THE JOURNEY' },
+    { id: 'system', label: 'INFRASTRUCTURE' },
+    { id: 'architecture', label: 'DEEP DIVE' },
+    { id: 'decisions', label: 'IMPLEMENTATION' },
     { id: 'loadtest', label: 'LOAD TESTING' },
     { id: 'results', label: 'RESULTS' },
     { id: 'lessons', label: 'LESSONS' },
@@ -93,7 +95,42 @@ export default function QuizBuzzPage() {
                     </Callout>
                 </CaseStudySection>
 
-                <CaseStudySection id="system" kicker="// ARCHITECTURE" heading="DUAL-MODE INFRA.">
+                <div id="journey" data-section style={{ marginBottom: '96px', scrollMarginTop: '80px' }}>
+                    <div
+                        style={{
+                            fontFamily: 'var(--font-suisseintlmono)',
+                            fontSize: '12px',
+                            color: 'var(--color-muted-on-light)',
+                            letterSpacing: '-0.36px',
+                            marginBottom: '12px',
+                        }}
+                    >
+                        {'// START HERE — WATCH IT ASSEMBLE'}
+                    </div>
+                    <h2
+                        style={{
+                            fontFamily: 'var(--font-suisseintlcond)',
+                            fontWeight: 700,
+                            fontSize: 'var(--fs-display-md)',
+                            lineHeight: 0.9,
+                            letterSpacing: '-0.03em',
+                            color: 'var(--color-ink-black)',
+                            marginBottom: '16px',
+                            textWrap: 'balance',
+                        }}
+                    >
+                        THE ARCHITECTURE JOURNEY.
+                    </h2>
+                    <Lead>
+                        The whole system, built in front of you. Scroll to fly the camera across the
+                        architecture as one real request travels through it — registration and payment, the
+                        real-time engine, background workers, and the infrastructure underneath. The detailed
+                        diagrams and decisions that follow are the proof.
+                    </Lead>
+                    <ArchitectureJourney />
+                </div>
+
+                <CaseStudySection id="system" kicker="// INFRASTRUCTURE" heading="DUAL-MODE INFRA.">
                     <Lead>
                         The central architectural bet: two completely different infrastructure stacks for two
                         completely different load profiles.

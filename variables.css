@@ -9,6 +9,15 @@
   --color-mint-pulse: #d1ffca;
   --color-electric-yellow: #fff100;
 
+  /* ─── Architecture domain palette (semantic, used by the QuizBuzz
+        Architecture Journey — one colour per system domain) ─────── */
+  --domain-core: #fff100;       /* Contest / core domain      */
+  --domain-infra: #7a00fb;      /* AWS · Docker · Redis        */
+  --domain-realtime: #22d3f5;   /* WebSockets · Socket.IO      */
+  --domain-worker: #44f87a;     /* Workers · background jobs   */
+  --domain-payment: #ff6924;    /* Payments · critical events  */
+  --domain-analytics: #ff7df1;  /* Analytics · certificates    */
+
   /* ─── Typography — Font Families ─────────────────────────────── */
   --font-suisseintl: 'SuisseIntl', ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;

@@ -72,6 +72,8 @@ export function Nav() {
     }
   }, [])
 
+
+
   // Measure the natural width of the links cluster so we can collapse it to 0
   // and grow it back without any layout jump. Re-measure when the breakpoint
   // changes (font size differs) and after fonts load so it isn't short.
@@ -137,6 +139,7 @@ export function Nav() {
     <>
       <motion.nav
         ref={navRef}
+        className="global-nav"
         onHoverStart={() => setHovered(true)}
         onHoverEnd={() => {
           setHovered(false)

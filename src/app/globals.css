@@ -324,23 +324,32 @@ a:hover > .wave-text span,
   }
 }
 
-/* Case-study side nav: a horizontal scroll strip on mobile,
-   a sticky column on desktop. */
+/* Case-study side nav: hidden on mobile (replaced by Nav dropdown),
+   a sticky column on desktop */
 .case-sidebar {
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  padding-bottom: 8px;
-  -webkit-overflow-scrolling: touch;
+  display: none;
 }
 @media (min-width: 768px) {
   .case-sidebar {
+    display: flex;
     position: sticky;
     top: 80px;
     flex-direction: column;
     gap: 0;
     overflow: visible;
     padding-bottom: 0;
+  }
+}
+
+/* Hide global navigation bar when scrolled to simulator on mobile */
+.global-nav {
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+@media (max-width: 767px) {
+  body.in-simulator-mode .global-nav {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translate(-50%, -80px) !important;
   }
 }
 

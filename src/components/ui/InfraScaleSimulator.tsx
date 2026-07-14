@@ -125,7 +125,40 @@ export function InfraScaleSimulator() {
   const [notice, setNotice] = useState<string | null>(null)
   const [pgP, setPgP] = useState(5000)
 
-  const scene = useMemo(() => <SimScene />, [])
+  // Mobile layout state
+  const [isMobile, setIsMobile] = useState(false)
+  const [islandExpanded, setIslandExpanded] = useState(false)
+  const [sheetLevel, setSheetLevel] = useState(1)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    const update = () => setIsMobile(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          document.body.classList.add('in-simulator-mode')
+        } else {
+          document.body.classList.remove('in-simulator-mode')
+        }
+      },
+      { threshold: 0.1 }
+    )
+    if (trackRef.current) {
+      observer.observe(trackRef.current)
+    }
+    return () => {
+      observer.disconnect()
+      document.body.classList.remove('in-simulator-mode')
+    }
+  }, [])
+
+  const scene = useMemo(() => <SimScene isMobile={isMobile} />, [isMobile])
 
   const ctrl = useRef({
     playground: false,
@@ -187,103 +220,491 @@ export function InfraScaleSimulator() {
   return (
     <div ref={trackRef} style={{ position: 'relative', height: `${BEATS.length * 92}vh` }}>
       <div style={{ position: 'sticky', top: 0, height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="is-panel" ref={wrapRef} data-stress="0" data-mode-ui={playground ? 'play' : 'story'}>
+        <div className="is-panel" ref={wrapRef} data-stress="0" data-mode-ui={playground ? 'play' : 'story'} data-island-open={islandExpanded ? '1' : '0'}>
           {scene}
 
           {/* Failure notice banner */}
           <div className="is-notice" data-show={notice ? '1' : '0'}>{notice}</div>
 
-          {/* Right rail — mission control */}
-          <div className="is-rail-right">
-            <div className="is-mission">
-              <div className="is-mission-top">
-                <span className="is-chip" data-readout="mode" data-mode="idle">🌙 IDLE</span>
-                <span className="is-clock" data-readout="clock">--:--:--</span>
-              </div>
-              <div className="is-mission-big">
-                <span className="is-mission-num" data-readout="participants">0</span>
-                <span className="is-mission-lab">concurrent participants</span>
-              </div>
-              <div className="is-mission-grid">
-                <div><span className="is-mg-lab">Contest</span><span className="is-mg-val" data-readout="status">Idle</span></div>
-                <div><span className="is-mg-lab">Autoscaling</span><span className="is-mg-val" data-readout="asg">Enabled</span></div>
-                <div><span className="is-mg-lab">Instances</span><span className="is-mg-val" data-readout="instances">1×</span></div>
-                <div><span className="is-mg-lab">Elapsed</span><span className="is-mg-val" data-readout="elapsed">00:00</span></div>
-              </div>
-            </div>
-
-            <div className="is-gauges">
-              <Gauge name="cpu" label="CPU" />
-              <Gauge name="mem" label="Memory" />
-              <Gauge name="rps" label="Requests / sec" />
-              <Gauge name="lat" label="P95 latency" />
-              <Gauge name="cache" label="Redis hit rate" />
-              <Gauge name="cost" label="Cost" isText />
-            </div>
-
-            <div className="is-threshold" data-tripped="0">
-              <span data-readout="thresholdtext">CPU 12% · threshold 80%</span>
-            </div>
-
-            {/* Story vs Playground controls */}
-            {!playground ? (
-              <div className="is-controls">
-                <div className="is-ctrl-head"><span>STORY MODE</span><span className="is-live-dot">SCROLL-DRIVEN</span></div>
-                <p className="is-ctrl-note">Scroll to watch it scale — or step in and run the system yourself.</p>
-                <button type="button" className="is-btn-primary" onClick={enterPlayground}>⚙ Take control</button>
-              </div>
-            ) : (
-              <div className="is-controls" data-live="1">
-                <div className="is-ctrl-head"><span>PLAYGROUND</span><span className="is-live-dot" data-on="1">LIVE</span></div>
-                <div className="is-toggle">
-                  <button type="button" onClick={onIdle}>Idle</button>
-                  <button type="button" onClick={onLive}>Live Contest</button>
+          {!isMobile ? (
+            <>
+              {/* Right rail — mission control */}
+              <div className="is-rail-right">
+                <div className="is-mission">
+                  <div className="is-mission-top">
+                    <span className="is-chip" data-readout="mode" data-mode="idle">🌙 IDLE</span>
+                    <span className="is-clock" data-readout="clock">--:--:--</span>
+                  </div>
+                  <div className="is-mission-big">
+                    <span className="is-mission-num" data-readout="participants">0</span>
+                    <span className="is-mission-lab">concurrent participants</span>
+                  </div>
+                  <div className="is-mission-grid">
+                    <div><span className="is-mg-lab">Contest</span><span className="is-mg-val" data-readout="status">Idle</span></div>
+                    <div><span className="is-mg-lab">Autoscaling</span><span className="is-mg-val" data-readout="asg">Enabled</span></div>
+                    <div><span className="is-mg-lab">Instances</span><span className="is-mg-val" data-readout="instances">1×</span></div>
+                    <div><span className="is-mg-lab">Elapsed</span><span className="is-mg-val" data-readout="elapsed">00:00</span></div>
+                  </div>
                 </div>
-                <label className="is-slider-label">
-                  Participants — {fmt(pgP)}
-                  <input type="range" min={0} max={10000} step={100} value={pgP} onChange={(e) => onParticipants(Number(e.target.value))} />
-                </label>
-                <div className="is-ops">
-                  <button type="button" onClick={onSpike} className="is-op is-op-spike">⚡ Spike</button>
-                  <button type="button" onClick={onKill} className="is-op is-op-kill">✕ Kill instance</button>
-                  <button type="button" onClick={onRedis} className="is-op is-op-redis">⚠ Drop Redis</button>
+
+                <div className="is-gauges">
+                  <Gauge name="cpu" label="CPU" />
+                  <Gauge name="mem" label="Memory" />
+                  <Gauge name="rps" label="Requests / sec" />
+                  <Gauge name="lat" label="P95 latency" />
+                  <Gauge name="cache" label="Redis hit rate" />
+                  <Gauge name="cost" label="Cost" isText />
                 </div>
-                <button type="button" className="is-btn-ghost" onClick={resumeStory}>← Back to story</button>
+
+                <div className="is-threshold" data-tripped="0">
+                  <span data-readout="thresholdtext">CPU 12% · threshold 80%</span>
+                </div>
+
+                {/* Story vs Playground controls */}
+                {!playground ? (
+                  <div className="is-controls">
+                    <div className="is-ctrl-head"><span>STORY MODE</span><span className="is-live-dot">SCROLL-DRIVEN</span></div>
+                    <p className="is-ctrl-note">Scroll to watch it scale — or step in and run the system yourself.</p>
+                    <button type="button" className="is-btn-primary" onClick={enterPlayground}>⚙ Take control</button>
+                  </div>
+                ) : (
+                  <div className="is-controls" data-live="1">
+                    <div className="is-ctrl-head"><span>PLAYGROUND</span><span className="is-live-dot" data-on="1">LIVE</span></div>
+                    <div className="is-toggle">
+                      <button type="button" onClick={onIdle}>Idle</button>
+                      <button type="button" onClick={onLive}>Live Contest</button>
+                    </div>
+                    <label className="is-slider-label">
+                      Participants — {fmt(pgP)}
+                      <input type="range" min={0} max={10000} step={100} value={pgP} onChange={(e) => onParticipants(Number(e.target.value))} />
+                    </label>
+                    <div className="is-ops">
+                      <button type="button" onClick={onSpike} className="is-op is-op-spike">⚡ Spike</button>
+                      <button type="button" onClick={onKill} className="is-op is-op-kill">✕ Kill instance</button>
+                      <button type="button" onClick={onRedis} className="is-op is-op-redis">⚠ Drop Redis</button>
+                    </div>
+                    <button type="button" className="is-btn-ghost" onClick={resumeStory}>← Back to story</button>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          {/* HUD — beat counter */}
-          <div className="is-hud">
-            <div className="is-counter">
-              <span className="is-counter-cur">{playground ? '⚙' : beat.index}</span>
-              {!playground && <span className="is-counter-tot">/ {String(BEATS.length).padStart(2, '0')}</span>}
-            </div>
-          </div>
-
-          {/* Caption */}
-          <div className="is-caption">
-            <div className="is-kicker">{playground ? '// LIVE — PLAYGROUND' : '// PRODUCTION ENGINEERING'}</div>
-            <h3 className="is-title" key={capTitle}>{capTitle}</h3>
-            <p className="is-sub">{capSub}</p>
-            {capWhy && (
-              <p className="is-why" key={capTitle + '-why'}>
-                <span className="is-why-tag">WHY</span>
-                {capWhy}
-              </p>
-            )}
-          </div>
-
-          {/* Milestone rail (story only) */}
-          {!playground && (
-            <div className="is-rail">
-              <div className="is-rail-fill" style={{ transform: `scaleX(${progress})` }} />
-              <div className="is-rail-ticks">
-                {BEATS.map((b, i) => (
-                  <button key={b.key} type="button" className="is-tick" data-on={i <= beatIdx ? '1' : '0'} data-cur={i === beatIdx ? '1' : '0'} onClick={() => jumpToBeat(i)} aria-label={`Jump to beat ${i + 1}: ${b.title}`} />
-                ))}
+              {/* HUD — beat counter */}
+              <div className="is-hud">
+                <div className="is-counter">
+                  <span className="is-counter-cur">{playground ? '⚙' : beat.index}</span>
+                  {!playground && <span className="is-counter-tot">/ {String(BEATS.length).padStart(2, '0')}</span>}
+                </div>
               </div>
-            </div>
+
+              {/* Caption */}
+              <div className="is-caption">
+                <div className="is-kicker">{playground ? '// LIVE — PLAYGROUND' : '// PRODUCTION ENGINEERING'}</div>
+                <h3 className="is-title" key={capTitle}>{capTitle}</h3>
+                <p className="is-sub">{capSub}</p>
+                {capWhy && (
+                  <p className="is-why" key={capTitle + '-why'}>
+                    <span className="is-why-tag">WHY</span>
+                    {capWhy}
+                  </p>
+                )}
+              </div>
+
+              {/* Milestone rail (story only) */}
+              {!playground && (
+                <div className="is-rail">
+                  <div className="is-rail-fill" style={{ transform: `scaleX(${progress})` }} />
+                  <div className="is-rail-ticks">
+                    {BEATS.map((b, i) => (
+                      <button key={b.key} type="button" className="is-tick" data-on={i <= beatIdx ? '1' : '0'} data-cur={i === beatIdx ? '1' : '0'} onClick={() => jumpToBeat(i)} aria-label={`Jump to beat ${i + 1}: ${b.title}`} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {/* Mobile Simulator Dynamic Island (Floating metrics status) */}
+              <div
+                className="sim-island"
+                data-expanded={islandExpanded ? 'true' : 'false'}
+                onClick={() => setIslandExpanded((e) => !e)}
+              >
+                {/* Collapsed view */}
+                <div className="sim-island-collapsed">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span data-readout="island-status-dot" style={{ fontSize: '11px' }}>🟢</span>
+                    <span data-readout="island-status-text" style={{ fontFamily: 'var(--font-suisseintlcond)', fontWeight: 700, fontSize: '12px', letterSpacing: '-0.2px' }}>
+                      Stable · 1 EC2
+                    </span>
+                  </div>
+                  <span data-readout="island-mini-info" style={{ fontFamily: 'var(--font-suisseintlmono)', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontVariantNumeric: 'tabular-nums' }}>
+                    1 EC2 · 0 Users
+                  </span>
+                </div>
+
+                {/* Expanded view */}
+                <div className="sim-island-expanded">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span data-readout="island-status-dot" style={{ fontSize: '13px' }}>🟢</span>
+                      <span style={{ fontFamily: 'var(--font-suisseintlcond)', fontWeight: 700, fontSize: '14px', letterSpacing: '-0.2px' }}>System Heartbeat</span>
+                    </div>
+                    <span style={{ fontSize: '10px', opacity: 0.4, fontFamily: 'var(--font-suisseintlmono)' }}>Tap to collapse</span>
+                  </div>
+
+                  {/* Two iOS Control Center-style cards side by side */}
+                  <div style={{ display: 'flex', gap: '10px', marginBottom: '12px' }}>
+                    
+                    {/* CARD 1 (LEFT): Circular Metrics Grid */}
+                    <div style={{
+                      flex: 1,
+                      background: 'rgba(255, 255, 255, 0.03)',
+                      borderRadius: '20px',
+                      padding: '12px 6px',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center'
+                    }}>
+                      <span style={{ fontFamily: 'var(--font-suisseintlmono)', fontSize: '8px', color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.2px', marginBottom: '10px', fontWeight: 600 }}>SYSTEM METRICS</span>
+                      
+                      <div style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: '1fr 1fr', 
+                        gap: '10px 14px', 
+                        justifyItems: 'center', 
+                        alignItems: 'center'
+                      }}>
+                        {/* CPU */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                          <svg width="42" height="42" viewBox="0 0 66 66">
+                            <circle cx="33" cy="33" r="28" stroke="rgba(255,255,255,0.06)" strokeWidth="5.5" fill="none" />
+                            <circle data-ring-fill="cpu" cx="33" cy="33" r="28" stroke={C.worker} strokeWidth="5.5" fill="none" strokeDasharray="175.93" strokeDashoffset="175.93" strokeLinecap="round" transform="rotate(-90 33 33)" style={{ transition: 'stroke-dashoffset 0.35s ease' }} />
+                            <text data-ring-text="cpu" x="33" y="38" textAnchor="middle" fill="#fff" fontSize="13px" fontWeight="700" fontFamily="var(--font-suisseintlcond)">0%</text>
+                          </svg>
+                          <span style={{ fontFamily: 'var(--font-suisseintlmono)', fontSize: '8px', color: 'rgba(255,255,255,0.4)' }}>CPU</span>
+                        </div>
+
+                        {/* Memory */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                          <svg width="42" height="42" viewBox="0 0 66 66">
+                            <circle cx="33" cy="33" r="28" stroke="rgba(255,255,255,0.06)" strokeWidth="5.5" fill="none" />
+                            <circle data-ring-fill="mem" cx="33" cy="33" r="28" stroke={C.infra} strokeWidth="5.5" fill="none" strokeDasharray="175.93" strokeDashoffset="175.93" strokeLinecap="round" transform="rotate(-90 33 33)" style={{ transition: 'stroke-dashoffset 0.35s ease' }} />
+                            <text data-ring-text="mem" x="33" y="38" textAnchor="middle" fill="#fff" fontSize="13px" fontWeight="700" fontFamily="var(--font-suisseintlcond)">0%</text>
+                          </svg>
+                          <span style={{ fontFamily: 'var(--font-suisseintlmono)', fontSize: '8px', color: 'rgba(255,255,255,0.4)' }}>Memory</span>
+                        </div>
+
+                        {/* Latency */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                          <svg width="42" height="42" viewBox="0 0 66 66">
+                            <circle cx="33" cy="33" r="28" stroke="rgba(255,255,255,0.06)" strokeWidth="5.5" fill="none" />
+                            <circle data-ring-fill="lat" cx="33" cy="33" r="28" stroke={C.realtime} strokeWidth="5.5" fill="none" strokeDasharray="175.93" strokeDashoffset="175.93" strokeLinecap="round" transform="rotate(-90 33 33)" style={{ transition: 'stroke-dashoffset 0.35s ease' }} />
+                            <text data-ring-text="lat" x="33" y="38" textAnchor="middle" fill="#fff" fontSize="13px" fontWeight="700" fontFamily="var(--font-suisseintlcond)">0ms</text>
+                          </svg>
+                          <span style={{ fontFamily: 'var(--font-suisseintlmono)', fontSize: '8px', color: 'rgba(255,255,255,0.4)' }}>Latency</span>
+                        </div>
+
+                        {/* RPS */}
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                          <svg width="42" height="42" viewBox="0 0 66 66">
+                            <circle cx="33" cy="33" r="28" stroke="rgba(255,255,255,0.06)" strokeWidth="5.5" fill="none" />
+                            <circle data-ring-fill="rps" cx="33" cy="33" r="28" stroke={C.core} strokeWidth="5.5" fill="none" strokeDasharray="175.93" strokeDashoffset="175.93" strokeLinecap="round" transform="rotate(-90 33 33)" style={{ transition: 'stroke-dashoffset 0.35s ease' }} />
+                            <text data-ring-text="rps" x="33" y="38" textAnchor="middle" fill="#fff" fontSize="13px" fontWeight="700" fontFamily="var(--font-suisseintlcond)">0</text>
+                          </svg>
+                          <span style={{ fontFamily: 'var(--font-suisseintlmono)', fontSize: '8px', color: 'rgba(255,255,255,0.4)' }}>RPS</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CARD 2 (RIGHT): Live Status & Concurrent Users */}
+                    <div style={{
+                      flex: 1,
+                      background: 'rgba(255, 255, 255, 0.03)',
+                      borderRadius: '20px',
+                      padding: '12px 10px',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between'
+                    }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', alignItems: 'center', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '4px' }}>
+                        <span data-readout="participants" style={{ fontFamily: 'var(--font-suisseintlcond)', fontSize: '20px', fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>0</span>
+                        <span style={{ fontFamily: 'var(--font-suisseintlmono)', fontSize: '7px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1px' }}>CONCURRENT PARTICIPANTS</span>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, justifyContent: 'center', paddingTop: '6px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontFamily: 'var(--font-suisseintlmono)', fontSize: '7.5px', color: 'rgba(255,255,255,0.4)' }}>CONTEST</span>
+                          <span data-readout="status" style={{ fontFamily: 'var(--font-suisseintlcond)', fontSize: '9px', fontWeight: 700, color: 'var(--color-electric-yellow)' }}>Idle</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontFamily: 'var(--font-suisseintlmono)', fontSize: '7.5px', color: 'rgba(255,255,255,0.4)' }}>AUTOSCALING</span>
+                          <span data-readout="asg" style={{ fontFamily: 'var(--font-suisseintlcond)', fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>Enabled</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontFamily: 'var(--font-suisseintlmono)', fontSize: '7.5px', color: 'rgba(255,255,255,0.4)' }}>INSTANCES</span>
+                          <span data-readout="instances" style={{ fontFamily: 'var(--font-suisseintlcond)', fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>1×</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontFamily: 'var(--font-suisseintlmono)', fontSize: '7.5px', color: 'rgba(255,255,255,0.4)' }}>ELAPSED</span>
+                          <span data-readout="elapsed" style={{ fontFamily: 'var(--font-suisseintlcond)', fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.8)' }}>00:00</span>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+
+                </div>
+              </div>
+
+              {/* Mobile Bottom Control Panel / Caption Sheet (Apple Maps style) */}
+              <div
+                className="sim-bottom-sheet"
+                style={{
+                  transform: sheetLevel === 1
+                    ? 'translateY(calc(100% - 56px))'
+                    : sheetLevel === 2
+                    ? 'translateY(calc(100% - 290px))'
+                    : 'translateY(0)',
+                  height: '420px',
+                }}
+              >
+                {/* Drag Handle & level toggle header */}
+                <div
+                  onClick={() => setSheetLevel((l) => (l === 3 ? 1 : l + 1))}
+                  style={{
+                    height: '56px',
+                    padding: '0 20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    borderBottom: '1px solid rgba(255,255,255,0.08)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '11px', opacity: 0.5 }}>{sheetLevel === 1 ? '▲' : '▼'}</span>
+                    <span style={{ fontFamily: 'var(--font-suisseintlcond)', fontWeight: 700, fontSize: '14px', letterSpacing: '-0.2px' }}>
+                      {playground ? '⚙ Playground' : `Beat ${beat.index}: ${beat.title}`}
+                    </span>
+                  </div>
+                  
+                  {!playground ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        enterPlayground()
+                        setSheetLevel(2) // open to level 2 on control enter
+                      }}
+                      style={{
+                        fontFamily: 'var(--font-suisseintlmono)',
+                        fontSize: '11px',
+                        background: 'var(--color-electric-yellow)',
+                        color: '#000',
+                        border: 'none',
+                        padding: '6px 12px',
+                        borderRadius: '10px',
+                        fontWeight: 650,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Take control
+                    </button>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        resumeStory()
+                        setSheetLevel(1)
+                      }}
+                      style={{
+                        fontFamily: 'var(--font-suisseintlmono)',
+                        fontSize: '11px',
+                        background: 'transparent',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        color: 'rgba(255,255,255,0.8)',
+                        padding: '5px 10px',
+                        borderRadius: '10px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Story Mode
+                    </button>
+                  )}
+                </div>
+
+                {/* Sheet Content scrollable */}
+                <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {!playground ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <p style={{ fontFamily: 'var(--font-suisseintl)', fontSize: '13px', lineHeight: 1.45, color: 'rgba(255,255,255,0.7)', margin: 0 }}>
+                        {beat.subtitle}
+                      </p>
+                      {beat.why && (
+                        <div style={{ display: 'flex', gap: '10px', borderLeft: '2px solid var(--color-electric-yellow)', paddingLeft: '12px', marginTop: '4px' }}>
+                          <p style={{ fontFamily: 'var(--font-suisseintl)', fontSize: '11.5px', lineHeight: 1.4, color: 'rgba(255,255,255,0.45)', margin: 0 }}>
+                            <strong style={{ color: 'var(--color-electric-yellow)', marginRight: '6px', fontSize: '9px', fontFamily: 'var(--font-suisseintlmono)' }}>WHY</strong>
+                            {beat.why}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      {/* Idle vs Live & Slider */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button
+                            onClick={onIdle}
+                            style={{
+                              flex: 1,
+                              fontFamily: 'var(--font-suisseintlmono)',
+                              fontSize: '11px',
+                              padding: '8px',
+                              borderRadius: '10px',
+                              border: '1px solid rgba(255,255,255,0.12)',
+                              background: ctrl.current.mode === 'idle' ? 'rgba(255,255,255,0.1)' : 'transparent',
+                              color: '#fff',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Idle Mode
+                          </button>
+                          <button
+                            onClick={onLive}
+                            style={{
+                              flex: 1,
+                              fontFamily: 'var(--font-suisseintlmono)',
+                              fontSize: '11px',
+                              padding: '8px',
+                              borderRadius: '10px',
+                              border: '1px solid rgba(255,255,255,0.12)',
+                              background: ctrl.current.mode === 'live' ? 'rgba(34,211,245,0.16)' : 'transparent',
+                              color: ctrl.current.mode === 'live' ? 'var(--color-cyan)' : '#fff',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Live Contest
+                          </button>
+                        </div>
+                        
+                        <label style={{ fontFamily: 'var(--font-suisseintlmono)', fontSize: '11px', color: 'rgba(255,255,255,0.5)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>PARTICIPANTS</span>
+                            <span style={{ color: '#fff', fontWeight: 'bold' }}>{fmt(pgP)}</span>
+                          </div>
+                          <input
+                            type="range"
+                            min={0}
+                            max={10000}
+                            step={100}
+                            value={pgP}
+                            onChange={(e) => onParticipants(Number(e.target.value))}
+                            style={{
+                              WebkitAppearance: 'none',
+                              appearance: 'none',
+                              height: '6px',
+                              borderRadius: '3px',
+                              background: 'linear-gradient(90deg, #22d3f5, #fff100)',
+                              outline: 'none',
+                              cursor: 'pointer',
+                            }}
+                          />
+                        </label>
+                      </div>
+
+                      {/* Operational buttons */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+                        <button
+                          onClick={onSpike}
+                          style={{
+                            fontFamily: 'var(--font-suisseintlmono)',
+                            fontSize: '11px',
+                            padding: '10px 4px',
+                            borderRadius: '10px',
+                            border: 'none',
+                            background: '#ff6924',
+                            color: '#fff',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          ⚡ Spike
+                        </button>
+                        <button
+                          onClick={onKill}
+                          style={{
+                            fontFamily: 'var(--font-suisseintlmono)',
+                            fontSize: '11px',
+                            padding: '10px 4px',
+                            borderRadius: '10px',
+                            border: '1px solid rgba(255,59,59,0.4)',
+                            background: 'rgba(255,59,59,0.12)',
+                            color: '#ff3b3b',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          ✕ Kill EC2
+                        </button>
+                        <button
+                          onClick={onRedis}
+                          style={{
+                            fontFamily: 'var(--font-suisseintlmono)',
+                            fontSize: '11px',
+                            padding: '10px 4px',
+                            borderRadius: '10px',
+                            border: '1px solid rgba(122,0,251,0.4)',
+                            background: 'rgba(122,0,251,0.12)',
+                            color: '#b98cff',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          ⚠ Drop Redis
+                        </button>
+                      </div>
+
+                      {/* Advanced options trigger */}
+                      <button
+                        onClick={() => setSheetLevel((l) => (l === 3 ? 2 : 3))}
+                        style={{
+                          fontFamily: 'var(--font-suisseintlmono)',
+                          fontSize: '11px',
+                          color: 'rgba(255,255,255,0.5)',
+                          background: 'transparent',
+                          border: 'none',
+                          textDecoration: 'underline',
+                          cursor: 'pointer',
+                          alignSelf: 'center',
+                          marginTop: '4px',
+                        }}
+                      >
+                        {sheetLevel === 3 ? 'Hide Advanced Options' : 'Show Advanced Options'}
+                      </button>
+
+                      {/* Advanced items */}
+                      {sheetLevel === 3 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '12px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-suisseintlmono)', fontSize: '10.5px', color: 'rgba(255,255,255,0.4)' }}>
+                            <span>SCALING POLICY</span>
+                            <span style={{ color: 'var(--color-electric-yellow)' }}>Target CPU 80%</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-suisseintlmono)', fontSize: '10.5px', color: 'rgba(255,255,255,0.4)' }}>
+                            <span>COOLDOWN PERIOD</span>
+                            <span style={{ color: '#fff' }}>120s</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-suisseintlmono)', fontSize: '10.5px', color: 'rgba(255,255,255,0.4)' }}>
+                            <span>TERMINATE DELAY</span>
+                            <span style={{ color: '#fff' }}>300s</span>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -318,6 +739,11 @@ function engine(
   let lastBeat = -1
   let lastNoticeShown: string | null = null
 
+  // Haptic feedback tracking variables
+  let lastMode: 'idle' | 'live' | null = null
+  let lastHealthyCount = 1
+  let lastTripped = false
+
   const setSlot = (el: SVGGElement, inst: Inst | undefined, cpu: number, mem: number) => {
     if (!inst) {
       el.dataset.state = 'off'
@@ -349,8 +775,20 @@ function engine(
     if (val) val.textContent = value
   }
   const setText = (name: string, value: string) => {
-    const el = $<HTMLElement>(`[data-readout="${name}"]`)
-    if (el) el.textContent = value
+    const els = wrap.querySelectorAll(`[data-readout="${name}"]`)
+    els.forEach((el) => {
+      el.textContent = value
+    })
+  }
+  const setRingGauge = (name: string, value: number, textVal: string) => {
+    const CIRC = 175.93
+    const circle = $<SVGCircleElement>(`[data-ring-fill="${name}"]`)
+    const label = $<SVGElement>(`[data-ring-text="${name}"]`)
+    if (circle) {
+      const offset = CIRC - (clamp(value, 0, 100) / 100) * CIRC
+      circle.setAttribute('stroke-dashoffset', String(offset))
+    }
+    if (label) label.textContent = textVal
   }
 
   const frame = (now: number) => {
@@ -446,11 +884,68 @@ function engine(
     const costVal = $<HTMLElement>('[data-gauge="cost"] [data-val]')
     if (costVal) costVal.textContent = sim.costLabel
 
+    const tripped = mode === 'live' && sim.cpu >= SCALE_THRESHOLD
+
+    // Metric Rings (Mobile)
+    setRingGauge('cpu', sim.cpu, `${sim.cpu}%`)
+    setRingGauge('mem', sim.mem, `${sim.mem}%`)
+    setRingGauge('lat', clamp((sim.latency / 300) * 100, 0, 100), `${sim.latency}ms`)
+    setRingGauge('rps', (sim.rps / 5600) * 100, fmt(sim.rps))
+    
+    // Cost (Mobile)
+    const islandCostVal = $<HTMLElement>('[data-readout="island-cost"]')
+    if (islandCostVal) islandCostVal.textContent = sim.costLabel
+
+    // Status (Mobile collapsed and expanded status bar summaries)
+    const islandDot = $<HTMLElement>('[data-readout="island-status-dot"]')
+    const islandText = $<HTMLElement>('[data-readout="island-status-text"]')
+    const islandMiniInfo = $<HTMLElement>('[data-readout="island-mini-info"]')
+    
+    let dotColor = '🟢'
+    let statusText = ''
+    let miniInfoText = `${healthy} EC2 · ${mode === 'idle' ? '0' : fmt(participants)} Users`
+
+    if (mode === 'idle') {
+      dotColor = '🌙'
+      statusText = `Idle · 1 EC2 · ${sim.cpu}% CPU`
+    } else if (redisDown) {
+      dotColor = '🔴'
+      statusText = `Simulated Failure · Recovering`
+    } else if (tripped) {
+      dotColor = '🟠'
+      statusText = `Scaling Out · Launching EC2 #${instances.length + 1}`
+    } else if (sim.stressed) {
+      dotColor = '⚡'
+      statusText = `Contest Live · ${fmt(participants)} participants`
+    } else {
+      dotColor = '🟢'
+      statusText = `Stable · ${healthy} EC2 · ${sim.latency}ms P95`
+    }
+    
+    if (islandDot) islandDot.textContent = dotColor
+    if (islandText) islandText.textContent = statusText
+    if (islandMiniInfo) islandMiniInfo.textContent = miniInfoText
+
+    // Haptics (Vibration Feedback)
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      if (lastMode !== null && lastMode !== mode) {
+        navigator.vibrate(15) // light tap for Idle <-> Live
+      }
+      if (healthy > lastHealthyCount) {
+        navigator.vibrate(25) // soft pulse when EC2 becomes healthy
+      }
+      if (tripped && !lastTripped) {
+        navigator.vibrate(80) // stronger pulse for autoscaling spike
+      }
+    }
+    lastMode = mode
+    lastHealthyCount = healthy
+    lastTripped = tripped
+
     // Mission-control readouts
     setText('participants', mode === 'idle' ? '0' : fmt(participants))
     setText('instances', `${healthy}×`)
     setText('status', mode === 'idle' ? 'Idle' : redisDown ? 'Degraded' : sim.stressed ? 'Under load' : 'Running')
-    const tripped = mode === 'live' && sim.cpu >= SCALE_THRESHOLD
     setText('asg', tripped ? 'Triggered' : 'Enabled')
     const modeChip = $<HTMLElement>('[data-readout="mode"]')
     if (modeChip) { modeChip.textContent = mode === 'idle' ? '🌙 IDLE' : '⚡ LIVE'; modeChip.dataset.mode = mode }
@@ -496,16 +991,17 @@ function Gauge({ name, label, isText }: { name: string; label: string; isText?: 
 }
 
 /* ── Static SVG topology ────────────────────────────────────────── */
-function SimScene() {
+function SimScene({ isMobile }: { isMobile?: boolean }) {
+  const vbW = isMobile ? 750 : VB_W
   return (
-    <svg viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio="xMidYMid meet" className="is-svg">
+    <svg viewBox={`0 0 ${vbW} ${VB_H}`} preserveAspectRatio="xMidYMid meet" className="is-svg">
       <defs>
         <radialGradient id="is-bg" cx="34%" cy="30%" r="80%">
           <stop offset="0%" stopColor="#16161c" />
           <stop offset="100%" stopColor="#08080a" />
         </radialGradient>
       </defs>
-      <rect x={0} y={0} width={VB_W} height={VB_H} fill="url(#is-bg)" />
+      <rect x={0} y={0} width={vbW} height={VB_H} fill="url(#is-bg)" />
 
       <g stroke={C.infra} strokeWidth={2} fill="none" opacity={0.5}>
         <path d={`M ${ROUTE53.x} ${ROUTE53.y + 30} L ${ALB.x} ${ALB.y - 30}`} />
@@ -579,6 +1075,93 @@ function SimStyles() {
       .is-panel::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: 32px; box-shadow: inset 0 0 120px 10px rgba(255,59,59,0); transition: box-shadow .5s ease; }
       .is-panel[data-stress='1']::after { box-shadow: inset 0 0 120px 12px rgba(255,59,59,0.26); }
       .is-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+      /* Mobile layout adjustments */
+      @media (max-width: 767px) {
+        .is-panel {
+          height: min(92vh, 800px);
+          border-radius: 24px;
+        }
+        .is-svg {
+          transition: transform 0.55s cubic-bezier(0.19, 1, 0.22, 1), filter 0.55s ease;
+        }
+        .is-panel[data-island-open='1'] .is-svg {
+          transform: translateY(68px) scale(0.92);
+          filter: blur(2px);
+        }
+        
+        /* Mobile Simulator Dynamic Island */
+        .sim-island {
+          position: absolute;
+          top: 16px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: calc(100% - 32px);
+          max-width: 340px;
+          background: rgba(10, 10, 13, 0.94);
+          backdrop-filter: blur(14px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 24px;
+          z-index: 40;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+          transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1); /* spring-like wobble */
+          overflow: hidden;
+          color: #fff;
+          cursor: pointer;
+        }
+        .sim-island[data-expanded='true'] {
+          border-radius: 28px;
+          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.68);
+          max-width: 350px;
+        }
+        .sim-island-collapsed {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 10px 16px;
+          height: 46px;
+          opacity: 1;
+          transition: opacity 0.2s ease, height 0.3s ease;
+        }
+        .sim-island[data-expanded='true'] .sim-island-collapsed {
+          opacity: 0;
+          height: 0;
+          padding: 0;
+          pointer-events: none;
+        }
+        .sim-island-expanded {
+          opacity: 0;
+          height: 0;
+          overflow: hidden;
+          pointer-events: none;
+          transition: opacity 0.25s ease, height 0.35s ease, padding 0.35s ease;
+          padding: 0;
+        }
+        .sim-island[data-expanded='true'] .sim-island-expanded {
+          opacity: 1;
+          height: auto;
+          pointer-events: auto;
+          padding: 18px;
+        }
+        
+        /* Mobile Bottom Sheet Controls */
+        .sim-bottom-sheet {
+          position: absolute;
+          bottom: 16px;
+          left: 16px;
+          right: 16px;
+          background: rgba(10, 10, 13, 0.95);
+          backdrop-filter: blur(14px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 28px;
+          z-index: 35;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+          color: #fff;
+          transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+          display: flex;
+          flex-direction: column;
+        }
+      }
       .is-node-label { font-family: var(--font-suisseintlcond), sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.4px; }
       .is-node-sub { font-family: var(--font-suisseintlmono), monospace; font-size: 12px; }
       .is-redis[data-down='1'] .is-pill-box { stroke: ${C.danger}; filter: drop-shadow(0 0 12px rgba(255,59,59,0.6)); }

@@ -124,6 +124,7 @@ export function InfraScaleSimulator() {
   const [playground, setPlayground] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
   const [pgP, setPgP] = useState(5000)
+  const [simMode, setSimMode] = useState<'idle' | 'live'>('live')
 
   // Mobile layout state
   const [isMobile, setIsMobile] = useState(false)
@@ -187,10 +188,29 @@ export function InfraScaleSimulator() {
   useEffect(() => engine(trackRef, wrapRef, ctrl, setBeatIdx, setProgress, setNotice), [])
 
   // Playground control handlers
-  const onParticipants = (v: number) => { setPgP(v); ctrl.current.participants = v; if (ctrl.current.mode === 'idle') ctrl.current.mode = 'live' }
-  const onIdle = () => { ctrl.current.mode = 'idle' }
-  const onLive = () => { ctrl.current.mode = 'live' }
-  const onSpike = () => { ctrl.current.mode = 'live'; setPgP(10000); ctrl.current.participants = 10000; flash('⚡ Traffic spike — 10,000 participants surged in') }
+  const onParticipants = (v: number) => { 
+    setPgP(v)
+    ctrl.current.participants = v
+    if (ctrl.current.mode === 'idle') {
+      ctrl.current.mode = 'live'
+      setSimMode('live')
+    }
+  }
+  const onIdle = () => { 
+    ctrl.current.mode = 'idle'
+    setSimMode('idle')
+  }
+  const onLive = () => { 
+    ctrl.current.mode = 'live'
+    setSimMode('live')
+  }
+  const onSpike = () => { 
+    ctrl.current.mode = 'live'
+    setSimMode('live')
+    setPgP(10000)
+    ctrl.current.participants = 10000
+    flash('⚡ Traffic spike — 10,000 participants surged in')
+  }
   const onKill = () => { ctrl.current.cmd = 'kill'; flash('✕ Instance terminated — ALB rerouting, ASG launching a replacement…') }
   const onRedis = () => { ctrl.current.redisDownUntil = performance.now() + REDIS_FAILOVER_MS; flash('⚠ Redis primary lost — cache misses hitting RDS, failing over to replica…', REDIS_FAILOVER_MS) }
 
@@ -215,6 +235,31 @@ export function InfraScaleSimulator() {
     ctrl.current.cmd = null
     setPlayground(false)
     setNotice(null)
+  }
+
+  const handleSpike = () => {
+    if (!playground) enterPlayground()
+    onSpike()
+  }
+  const handleKill = () => {
+    if (!playground) enterPlayground()
+    onKill()
+  }
+  const handleRedis = () => {
+    if (!playground) enterPlayground()
+    onRedis()
+  }
+  const handleToggleMode = () => {
+    if (!playground) {
+      enterPlayground()
+      onLive()
+    } else {
+      if (ctrl.current.mode === 'idle') {
+        onLive()
+      } else {
+        onIdle()
+      }
+    }
   }
 
   return (
@@ -454,254 +499,231 @@ export function InfraScaleSimulator() {
                     </div>
 
                   </div>
-
-
                 </div>
               </div>
 
-              {/* Mobile Bottom Control Panel / Caption Sheet (Apple Maps style) */}
-              <div
-                className="sim-bottom-sheet"
-                style={{
-                  transform: sheetLevel === 1
-                    ? 'translateY(calc(100% - 56px))'
-                    : sheetLevel === 2
-                    ? 'translateY(calc(100% - 290px))'
-                    : 'translateY(0)',
-                  height: '420px',
-                }}
-              >
-                {/* Drag Handle & level toggle header */}
-                <div
-                  onClick={() => setSheetLevel((l) => (l === 3 ? 1 : l + 1))}
-                  style={{
-                    height: '56px',
-                    padding: '0 20px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    cursor: 'pointer',
-                    borderBottom: '1px solid rgba(255,255,255,0.08)',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '11px', opacity: 0.5 }}>{sheetLevel === 1 ? '▲' : '▼'}</span>
-                    <span style={{ fontFamily: 'var(--font-suisseintlcond)', fontWeight: 700, fontSize: '14px', letterSpacing: '-0.2px' }}>
-                      {playground ? '⚙ Playground' : `Beat ${beat.index}: ${beat.title}`}
-                    </span>
-                  </div>
-                  
-                  {!playground ? (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        enterPlayground()
-                        setSheetLevel(2) // open to level 2 on control enter
-                      }}
-                      style={{
-                        fontFamily: 'var(--font-suisseintlmono)',
-                        fontSize: '11px',
-                        background: 'var(--color-electric-yellow)',
-                        color: '#000',
-                        border: 'none',
-                        padding: '6px 12px',
-                        borderRadius: '10px',
-                        fontWeight: 650,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Take control
-                    </button>
-                  ) : (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        resumeStory()
-                        setSheetLevel(1)
-                      }}
-                      style={{
-                        fontFamily: 'var(--font-suisseintlmono)',
-                        fontSize: '11px',
-                        background: 'transparent',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        color: 'rgba(255,255,255,0.8)',
-                        padding: '5px 10px',
-                        borderRadius: '10px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Story Mode
-                    </button>
+              {/* Mobile story mode caption (displayed normally on the screen, just like in desktop mode) */}
+              {!playground && (
+                <div className="is-caption">
+                  <div className="is-kicker">// PRODUCTION ENGINEERING</div>
+                  <h3 className="is-title" key={capTitle}>{capTitle}</h3>
+                  <p className="is-sub">{capSub}</p>
+                  {capWhy && (
+                    <p className="is-why" key={capTitle + '-why'}>
+                      <span className="is-why-tag">WHY</span>
+                      {capWhy}
+                    </p>
                   )}
                 </div>
+              )}
 
-                {/* Sheet Content scrollable */}
-                <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  {!playground ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <p style={{ fontFamily: 'var(--font-suisseintl)', fontSize: '13px', lineHeight: 1.45, color: 'rgba(255,255,255,0.7)', margin: 0 }}>
-                        {beat.subtitle}
-                      </p>
-                      {beat.why && (
-                        <div style={{ display: 'flex', gap: '10px', borderLeft: '2px solid var(--color-electric-yellow)', paddingLeft: '12px', marginTop: '4px' }}>
-                          <p style={{ fontFamily: 'var(--font-suisseintl)', fontSize: '11.5px', lineHeight: 1.4, color: 'rgba(255,255,255,0.45)', margin: 0 }}>
-                            <strong style={{ color: 'var(--color-electric-yellow)', marginRight: '6px', fontSize: '9px', fontFamily: 'var(--font-suisseintlmono)' }}>WHY</strong>
-                            {beat.why}
-                          </p>
-                        </div>
-                      )}
+              {/* Mobile Floating Pill Controls near thumb area */}
+              <div 
+                className="sim-mobile-pill" 
+                style={{
+                  position: 'absolute',
+                  bottom: '20px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: 'calc(100% - 32px)',
+                  maxWidth: '340px',
+                  background: 'rgba(10, 10, 13, 0.95)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: playground ? '28px' : '999px',
+                  padding: playground ? '14px 16px' : '10px 14px',
+                  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.6)',
+                  zIndex: 35,
+                  color: '#fff',
+                  transition: 'all 0.4s cubic-bezier(0.19, 1, 0.22, 1)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px'
+                }}
+              >
+                {/* Slider Row (only visible in Playground Mode) */}
+                {playground && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontFamily: 'var(--font-suisseintlmono)', fontSize: '8px', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.2px' }}>PARTICIPANTS</span>
+                      <span style={{ fontFamily: 'var(--font-suisseintlcond)', fontSize: '11px', fontWeight: 700, color: '#fff' }}>{fmt(pgP)}</span>
                     </div>
-                  ) : (
-                    <>
-                      {/* Idle vs Live & Slider */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <button
-                            onClick={onIdle}
-                            style={{
-                              flex: 1,
-                              fontFamily: 'var(--font-suisseintlmono)',
-                              fontSize: '11px',
-                              padding: '8px',
-                              borderRadius: '10px',
-                              border: '1px solid rgba(255,255,255,0.12)',
-                              background: ctrl.current.mode === 'idle' ? 'rgba(255,255,255,0.1)' : 'transparent',
-                              color: '#fff',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            Idle Mode
-                          </button>
-                          <button
-                            onClick={onLive}
-                            style={{
-                              flex: 1,
-                              fontFamily: 'var(--font-suisseintlmono)',
-                              fontSize: '11px',
-                              padding: '8px',
-                              borderRadius: '10px',
-                              border: '1px solid rgba(255,255,255,0.12)',
-                              background: ctrl.current.mode === 'live' ? 'rgba(34,211,245,0.16)' : 'transparent',
-                              color: ctrl.current.mode === 'live' ? 'var(--color-cyan)' : '#fff',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            Live Contest
-                          </button>
-                        </div>
-                        
-                        <label style={{ fontFamily: 'var(--font-suisseintlmono)', fontSize: '11px', color: 'rgba(255,255,255,0.5)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span>PARTICIPANTS</span>
-                            <span style={{ color: '#fff', fontWeight: 'bold' }}>{fmt(pgP)}</span>
-                          </div>
-                          <input
-                            type="range"
-                            min={0}
-                            max={10000}
-                            step={100}
-                            value={pgP}
-                            onChange={(e) => onParticipants(Number(e.target.value))}
-                            style={{
-                              WebkitAppearance: 'none',
-                              appearance: 'none',
-                              height: '6px',
-                              borderRadius: '3px',
-                              background: 'linear-gradient(90deg, #22d3f5, #fff100)',
-                              outline: 'none',
-                              cursor: 'pointer',
-                            }}
-                          />
-                        </label>
-                      </div>
+                    <input 
+                      type="range" 
+                      min={0} 
+                      max={10000} 
+                      step={100} 
+                      value={pgP} 
+                      onChange={(e) => onParticipants(Number(e.target.value))}
+                      style={{
+                        width: '100%',
+                        height: '4px',
+                        borderRadius: '2px',
+                        background: 'rgba(255,255,255,0.1)',
+                        outline: 'none',
+                        accentColor: 'var(--color-electric-yellow)',
+                        cursor: 'pointer'
+                      }}
+                    />
+                  </div>
+                )}
 
-                      {/* Operational buttons */}
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-                        <button
-                          onClick={onSpike}
-                          style={{
-                            fontFamily: 'var(--font-suisseintlmono)',
-                            fontSize: '11px',
-                            padding: '10px 4px',
-                            borderRadius: '10px',
-                            border: 'none',
-                            background: '#ff6924',
-                            color: '#fff',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                          }}
-                        >
-                          ⚡ Spike
-                        </button>
-                        <button
-                          onClick={onKill}
-                          style={{
-                            fontFamily: 'var(--font-suisseintlmono)',
-                            fontSize: '11px',
-                            padding: '10px 4px',
-                            borderRadius: '10px',
-                            border: '1px solid rgba(255,59,59,0.4)',
-                            background: 'rgba(255,59,59,0.12)',
-                            color: '#ff3b3b',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          ✕ Kill EC2
-                        </button>
-                        <button
-                          onClick={onRedis}
-                          style={{
-                            fontFamily: 'var(--font-suisseintlmono)',
-                            fontSize: '11px',
-                            padding: '10px 4px',
-                            borderRadius: '10px',
-                            border: '1px solid rgba(122,0,251,0.4)',
-                            background: 'rgba(122,0,251,0.12)',
-                            color: '#b98cff',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          ⚠ Drop Redis
-                        </button>
-                      </div>
+                {/* Buttons Row (5 circular buttons) */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                  {/* 1. Story / Playground Toggle */}
+                  <button 
+                    type="button" 
+                    onClick={playground ? resumeStory : enterPlayground}
+                    style={{
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '50%',
+                      border: 'none',
+                      background: playground ? 'var(--color-electric-yellow)' : 'rgba(255,255,255,0.08)',
+                      color: playground ? '#000' : '#fff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: playground ? '0 0 10px rgba(255,241,0,0.3)' : 'none'
+                    }}
+                    aria-label={playground ? "Back to Story Mode" : "Take Control (Playground)"}
+                    title={playground ? "Story Mode" : "Playground Mode"}
+                  >
+                    {playground ? (
+                      // Book icon (Back to story)
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6 2v20H20V2H6Z" />
+                      </svg>
+                    ) : (
+                      // Tools / slider icon (Take Control)
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="4" y1="21" x2="4" y2="14" />
+                        <line x1="4" y1="10" x2="4" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="12" />
+                        <line x1="12" y1="8" x2="12" y2="3" />
+                        <line x1="20" y1="21" x2="20" y2="16" />
+                        <line x1="20" y1="12" x2="20" y2="3" />
+                        <line x1="2" y1="14" x2="6" y2="14" />
+                        <line x1="10" y1="8" x2="14" y2="8" />
+                        <line x1="18" y1="16" x2="22" y2="16" />
+                      </svg>
+                    )}
+                  </button>
 
-                      {/* Advanced options trigger */}
-                      <button
-                        onClick={() => setSheetLevel((l) => (l === 3 ? 2 : 3))}
-                        style={{
-                          fontFamily: 'var(--font-suisseintlmono)',
-                          fontSize: '11px',
-                          color: 'rgba(255,255,255,0.5)',
-                          background: 'transparent',
-                          border: 'none',
-                          textDecoration: 'underline',
-                          cursor: 'pointer',
-                          alignSelf: 'center',
-                          marginTop: '4px',
-                        }}
-                      >
-                        {sheetLevel === 3 ? 'Hide Advanced Options' : 'Show Advanced Options'}
-                      </button>
+                  {/* 2. Idle / Live Toggle */}
+                  <button 
+                    type="button" 
+                    onClick={handleToggleMode}
+                    style={{
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '50%',
+                      border: 'none',
+                      background: !playground ? 'rgba(255,255,255,0.04)' : simMode === 'live' ? 'var(--color-electric-yellow)' : 'rgba(255,255,255,0.08)',
+                      color: !playground ? 'rgba(255,255,255,0.3)' : simMode === 'live' ? '#000' : '#fff',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: playground && simMode === 'live' ? '0 0 10px rgba(255,241,0,0.3)' : 'none'
+                    }}
+                    title="Toggle Idle/Live"
+                  >
+                    {simMode === 'idle' ? (
+                      // Moon icon
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                      </svg>
+                    ) : (
+                      // Lightning bolt
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                      </svg>
+                    )}
+                  </button>
 
-                      {/* Advanced items */}
-                      {sheetLevel === 3 && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '12px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-suisseintlmono)', fontSize: '10.5px', color: 'rgba(255,255,255,0.4)' }}>
-                            <span>SCALING POLICY</span>
-                            <span style={{ color: 'var(--color-electric-yellow)' }}>Target CPU 80%</span>
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-suisseintlmono)', fontSize: '10.5px', color: 'rgba(255,255,255,0.4)' }}>
-                            <span>COOLDOWN PERIOD</span>
-                            <span style={{ color: '#fff' }}>120s</span>
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-suisseintlmono)', fontSize: '10.5px', color: 'rgba(255,255,255,0.4)' }}>
-                            <span>TERMINATE DELAY</span>
-                            <span style={{ color: '#fff' }}>300s</span>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
+                  {/* 3. Spike Action */}
+                  <button 
+                    type="button" 
+                    onClick={handleSpike}
+                    style={{
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '50%',
+                      border: 'none',
+                      background: !playground ? 'rgba(255,255,255,0.04)' : 'rgba(255,102,0,0.15)',
+                      color: !playground ? 'rgba(255,255,255,0.3)' : '#ff6600',
+                      border: playground ? '1px solid rgba(255,102,0,0.3)' : 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    title="Simulate Spike"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                      <polyline points="16 7 22 7 22 13" />
+                    </svg>
+                  </button>
+
+                  {/* 4. Kill EC2 Action */}
+                  <button 
+                    type="button" 
+                    onClick={handleKill}
+                    style={{
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '50%',
+                      border: 'none',
+                      background: !playground ? 'rgba(255,255,255,0.04)' : 'rgba(255,59,59,0.15)',
+                      color: !playground ? 'rgba(255,255,255,0.3)' : '#ff3b3b',
+                      border: playground ? '1px solid rgba(255,59,59,0.3)' : 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    title="Kill EC2 Instance"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+
+                  {/* 5. Drop Redis Action */}
+                  <button 
+                    type="button" 
+                    onClick={handleRedis}
+                    style={{
+                      width: '42px',
+                      height: '42px',
+                      borderRadius: '50%',
+                      border: 'none',
+                      background: !playground ? 'rgba(255,255,255,0.04)' : 'rgba(122,0,251,0.15)',
+                      color: !playground ? 'rgba(255,255,255,0.3)' : '#b98cff',
+                      border: playground ? '1px solid rgba(122,0,251,0.3)' : 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    title="Drop Redis Cache"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <ellipse cx="12" cy="5" rx="9" ry="3" />
+                      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                      <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             </>
@@ -1144,22 +1166,69 @@ function SimStyles() {
           padding: 18px;
         }
         
-        /* Mobile Bottom Sheet Controls */
-        .sim-bottom-sheet {
-          position: absolute;
-          bottom: 16px;
-          left: 16px;
-          right: 16px;
-          background: rgba(10, 10, 13, 0.95);
-          backdrop-filter: blur(14px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 28px;
-          z-index: 35;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-          color: #fff;
-          transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-          display: flex;
-          flex-direction: column;
+        /* Mobile Story Mode Caption positioning */
+        .is-caption {
+          position: absolute !important;
+          left: 16px !important;
+          right: 16px !important;
+          bottom: 96px !important; /* sit beautifully above the floating control pill */
+          max-width: none !important;
+          pointer-events: auto !important;
+          z-index: 25 !important;
+          background: linear-gradient(180deg, transparent, rgba(10,10,13,0.85) 40%, rgba(10,10,13,0.95)) !important;
+          padding: 20px 16px 12px 16px !important;
+          border-radius: 0 0 24px 24px !important;
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 4px !important;
+          animation: is-rise .5s cubic-bezier(0.2,0.7,0.2,1) both !important;
+        }
+        .is-caption .is-kicker {
+          font-size: 10px !important;
+          margin-bottom: 4px !important;
+        }
+        .is-caption .is-title {
+          font-size: 22px !important;
+          margin-bottom: 6px !important;
+          line-height: 1.1 !important;
+        }
+        .is-caption .is-sub {
+          font-size: 12.5px !important;
+          line-height: 1.4 !important;
+          color: rgba(255,255,255,0.7) !important;
+        }
+        .is-caption .is-why {
+          margin-top: 8px !important;
+          font-size: 11.5px !important;
+          padding-left: 10px !important;
+        }
+
+        /* Mobile range slider customizations inside floating pill */
+        .sim-mobile-pill input[type='range'] {
+          -webkit-appearance: none;
+          appearance: none;
+          height: 4px;
+          border-radius: 2px;
+          background: rgba(255, 255, 255, 0.15) !important;
+          outline: none;
+        }
+        .sim-mobile-pill input[type='range']::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: var(--color-electric-yellow,#fff100) !important;
+          box-shadow: 0 0 8px rgba(255, 241, 0, 0.5);
+          cursor: grab;
+        }
+        .sim-mobile-pill input[type='range']::-moz-range-thumb {
+          width: 14px;
+          height: 14px;
+          border: 0;
+          border-radius: 50%;
+          background: var(--color-electric-yellow,#fff100) !important;
+          box-shadow: 0 0 8px rgba(255, 241, 0, 0.5);
+          cursor: grab;
         }
       }
       .is-node-label { font-family: var(--font-suisseintlcond), sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.4px; }

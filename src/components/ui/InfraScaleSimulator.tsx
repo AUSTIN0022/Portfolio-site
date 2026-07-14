@@ -47,6 +47,9 @@ const ROUTE53 = { x: 375, y: 90 }
 const ALB = { x: 375, y: 220 }
 const REDIS = { x: 250, y: 660 }
 const RDS = { x: 560, y: 660 }
+const POOL_REDIS = { x: 250, y: 560 }
+const POOL_RDS = { x: 560, y: 560 }
+
 
 /* ── Beats (story mode) ─────────────────────────────────────────── */
 type Beat = {
@@ -766,9 +769,38 @@ function engine(
   let lastHealthyCount = 1
   let lastTripped = false
 
-  const setSlot = (el: SVGGElement, inst: Inst | undefined, cpu: number, mem: number) => {
+  const setSlot = (el: SVGGElement, inst: Inst | undefined, cpu: number, mem: number, i: number) => {
+    // Update ALB connection wire & packets
+    const albWire = wrap.querySelector(`[data-alb-wire="${i}"]`)
+    const albPacket = wrap.querySelector(`[data-alb-packet="${i}"]`)
+    if (albWire) {
+      if (inst && inst.state === 'healthy') {
+        albWire.setAttribute('opacity', '0.3')
+      } else if (inst && inst.state === 'pending') {
+        albWire.setAttribute('opacity', '0.12')
+      } else {
+        albWire.setAttribute('opacity', '0')
+      }
+    }
+    if (albPacket) {
+      if (inst && inst.state === 'healthy') {
+        albPacket.setAttribute('opacity', '0.8')
+      } else {
+        albPacket.setAttribute('opacity', '0')
+      }
+    }
+
     if (!inst) {
       el.dataset.state = 'off'
+      // Hide packet & wire
+      const redPacket = wrap.querySelector(`[data-packet="red-slot-${i}"]`)
+      const rdsPacket = wrap.querySelector(`[data-packet="rds-slot-${i}"]`)
+      if (redPacket) redPacket.setAttribute('opacity', '0')
+      if (rdsPacket) rdsPacket.setAttribute('opacity', '0')
+      const redWire = wrap.querySelector(`[data-wire="red-wire-${i}"]`)
+      const rdsWire = wrap.querySelector(`[data-wire="rds-wire-${i}"]`)
+      if (redWire) { redWire.setAttribute('opacity', '0.12'); redWire.setAttribute('stroke', '#3a3a46') }
+      if (rdsWire) { rdsWire.setAttribute('opacity', '0.12'); rdsWire.setAttribute('stroke', '#3a3a46') }
       return
     }
     el.dataset.state = inst.state
@@ -781,10 +813,27 @@ function engine(
     const hot = cpu >= 88
     const show = inst.state === 'healthy'
     if (cpuBar) {
-      cpuBar.setAttribute('width', `${(show ? cpu : 0) * 0.86}`)
+      cpuBar.setAttribute('width', `${(show ? cpu : 0) * 0.7}`)
       cpuBar.setAttribute('fill', hot ? C.danger : C.worker)
     }
-    if (memBar) memBar.setAttribute('width', `${(show ? mem : 0) * 0.86}`)
+    if (memBar) memBar.setAttribute('width', `${(show ? mem : 0) * 0.7}`)
+
+    // Update connection packets & wires
+    const redPacket = wrap.querySelector(`[data-packet="red-slot-${i}"]`)
+    const rdsPacket = wrap.querySelector(`[data-packet="rds-slot-${i}"]`)
+    if (redPacket) redPacket.setAttribute('opacity', show ? '0.7' : '0')
+    if (rdsPacket) rdsPacket.setAttribute('opacity', show ? '0.7' : '0')
+
+    const redWire = wrap.querySelector(`[data-wire="red-wire-${i}"]`)
+    const rdsWire = wrap.querySelector(`[data-wire="rds-wire-${i}"]`)
+    if (redWire) {
+      redWire.setAttribute('opacity', show ? '0.45' : '0.12')
+      redWire.setAttribute('stroke', show ? C.infra : '#3a3a46')
+    }
+    if (rdsWire) {
+      rdsWire.setAttribute('opacity', show ? '0.45' : '0.12')
+      rdsWire.setAttribute('stroke', show ? C.infra : '#3a3a46')
+    }
   }
 
   const setGauge = (name: string, pct: number, value: string, danger = false) => {
@@ -890,10 +939,18 @@ function engine(
     slotEls.forEach((el, i) => {
       const inst = instances[i]
       const jitter = inst?.state === 'healthy' ? Math.sin(now / 500 + i) * 3 : 0
-      setSlot(el, inst, sim.cpu + jitter, sim.mem)
+      setSlot(el, inst, sim.cpu + jitter, sim.mem, i)
     })
     if (albEl) albEl.style.opacity = mode === 'idle' ? '0.28' : '1'
     if (redisEl) redisEl.dataset.down = redisDown ? '1' : '0'
+
+    // Connection pool DB packet updates
+    const redPoolPackets = $$('[data-pool-packet="redis"]')
+    const rdsPoolPackets = $$('[data-pool-packet="rds"]')
+    const showRed = healthy > 0 && !redisDown
+    const showRds = healthy > 0
+    redPoolPackets.forEach(p => p.setAttribute('opacity', showRed ? '0.8' : '0'))
+    rdsPoolPackets.forEach(p => p.setAttribute('opacity', showRds ? '0.8' : '0'))
 
     // Gauges
     setGauge('cpu', sim.cpu, `${sim.cpu}%`, sim.cpu >= 88)
@@ -1028,21 +1085,79 @@ function SimScene({ isMobile }: { isMobile?: boolean }) {
       <g stroke={C.infra} strokeWidth={2} fill="none" opacity={0.5}>
         <path d={`M ${ROUTE53.x} ${ROUTE53.y + 30} L ${ALB.x} ${ALB.y - 30}`} />
       </g>
-      <g stroke={C.realtime} strokeWidth={1.6} fill="none" opacity={0.3}>
-        {SLOTS.map((s, i) => (<path key={i} d={`M ${ALB.x} ${ALB.y + 30} L ${s.x} ${s.y - 34}`} />))}
+      <g stroke={C.realtime} strokeWidth={1.6} fill="none">
+        {SLOTS.map((s, i) => (<path key={i} data-alb-wire={i} opacity={0} d={`M ${ALB.x} ${ALB.y + 30} L ${s.x} ${s.y - 34}`} />))}
       </g>
-      <g stroke="#555" strokeWidth={1.4} fill="none" opacity={0.28}>
-        {SLOTS.map((s, i) => (<path key={i} d={`M ${s.x} ${s.y + 34} L ${REDIS.x} ${REDIS.y - 30}`} />))}
-        {SLOTS.map((s, i) => (<path key={`r${i}`} d={`M ${s.x} ${s.y + 34} L ${RDS.x} ${RDS.y - 30}`} />))}
+      {/* Instances → Pools connection wires */}
+      <g stroke="#3a3a46" strokeWidth={1.2} fill="none">
+        {SLOTS.map((s, i) => (<path key={`red-${i}`} data-wire={`red-wire-${i}`} opacity={0.12} d={`M ${s.x} ${s.y + 34} L ${POOL_REDIS.x} ${POOL_REDIS.y - 12}`} />))}
+        {SLOTS.map((s, i) => (<path key={`rds-${i}`} data-wire={`rds-wire-${i}`} opacity={0.12} d={`M ${s.x} ${s.y + 34} L ${POOL_RDS.x} ${POOL_RDS.y - 12}`} />))}
+      </g>
+
+      {/* Pools → DB wires (4 distinct wires side-by-side representing the pool capacity) */}
+      <g stroke={C.infra} strokeWidth={1.4} fill="none" opacity={0.65}>
+        {[-9, -3, 3, 9].map((offset, idx) => (
+          <path key={`w-red-${idx}`} d={`M ${POOL_REDIS.x + offset} ${POOL_REDIS.y + 12} L ${REDIS.x + offset} ${REDIS.y - 30}`} />
+        ))}
+        {[-9, -3, 3, 9].map((offset, idx) => (
+          <path key={`w-rds-${idx}`} d={`M ${POOL_RDS.x + offset} ${POOL_RDS.y + 12} L ${RDS.x + offset} ${RDS.y - 30}`} />
+        ))}
       </g>
 
       {/* ALB → instance packets */}
       <g>
         {SLOTS.map((s, i) => (
-          <circle key={i} r={3.5} fill={C.realtime} opacity={0.8}>
+          <circle key={i} data-alb-packet={i} r={3.5} fill={C.realtime} opacity={0}>
             <animateMotion dur={`${(1.5 + (i % 3) * 0.2).toFixed(2)}s`} begin={`${(i * 0.12).toFixed(2)}s`} repeatCount="indefinite" path={`M ${ALB.x} ${ALB.y + 30} L ${s.x} ${s.y - 34}`} />
           </circle>
         ))}
+      </g>
+
+      {/* Instances → Redis Pool packets */}
+      <g>
+        {SLOTS.map((s, i) => (
+          <circle key={`p-red-${i}`} r={3} fill="#a855f7" opacity={0} data-packet={`red-slot-${i}`}>
+            <animateMotion dur={`${(1.4 + (i % 3) * 0.25).toFixed(2)}s`} begin={`${(i * 0.15).toFixed(2)}s`} repeatCount="indefinite" path={`M ${s.x} ${s.y + 34} L ${POOL_REDIS.x} ${POOL_REDIS.y - 12}`} />
+          </circle>
+        ))}
+      </g>
+
+      {/* Instances → RDS Pool packets */}
+      <g>
+        {SLOTS.map((s, i) => (
+          <circle key={`p-rds-${i}`} r={3} fill="#a855f7" opacity={0} data-packet={`rds-slot-${i}`}>
+            <animateMotion dur={`${(1.6 + (i % 3) * 0.2).toFixed(2)}s`} begin={`${(i * 0.1).toFixed(2)}s`} repeatCount="indefinite" path={`M ${s.x} ${s.y + 34} L ${POOL_RDS.x} ${POOL_RDS.y - 12}`} />
+          </circle>
+        ))}
+      </g>
+
+      {/* Redis Pool → Redis DB packets (4 streams corresponding to active wires) */}
+      <g>
+        {[-9, -3, 3, 9].map((offset, idx) => (
+          <circle key={`pb-red-${idx}`} r={3} fill="#a855f7" opacity={0.8} data-pool-packet="redis">
+            <animateMotion dur={`${(1.0 + idx * 0.15).toFixed(2)}s`} begin={`${(idx * 0.2).toFixed(2)}s`} repeatCount="indefinite" path={`M ${POOL_REDIS.x + offset} ${POOL_REDIS.y + 12} L ${REDIS.x + offset} ${REDIS.y - 30}`} />
+          </circle>
+        ))}
+      </g>
+
+      {/* RDS Pool → RDS DB packets (4 streams corresponding to active wires) */}
+      <g>
+        {[-9, -3, 3, 9].map((offset, idx) => (
+          <circle key={`pb-rds-${idx}`} r={3} fill="#a855f7" opacity={0.8} data-pool-packet="rds">
+            <animateMotion dur={`${(1.2 + idx * 0.1).toFixed(2)}s`} begin={`${(idx * 0.15).toFixed(2)}s`} repeatCount="indefinite" path={`M ${POOL_RDS.x + offset} ${POOL_RDS.y + 12} L ${RDS.x + offset} ${RDS.y - 30}`} />
+          </circle>
+        ))}
+      </g>
+
+      {/* Connection Pool Nodes */}
+      <g>
+        {/* ElastiCache Redis Pool Box */}
+        <rect x={POOL_REDIS.x - 24} y={POOL_REDIS.y - 12} width={48} height={24} rx={6} fill="#141418" stroke={C.infra} strokeWidth={1.6} />
+        <text x={POOL_REDIS.x} y={POOL_REDIS.y + 3.5} textAnchor="middle" fill="#b98cff" fontSize="8px" fontWeight="800" fontFamily="var(--font-suisseintlmono)">POOL</text>
+
+        {/* RDS Postgres Pool Box */}
+        <rect x={POOL_RDS.x - 24} y={POOL_RDS.y - 12} width={48} height={24} rx={6} fill="#141418" stroke={C.infra} strokeWidth={1.6} />
+        <text x={POOL_RDS.x} y={POOL_RDS.y + 3.5} textAnchor="middle" fill="#b98cff" fontSize="8px" fontWeight="800" fontFamily="var(--font-suisseintlmono)">POOL</text>
       </g>
 
       <PillNode x={ROUTE53.x} y={ROUTE53.y} w={210} h={62} color={C.core} label="Route 53" sub="ysmquizbuzz.com" />
@@ -1075,16 +1190,16 @@ function InstanceCard({ i, x, y }: { i: number; x: number; y: number }) {
       <text x={-w / 2 + 12} y={-h / 2 + 22} className="is-slot-name" fill="#fff">EC2 {String.fromCharCode(65 + i)}</text>
       <text x={-w / 2 + 12} y={-h / 2 + 40} className="is-slot-state" fill={C.worker}>healthy</text>
       <text x={-w / 2 + 12} y={h / 2 - 26} className="is-slot-tag" fill="#7a7a82">CPU</text>
-      <rect x={-w / 2 + 44} y={h / 2 - 34} width={86} height={8} rx={4} fill="#26262c" />
-      <rect data-bar="cpu" x={-w / 2 + 44} y={h / 2 - 34} width={0} height={8} rx={4} fill={C.worker} />
+      <rect x={-w / 2 + 40} y={h / 2 - 34} width={70} height={8} rx={4} fill="#26262c" />
+      <rect data-bar="cpu" x={-w / 2 + 40} y={h / 2 - 34} width={0} height={8} rx={4} fill={C.worker} />
       <text x={-w / 2 + 12} y={h / 2 - 8} className="is-slot-tag" fill="#7a7a82">MEM</text>
-      <rect x={-w / 2 + 44} y={h / 2 - 16} width={86} height={8} rx={4} fill="#26262c" />
-      <rect data-bar="mem" x={-w / 2 + 44} y={h / 2 - 16} width={0} height={8} rx={4} fill={C.infra} />
+      <rect x={-w / 2 + 40} y={h / 2 - 16} width={70} height={8} rx={4} fill="#26262c" />
+      <rect data-bar="mem" x={-w / 2 + 40} y={h / 2 - 16} width={0} height={8} rx={4} fill={C.infra} />
       {/* pending */}
       <circle className="is-slot-spin" cx={0} cy={-4} r={15} fill="none" stroke={C.core} strokeWidth={3} strokeDasharray="24 60" />
       <text data-life x={0} y={26} textAnchor="middle" className="is-slot-pending" fill={C.core}>pending</text>
       {/* dead */}
-      <text className="is-slot-dead" x={0} y={4} textAnchor="middle" fill={C.danger}>✕ stopped</text>
+      <text className="is-slot-dead" x={0} y={4} textAnchor="middle" fill={C.danger}>✕ stopping...</text>
     </g>
   )
 }

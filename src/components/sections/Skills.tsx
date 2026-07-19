@@ -45,14 +45,30 @@ export function Skills() {
         <div style={{ display: 'grid', gridTemplateColumns: 'var(--skills-cols)', gap: 'var(--skills-gap)' }}>
           {columns.map((col, i) => (
             <div key={i}>
-              <LazyCanvas
-                camera={{ position: [0, 0, 4], fov: 50 }}
-                style={{ height: '160px', marginBottom: '32px' }}
+              {/* The 3D nodes have near-black bases that vanish into this pure-black
+                section. This wrapper is a borderless spotlight — a light tint pooled
+                low and wide (bottom centre, spreading left/right) so it sits right
+                under the component's base and lifts it off the background, WITHOUT
+                changing the component or the section colours. */}
+            <div
+                style={{
+                  height: '160px',
+                  marginBottom: '32px',
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  background:
+                    'radial-gradient(135% 120% at 50% 60%, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.10) 38%, rgba(255,255,255,0.03) 62%, rgba(255,255,255,0) 82%)',
+                }}
               >
-                <ambientLight intensity={0.6} />
-                <directionalLight position={[2, 3, 2]} intensity={1} />
-                <ProjectObject type={col.objectType} scale={0.7} />
-              </LazyCanvas>
+                <LazyCanvas
+                  camera={{ position: [0, 0, 4], fov: 50 }}
+                  style={{ width: '100%', height: '100%' }}
+                >
+                  <ambientLight intensity={0.6} />
+                  <directionalLight position={[2, 3, 2]} intensity={1} />
+                  <ProjectObject type={col.objectType} scale={0.7} />
+                </LazyCanvas>
+              </div>
               <h3
                 data-gsap="heading"
                 style={{

@@ -1,9 +1,10 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 import { AvailablePill } from '@/components/ui/AvailablePill'
 import { RotatingWord } from '@/components/ui/RotatingWord'
+import { LazyCanvas } from '@/components/three/LazyCanvas'
+import { HeroScene } from '@/components/three/HeroScene'
 
 export function Hero() {
     return (
@@ -115,20 +116,14 @@ export function Hero() {
                         height: 'var(--hero-canvas-h)',
                         position: 'relative',
                         overflow: 'hidden',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
                     }}
                 >
-                    <Image
-                        src="/hero-illustration-1x1.png"
-                        alt="Illustration of stacked backend infrastructure blocks — servers, queues, and databases"
-                        fill
-                        priority
-                        unoptimized
-                        sizes="(max-width: 1024px) 90vw, 45vw"
-                        style={{ objectFit: 'contain' }}
-                    />
+                    <LazyCanvas
+                        camera={{ position: [4.9, 18.8, 35], fov: 26 }}
+                        style={{ width: '100%', height: '100%' }}
+                    >
+                        <HeroScene />
+                    </LazyCanvas>
                 </div>
             </div>
         </section>

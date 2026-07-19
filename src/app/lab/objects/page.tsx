@@ -47,9 +47,8 @@ export default function ObjectsLabPage() {
                                 height: 160,
                                 borderRadius: 16,
                                 overflow: 'hidden',
-                                border: '1px solid rgba(255,255,255,0.09)',
                                 background:
-                                    'radial-gradient(120% 115% at 50% 42%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.035) 45%, rgba(255,255,255,0) 78%)',
+                                    'radial-gradient(135% 120% at 50% 60%, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.10) 38%, rgba(255,255,255,0.03) 62%, rgba(255,255,255,0) 82%)',
                             }}
                         >
                             <Canvas frameloop="always" dpr={[1, 1.5]} camera={{ position: [0, 0, 4], fov: 50 }}>

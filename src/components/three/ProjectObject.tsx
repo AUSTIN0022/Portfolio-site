@@ -22,7 +22,7 @@ const STATIC = { showLabel: false, floating: false, interactive: false, animatio
 // top + two faces) and a front-facing angle for the laptop (its screen must face us).
 const NODES: Record<ObjectType, { el: ReactNode; scale: number; y: number; yaw0: number }> = {
     monitor: { el: <Laptop {...STATIC} />, scale: 1.3, y: -0.1, yaw0: -0.5 }, //  QUIZBUZZ — real-time platform
-    forms: { el: <Queue {...STATIC} />, scale: 1.3, y: -0.2, yaw0: 0.6 }, //      SMARTFORMFLOW — async/forms
+    forms: { el: <Queue {...STATIC} />, scale: 1.3, y: -0.2, yaw0: 0.15 }, //     SMARTFORMFLOW — async/forms (front-facing so the stacked tiers read)
     systems: { el: <Workers {...STATIC} />, scale: 1.3, y: 0, yaw0: 0.6 }, //     distributed queues/pipelines
     backend: { el: <Database {...STATIC} />, scale: 1.25, y: -0.1, yaw0: 0.6 }, // APIs + PostgreSQL
     infra: { el: <LoadBalancer {...STATIC} />, scale: 1.3, y: 0, yaw0: 0.6 }, //  AWS auto-scaling / infra

@@ -3,11 +3,23 @@ import { CaseStudySection } from '@/components/sections/CaseStudySection'
 import { P, Lead, Callout, Metric, MetricGrid, DecisionCard } from '@/components/ui/CaseStudyProse'
 import { SkillTag } from '@/components/ui/SkillTag'
 import { Nav } from '@/components/nav/Nav'
+import type { Metadata } from 'next'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { projectSchema, breadcrumbSchema } from '@/lib/seo/jsonLd'
 
-export const metadata = {
-  title: 'SmartFormFlow — Austin Makasare',
+export const metadata: Metadata = {
+  title: 'SmartFormFlow — Multi-tenant Event SaaS Case Study',
   description:
-    'Case study: multi-tenant form builder SaaS with payments, automated certificates, and async job queues.',
+    'Case study: multi-tenant event SaaS with payments, automated certificate generation, and WhatsApp delivery — engineered around async workers and global contact deduplication. Node.js, Express, BullMQ, Prisma, PostgreSQL, Razorpay, Docker.',
+  alternates: { canonical: '/work/smartformflow' },
+  keywords: ['SmartFormFlow', 'SaaS', 'async workers', 'BullMQ', 'Razorpay', 'multi-tenant', 'background jobs', 'Prisma', 'Austin Makasare'],
+  openGraph: {
+    title: 'SmartFormFlow — Austin Makasare',
+    description:
+      'Case study: multi-tenant event SaaS with payments, automated certificates, and async job queues.',
+    url: '/work/smartformflow',
+    type: 'article',
+  },
 }
 
 const sidebarLinks = [
@@ -41,6 +53,16 @@ const overviewStack = [
 export default function SmartFormFlowPage() {
   return (
     <>
+      <JsonLd
+        data={[
+          projectSchema('smartformflow')!,
+          breadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'Work', path: '/work' },
+            { name: 'SmartFormFlow', path: '/work/smartformflow' },
+          ]),
+        ]}
+      />
       <Nav />
       <CaseStudyLayout
         sidebarLinks={sidebarLinks}
@@ -49,7 +71,7 @@ export default function SmartFormFlowPage() {
       >
         <CaseStudySection id="overview" kicker="// PROJECT" heading="SMARTFORMFLOW">
           <Lead>
-            Google Forms Pro — a multi-tenant SaaS platform for event organizers to build dynamic
+            A multi-tenant SaaS platform for event organizers to build dynamic
             registration forms, collect payments, automatically issue certificates, message
             attendees over email and WhatsApp, and manage every attendee as a deduplicated contact
             across all their events.

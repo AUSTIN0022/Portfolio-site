@@ -75,7 +75,7 @@ export default function OpengraphImage() {
               padding: '8px 20px',
             }}
           >
-            AVAILABLE FOR WORK
+            OPEN TO BACKEND ROLES
           </span>
         </div>
       </div>

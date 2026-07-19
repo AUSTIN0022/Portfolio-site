@@ -6,10 +6,21 @@ import { ArchitectureJourney } from '@/components/ui/ArchitectureJourney'
 import { InfraScaleSimulator } from '@/components/ui/InfraScaleSimulator'
 import { SkillTag } from '@/components/ui/SkillTag'
 import { Nav } from '@/components/nav/Nav'
+import type { Metadata } from 'next'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { projectSchema, breadcrumbSchema } from '@/lib/seo/jsonLd'
 
-export const metadata = {
-    title: 'QuizBuzz — Austin Makasare',
-    description: 'Case study: multi-tenant quiz platform scaled to 10,000 concurrent WebSocket users.',
+export const metadata: Metadata = {
+    title: 'QuizBuzz — Real-time Quiz Platform Case Study',
+    description: 'Case study: multi-tenant quiz platform load-tested to 7,500 concurrent WebSocket users against a 10K-user architecture. Built solo with Node.js, Socket.IO, BullMQ, Redis, PostgreSQL, AWS, and Terraform.',
+    alternates: { canonical: '/work/quizbuzz' },
+    keywords: ['QuizBuzz', 'WebSocket scaling', 'Socket.IO', 'load testing', 'k6', 'Redis', 'BullMQ', 'multi-tenant', 'real-time backend', 'Austin Makasare'],
+    openGraph: {
+        title: 'QuizBuzz — Austin Makasare',
+        description: 'Case study: multi-tenant quiz platform load-tested to 7,500 concurrent WebSocket users against a 10K-user architecture.',
+        url: '/work/quizbuzz',
+        type: 'article',
+    },
 }
 
 const sidebarLinks = [
@@ -46,6 +57,16 @@ const overviewStack = [
 export default function QuizBuzzPage() {
     return (
         <>
+            <JsonLd
+                data={[
+                    projectSchema('quizbuzz')!,
+                    breadcrumbSchema([
+                        { name: 'Home', path: '/' },
+                        { name: 'Work', path: '/work' },
+                        { name: 'QuizBuzz', path: '/work/quizbuzz' },
+                    ]),
+                ]}
+            />
             <Nav />
             <CaseStudyLayout
                 sidebarLinks={sidebarLinks}

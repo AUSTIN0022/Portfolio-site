@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from 'react'
 
-const ROTATING_WORDS = ['SYSTEMS', 'QUEUES', 'PIPELINES', 'PLATFORMS', 'PRODUCTS']
+const ROTATING_WORDS = ['SYSTEMS', 'QUEUES', 'PIPELINES', 'SERVICES']
 const INTERVAL_MS = 2200 // how long each word shows
 const FLIP_DURATION_MS = 400 // animation duration
 
 // Longest word decides the box width so the headline never reflows as
-// shorter/longer words swap in ("PIPELINES"/"PLATFORMS" are the widest at 9
-// chars — a fixed 4ch box, sized for "QUEUES", would jump on every swap).
+// shorter/longer words swap in ("PIPELINES" is the widest at 9 chars — a
+// fixed 4ch box, sized for "QUEUES", would jump on every swap).
 const MIN_WIDTH_CH = Math.max(...ROTATING_WORDS.map((w) => w.length)) + 0.5
 
 export function RotatingWord() {

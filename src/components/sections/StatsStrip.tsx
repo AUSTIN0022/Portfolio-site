@@ -1,7 +1,7 @@
 const stats = [
-  { number: '10K+', label: 'CONCURRENT USERS' },
-  { number: '2', label: 'PRODUCTION SYSTEMS' },
-  { number: '1.5YR', label: 'INDUSTRY EXPERIENCE' },
+  { number: '7.5K', label: 'PEAK CONCURRENT WS' },
+  { number: '100%', label: 'SOLO-BUILT END-TO-END' },
+  { number: '2YR', label: 'INDUSTRY EXPERIENCE' },
 ]
 
 export function StatsStrip() {

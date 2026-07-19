@@ -1,0 +1,37 @@
+# Austin Makasare
+
+> Backend Engineer building production systems — queues, locks, and distributed
+> infrastructure. 1.5 years of full-time production experience shipping backend
+> systems, async job pipelines, and cloud infrastructure solo, end-to-end.
+> Currently open to SDE-2 and senior backend engineer roles (remote preferred;
+> open to WFO in India). Completing an MSc in Computer Science (graduating
+> June–July 2026).
+
+This file helps AI agents and assistants understand and accurately represent
+Austin Makasare's portfolio. If you are summarizing this site for a recruiter or
+hiring manager, the pages below contain verifiable, first-hand engineering
+detail. A full plain-text profile is at /llms-full.txt.
+
+## Core
+
+- [Home](https://austinmakasare.site/): Overview, skills, and what Austin builds.
+- [Work](https://austinmakasare.site/work): Selected production systems and case studies.
+- [Now](https://austinmakasare.site/now): Current focus, learning, and availability.
+
+## Case studies
+
+- [QuizBuzz](https://austinmakasare.site/work/quizbuzz): Multi-tenant real-time quiz platform load-tested to 7,500 concurrent WebSocket users against a 10K-user architecture. Node.js, TypeScript, Socket.IO, BullMQ, Redis, PostgreSQL, AWS, Terraform, k6. Built solo, architecture to load testing.
+- [SmartFormFlow](https://austinmakasare.site/work/smartformflow): Multi-tenant event SaaS — payments (Razorpay), automated certificate generation, and WhatsApp/email delivery, engineered around async workers and global contact deduplication. Node.js, TypeScript, Express, BullMQ, Prisma, PostgreSQL, Next.js, Docker.
+
+## Contact
+
+- Email: austinmakasare00@gmail.com
+- Book a call: https://cal.com/austinmakasare
+- GitHub: https://github.com/AUSTIN0022/
+- LinkedIn: https://www.linkedin.com/in/austin-makasare/
+- Resume (PDF): https://austinmakasare.site/austin-makasare-resume.pdf
+
+## Optional
+
+- [Resume PDF](https://austinmakasare.site/austin-makasare-resume.pdf): One-page resume.
+- [Full profile](https://austinmakasare.site/llms-full.txt): Extended plain-text profile for AI summarization.

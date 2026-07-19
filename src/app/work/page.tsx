@@ -1,16 +1,27 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Nav } from '@/components/nav/Nav'
 import { projects } from '@/content/projects'
 import { WorkPageCard } from './WorkPageCard'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { workCollectionSchema, breadcrumbSchema } from '@/lib/seo/jsonLd'
 
-export const metadata = {
-  title: 'Work — Austin Makasare',
+export const metadata: Metadata = {
+  title: 'Work',
   description:
-    'Production systems built by Austin Makasare — backend engineer. QuizBuzz and SmartFormFlow case studies.',
+    'Production systems built by Austin Makasare — backend engineer. QuizBuzz and SmartFormFlow case studies with real architecture, scale numbers, and trade-offs.',
+  alternates: { canonical: '/work' },
+  openGraph: {
+    title: 'Work — Austin Makasare',
+    description:
+      'Production systems built by Austin Makasare — backend engineer. QuizBuzz and SmartFormFlow case studies.',
+    url: '/work',
+    type: 'website',
+  },
 }
 
 const stats = [
-  { number: '10K+', label: 'CONCURRENT USERS' },
+  { number: '7.5K', label: 'PEAK CONCURRENT WS' },
   { number: '2', label: 'PRODUCTION SYSTEMS' },
   { number: '24', label: 'BUGS DOCUMENTED' },
 ]
@@ -18,6 +29,15 @@ const stats = [
 export default function WorkPage() {
   return (
     <>
+      <JsonLd
+        data={[
+          workCollectionSchema(),
+          breadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'Work', path: '/work' },
+          ]),
+        ]}
+      />
       <Nav />
       <main id="main-content">
 
@@ -186,7 +206,7 @@ export default function WorkPage() {
               Book a Call
             </a>
             <a
-              href="mailto:hello@austinmakasare.site"
+              href="mailto:austinmakasare00@gmail.com"
               style={{
                 background: 'transparent',
                 color: 'var(--color-pure-white)',

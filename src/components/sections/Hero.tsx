@@ -35,7 +35,7 @@ export function Hero() {
                         >
             // AUSTIN MAKASARE
                         </span>
-                        <AvailablePill>AVAILABLE FOR WORK</AvailablePill>
+                        <AvailablePill>OPEN TO BACKEND ROLES</AvailablePill>
                     </div>
 
                     <motion.h1
@@ -70,7 +70,7 @@ export function Hero() {
                             marginBottom: '40px',
                         }}
                     >
-                        Queues, locks, and distributed infrastructure — production systems that don&apos;t break.
+                        Queues, locks, and distributed infrastructure — the systems that stay up when everything else is on fire.
                     </p>
 
                     <div style={{ display: 'flex', gap: '16px' }}>
@@ -87,7 +87,7 @@ export function Hero() {
                                 textDecoration: 'none',
                             }}
                         >
-                            View My Work
+                            See What I&apos;ve Shipped
                         </a>
                         <a
                             href="https://cal.com/austinmakasare"

@@ -12,12 +12,15 @@ import { CtaTiles } from '@/components/sections/CtaTiles'
 import { Footer } from '@/components/sections/Footer'
 import { CurvedRise } from '@/components/ui/CurvedRise'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { profilePageSchema } from '@/lib/seo/jsonLd'
 
 export default function Home() {
   useScrollAnimation()
 
   return (
     <>
+      <JsonLd data={profilePageSchema()} />
       <Nav />
       <main id="main-content">
         <Hero />

@@ -1,11 +1,20 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Nav } from '@/components/nav/Nav'
 import { SkillTag } from '@/components/ui/SkillTag'
 import { nowData } from '@/content/now'
 
-export const metadata = {
-  title: 'Now — Austin Makasare',
-  description: 'What Austin Makasare is currently building, learning, and thinking about.',
+export const metadata: Metadata = {
+  title: 'Now',
+  description:
+    'What Austin Makasare is currently building, learning, and thinking about — plus current availability for backend roles.',
+  alternates: { canonical: '/now' },
+  openGraph: {
+    title: 'Now — Austin Makasare',
+    description: 'What Austin Makasare is currently building, learning, and thinking about.',
+    url: '/now',
+    type: 'profile',
+  },
 }
 
 const nowRows = [
@@ -212,7 +221,7 @@ export default function NowPage() {
                   letterSpacing: '-0.36px',
                 }}
               >
-                AVAILABLE FOR WORK
+                OPEN TO BACKEND ROLES
               </span>
               <p
                 style={{
@@ -243,8 +252,9 @@ export default function NowPage() {
               <div style={{ ...kickerStyleLight }}>// BUILDING</div>
               <h2 style={{ ...blockHeadingStyle }}>SMARTFORMFLOW.</h2>
               <p style={{ ...blockBodyStyle }}>
-                Adding Stripe payment flows, multi-step conditional logic, and a real-time
-                split-pane form preview. Currently finishing the pre-launch checklist — legal
+                Building multi-step conditional logic and a real-time split-pane form preview
+                on top of the live Razorpay payment flow. Currently finishing the pre-launch
+                checklist — legal
                 pages, Sentry error tracking, and uptime monitoring — before opening the first 10
                 paying clients. The platform handles event registrations, certificate issuance,
                 and WhatsApp/email messaging for SMB organizers. Built solo on a single VPS,

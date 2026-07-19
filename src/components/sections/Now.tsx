@@ -77,7 +77,7 @@ export function Now() {
             }}
             className="hover:text-black transition-colors duration-200"
           >
-            See full context →
+            What I&apos;m working on →
           </Link>
         </div>
       </div>

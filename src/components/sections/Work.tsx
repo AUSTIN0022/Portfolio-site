@@ -33,7 +33,7 @@ export function Work() {
             marginTop: '16px',
           }}
         >
-          WHAT I&apos;VE BUILT.
+          WHAT I&apos;VE SHIPPED.
         </h2>
       </div>
 

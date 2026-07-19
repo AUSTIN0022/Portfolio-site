@@ -20,7 +20,7 @@ const linkColumns = [
   {
     heading: 'Connect',
     links: [
-      { label: 'GitHub', href: 'https://github.com/aUSTIN0022/' },
+      { label: 'GitHub', href: 'https://github.com/AUSTIN0022/' },
       { label: 'LinkedIn', href: 'https://www.linkedin.com/in/austin-makasare/' },
     ],
   },
@@ -90,7 +90,7 @@ export function Footer() {
             >
               Drop a line →{' '}
               <a
-                href="mailto:hello@austinmakasare.site"
+                href="mailto:austinmakasare00@gmail.com"
                 style={{
                   color: 'var(--color-ink-black)',
                   background: 'var(--color-mint-pulse)',
@@ -100,7 +100,7 @@ export function Footer() {
                   fontWeight: 500,
                 }}
               >
-                hello@austinmakasare.site
+                austinmakasare00@gmail.com
               </a>
             </div>
           </div>
@@ -166,7 +166,7 @@ export function Footer() {
           <BackToTop />
           <div style={{ display: 'flex', gap: '16px' }}>
             <a
-              href="https://github.com/aUSTIN0022/"
+              href="https://github.com/AUSTIN0022/"
               target="_blank"
               rel="noopener noreferrer"
               style={{

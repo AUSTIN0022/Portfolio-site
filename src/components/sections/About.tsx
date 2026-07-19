@@ -64,8 +64,8 @@ export function About() {
             }}
           >
             I&apos;m a backend engineer and MSc Computer Science student building production-grade
-            systems — from distributed job queues to scalable APIs handling 10,000 concurrent
-            users.
+            systems — from distributed job queues to APIs load-tested to 7,500 concurrent
+            WebSocket users.
           </p>
           <p
             style={{
@@ -80,7 +80,8 @@ export function About() {
           >
             My work focuses on the unglamorous but critical parts of software: queues that
             don&apos;t lose jobs, locks that don&apos;t deadlock, infrastructure that
-            auto-scales. I care about reliability, not just features.
+            auto-scales. I care about reliability, not just features — the kind of backend
+            you don&apos;t get paged for at 3am.
           </p>
           <div data-gsap="tags" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {skillTags.map((tag) => (

@@ -68,7 +68,7 @@ export function CtaTiles() {
               letterSpacing: '-0.28px',
             }}
           >
-            Let&apos;s talk. Book a 30-minute intro to explore working together.
+            Book a 30-minute intro — I&apos;m looking for backend and infra roles where reliability matters.
           </p>
         </a>
 
@@ -126,7 +126,7 @@ export function CtaTiles() {
               letterSpacing: '-0.28px',
             }}
           >
-            Download my full resume — experience, projects, and education.
+            Open my full resume — experience, projects, and education.
           </p>
         </a>
       </div>

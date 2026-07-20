@@ -35,7 +35,11 @@ const linkColumns = [
 
 export function Footer() {
   return (
-    <footer id="contact" style={{ background: 'var(--color-ink-black)', padding: 'var(--section-y) var(--gutter) 40px' }}>
+    <footer
+      id="contact"
+      className="surface-ambient"
+      style={{ background: 'var(--color-ink-black)', padding: 'var(--section-y) var(--gutter) 40px' }}
+    >
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         <div
           style={{
@@ -204,6 +208,7 @@ function BackToTop() {
   return (
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      className="icon-btn"
       style={{
         fontFamily: 'var(--font-suisseintlmono)',
         fontSize: '12px',

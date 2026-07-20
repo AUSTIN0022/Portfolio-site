@@ -43,6 +43,7 @@ export function CtaTiles() {
               BOOK A CALL
             </h2>
             <div
+              className="cta-icon"
               style={{
                 width: '48px',
                 height: '48px',
@@ -101,6 +102,7 @@ export function CtaTiles() {
               VIEW RESUME
             </h2>
             <div
+              className="cta-icon"
               style={{
                 width: '48px',
                 height: '48px',

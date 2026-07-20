@@ -15,6 +15,7 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <article
       data-gsap="card"
+      className="card-elevated"
       style={{
         background: 'var(--color-pure-white)',
         borderRadius: '32px',
@@ -24,7 +25,14 @@ export function ProjectCard({ project }: { project: Project }) {
         overflow: 'hidden',
       }}
     >
-      <div style={{ background: 'var(--color-canvas-mist)', height: '280px', position: 'relative' }}>
+      <div
+        style={{
+          background: 'var(--color-canvas-mist)',
+          height: '280px',
+          position: 'relative',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(0,0,0,0.04)',
+        }}
+      >
         {/* Same studio rig and post chain as the hero, so a component looks
             identical here and in the hero diagram. The object rocks continuously,
             so shadows come from the real shadow map (which follows the motion)
@@ -92,6 +100,7 @@ export function ProjectCard({ project }: { project: Project }) {
         </div>
         <a
           href={project.caseStudyUrl}
+          className="btn-shine btn-shine--ghost"
           style={{
             display: 'inline-block',
             fontFamily: 'var(--font-suisseintl)',

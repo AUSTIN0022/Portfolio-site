@@ -6,7 +6,10 @@ const stats = [
 
 export function StatsStrip() {
   return (
-    <section style={{ background: 'var(--color-ink-black)', padding: 'var(--section-y) var(--gutter)' }}>
+    <section
+      className="surface-ambient"
+      style={{ background: 'var(--color-ink-black)', padding: 'var(--section-y) var(--gutter)' }}
+    >
       <div
         style={{
           maxWidth: '1280px',

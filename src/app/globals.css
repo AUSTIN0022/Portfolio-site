@@ -574,3 +574,106 @@ a:hover > .wave-text span,
     display: inline-flex;
   }
 }
+
+/* ============================================================
+   Premium finish layer — elevation, ambient glow, and glossy
+   micro-interactions layered on top of the existing flat system.
+   Pure refinement: no new colors beyond the existing brand set
+   (ink-black / electric-yellow / mint-pulse), no markup changes,
+   no IA changes. Tinted, layered shadows instead of flat single
+   drop-shadows; a subtle brand-tinted glow on dark sections instead
+   of a dead flat black; spring-eased hover/press states on
+   interactive elements that previously had none.
+   ============================================================ */
+:root {
+  --shadow-elevation-1: 0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-elevation-2: 0 2px 6px rgba(0, 0, 0, 0.07), 0 10px 28px rgba(0, 0, 0, 0.10);
+  --shadow-elevation-3: 0 6px 16px rgba(0, 0, 0, 0.10), 0 24px 56px rgba(0, 0, 0, 0.18);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Ambient glow — a near-invisible bleed of the two brand accents pooled at
+   the top corners of pure-black sections, fading to true black by mid-page.
+   Reads as depth/richness (the way a dark UI with real light sources never
+   sits at one flat value) without introducing any new hue or touching the
+   section's own background/text colors. Layered behind content via a
+   negative z-index pseudo-element, so it costs zero markup. */
+.surface-ambient {
+  position: relative;
+  isolation: isolate;
+}
+.surface-ambient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 900px 520px at 10% -8%, rgba(209, 255, 202, 0.07), transparent 62%),
+    radial-gradient(ellipse 760px 480px at 92% 4%, rgba(255, 241, 0, 0.05), transparent 58%);
+}
+
+/* Shared glossy hover/press treatment for solid + outline buttons. Adds the
+   lift-and-glow a flat color swatch can't give: a soft directional shadow
+   on hover, a tactile compress on press. Layered on top of each button's
+   own inline background/border, so it never fights the existing palette. */
+.btn-shine {
+  transition: transform 0.4s var(--ease-spring), box-shadow 0.4s var(--ease-spring), filter 0.3s ease;
+}
+.btn-shine--dark:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevation-3);
+  filter: brightness(1.08);
+}
+.btn-shine--ghost:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevation-1);
+}
+.btn-shine:active {
+  transform: translateY(0) scale(0.97);
+  filter: none;
+}
+
+/* Project / work cards — flat white tiles get real elevation: a soft
+   resting shadow, a deeper tinted lift on hover instead of no feedback. */
+.card-elevated {
+  box-shadow: var(--shadow-elevation-1);
+  transition: transform 0.5s var(--ease-spring), box-shadow 0.5s var(--ease-spring);
+}
+.card-elevated:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-elevation-3);
+}
+
+/* Round icon buttons (work-track prev/next, back-to-top) — currently static
+   circles with no feedback state. A faint rest-state tint reads as a nested
+   "button-in-button" chip rather than a naked outline; on hover it leans
+   diagonally toward its own arrow, like the icon is being pulled by it. */
+.icon-btn {
+  background: rgba(0, 0, 0, 0.03);
+  transition: transform 0.35s var(--ease-spring), box-shadow 0.35s var(--ease-spring), background 0.35s ease, color 0.35s ease;
+}
+.icon-btn:hover {
+  transform: translate(1px, -2px);
+  box-shadow: var(--shadow-elevation-2);
+  background: rgba(0, 0, 0, 0.05);
+}
+.icon-btn:active {
+  transform: translateY(0) scale(0.94);
+}
+
+/* CTA tile corner glyph — rotates open, fills solid, and leans diagonally
+   toward the arrow's own direction as the sweep arrives, so the icon
+   announces the tile is "armed" instead of sitting static while only the
+   background moves. A faint rest-state tint gives it a nested chip feel
+   even before hover. */
+.cta-icon {
+  background: rgba(0, 0, 0, 0.02);
+  transition: transform 0.5s var(--ease-spring), background 0.5s var(--ease-spring), color 0.5s var(--ease-spring), border-color 0.5s var(--ease-spring);
+}
+.cta-tile:hover .cta-icon {
+  transform: translate(2px, -2px) rotate(45deg);
+  background: var(--color-ink-black);
+  color: var(--color-electric-yellow);
+  border-color: var(--color-ink-black);
+}

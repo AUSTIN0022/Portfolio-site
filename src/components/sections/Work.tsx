@@ -73,6 +73,7 @@ export function Work() {
         <button
           onClick={() => scrollBy(-1)}
           aria-label="Scroll to previous projects"
+          className="icon-btn"
           style={{
             flexShrink: 0,
             width: '48px',
@@ -94,6 +95,7 @@ export function Work() {
         <button
           onClick={() => scrollBy(1)}
           aria-label="Scroll to next projects"
+          className="icon-btn"
           style={{
             flexShrink: 0,
             width: '48px',

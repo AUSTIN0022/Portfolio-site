@@ -32,6 +32,7 @@ export function Skills() {
     <section
       id="skills"
       aria-labelledby="skills-heading"
+      className="surface-ambient"
       style={{ background: 'var(--color-ink-black)', padding: 'var(--section-y) var(--gutter)' }}
     >
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
@@ -59,6 +60,7 @@ export function Skills() {
                   overflow: 'hidden',
                   background:
                     'radial-gradient(135% 120% at 50% 60%, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.10) 38%, rgba(255,255,255,0.03) 62%, rgba(255,255,255,0) 82%)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), inset 0 0 0 1px rgba(255,255,255,0.04)',
                 }}
               >
                 {/* The 'dark' rig variant: same studio setup as the hero and the

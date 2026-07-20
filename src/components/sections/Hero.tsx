@@ -76,6 +76,7 @@ export function Hero() {
                     <div style={{ display: 'flex', gap: '16px' }}>
                         <a
                             href="#work"
+                            className="btn-shine btn-shine--dark"
                             style={{
                                 background: 'var(--color-ink-black)',
                                 color: 'var(--color-pure-white)',
@@ -85,6 +86,7 @@ export function Hero() {
                                 borderRadius: '4px',
                                 padding: '12px 24px',
                                 textDecoration: 'none',
+                                boxShadow: 'var(--shadow-elevation-1)',
                             }}
                         >
                             See What I&apos;ve Shipped
@@ -93,6 +95,7 @@ export function Hero() {
                             href="https://cal.com/austinmakasare"
                             target="_blank"
                             rel="noopener noreferrer"
+                            className="btn-shine btn-shine--ghost"
                             style={{
                                 background: 'transparent',
                                 color: 'var(--color-ink-black)',

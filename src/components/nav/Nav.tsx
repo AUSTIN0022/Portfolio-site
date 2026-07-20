@@ -159,8 +159,8 @@ export function Nav() {
           paddingTop: expanded ? 10 : 8,
           paddingBottom: expanded ? 10 : 8,
           boxShadow: expanded
-            ? '0 10px 30px rgba(0,0,0,0.10)'
-            : '0 6px 20px rgba(0,0,0,0.18)',
+            ? 'inset 0 1px 0 rgba(255,255,255,0.8), 0 10px 30px rgba(0,0,0,0.10)'
+            : 'inset 0 1px 0 rgba(255,255,255,0.8), 0 6px 20px rgba(0,0,0,0.18)',
         }}
         transition={islandSpring}
         style={{
@@ -242,7 +242,7 @@ export function Nav() {
 
         <a
           href="#contact"
-          className="nav-cta"
+          className="nav-cta btn-shine btn-shine--dark"
           style={{
             background: 'var(--color-ink-black)',
             color: 'var(--color-pure-white)',
@@ -568,6 +568,7 @@ export function Nav() {
                 variants={menuRow}
                 href="#contact"
                 onClick={() => setOpen(false)}
+                className="btn-shine btn-shine--dark"
                 style={{
                   background: 'var(--color-ink-black)',
                   color: 'var(--color-pure-white)',
@@ -580,6 +581,7 @@ export function Nav() {
                   textDecoration: 'none',
                   textAlign: 'center',
                   marginTop: '6px',
+                  boxShadow: 'var(--shadow-elevation-1)',
                 }}
               >
                 Hire Me

@@ -50,7 +50,7 @@ export function Footer() {
             borderBottom: '1px solid #222',
           }}
         >
-          <div>
+          <div data-gsap="heading">
             <div
               style={{
                 fontFamily: 'var(--font-suisseintl)',

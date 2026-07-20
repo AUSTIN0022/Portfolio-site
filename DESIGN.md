@@ -1,6 +1,6 @@
 ---
 name: Austin Makasare Portfolio
-description: Swiss-editorial backend-engineer portfolio — condensed display type, a two-color accent system, and flat tonal surfaces instead of shadows.
+description: Swiss-editorial backend-engineer portfolio — condensed display type, a two-color accent system, and a restrained tinted-elevation layer (soft layered shadows, glossy pills, ambient glow on black sections) on top of otherwise flat tonal surfaces.
 colors:
   canvas-mist: "#e5e7eb"
   pure-white: "#ffffff"
@@ -102,7 +102,7 @@ This system explicitly rejects the SaaS-landing-page playbook: no gradient text,
 **Key Characteristics:**
 - Condensed, tight-set display type as the primary visual instrument
 - Two accent colors used sparingly and specifically (mint = status/active, yellow = emphasis/hover)
-- Flat surfaces; depth comes from a scroll-driven rising panel, not shadows
+- Mostly flat surfaces at rest; depth is spent deliberately on interaction (hover elevation, glossy pills, ambient glow on black sections) and the scroll-driven rising panel, not on permanent card shadows
 - One named mono-kicker system (`// SECTION`) used consistently, not as decorative filler
 - Black and canvas-gray sections alternate as fixed layout rhythm, not theme
 
@@ -154,14 +154,19 @@ Nearly monochrome chrome, two accents used with intent, and three separately-tun
 
 ## 4. Elevation
 
-Flat by default. There is exactly one `box-shadow` in the entire codebase. Depth and section-to-section separation come from two other mechanisms instead: a five-level flat tonal stack (canvas → white card → surface-mist → mint → yellow) and a scroll-driven rising panel that overlaps the section above it.
+Restrained, not flat. Section-to-section separation is still primarily the tonal stack (canvas → white card → surface-mist → mint → yellow) and the scroll-driven rising panel, but interactive surfaces now carry a deliberate three-level elevation system on hover/press, built from tinted, layered shadows rather than a single flat drop-shadow.
 
 ### Shadow Vocabulary
-- **Floating menu shadow** (`box-shadow: 0 24px 60px rgba(0,0,0,0.25)`): the one exception — the mobile nav's dropdown menu, a genuinely floating overlay above page content. Not reused anywhere else.
+- **`--shadow-elevation-1`** (`0 1px 2px rgba(0,0,0,0.05), 0 2px 8px rgba(0,0,0,0.05)`): resting elevation for buttons and cards that need to read as slightly raised even before interaction.
+- **`--shadow-elevation-2`** (`0 2px 6px rgba(0,0,0,0.07), 0 10px 28px rgba(0,0,0,0.10)`): hover state for round icon buttons (work-track prev/next, back-to-top).
+- **`--shadow-elevation-3`** (`0 6px 16px rgba(0,0,0,0.10), 0 24px 56px rgba(0,0,0,0.18)`): hover state for primary buttons and the project-card lift. The deepest shadow in the system; still layered and diffuse, never a single hard offset.
+- **Ambient glow** (`.surface-ambient`): a near-invisible bleed of mint (7%) and electric-yellow (5%) pooled at the top corners of the three pure-black sections (Stats, Skills, Footer), fading to true black by mid-section. Reads as depth on a dark surface without introducing a new hue.
+- **Floating menu shadow** (`0 24px 60px rgba(0,0,0,0.25)`): unchanged, the mobile nav's dropdown menu.
 
 ### Named Rules
-**The Flat-By-Default Rule.** Cards, pills, and section surfaces never get a shadow. Separation comes from background-color contrast (the tonal stack) alone.
-**The Rising-Panel Rule.** Where a black section needs to visually rise over the section before it, wrap it in the `CurvedRise` component: as the panel scrolls into place, its top corners round and its edges pull in from an inset toward full width, reading as a panel lifting over the section behind it. This is the system's only "elevation" gesture, and it's motion-driven, not shadow-driven.
+**The Tinted-Elevation Rule.** When a shadow is used, it is always multi-layered and low-opacity (≤0.18 alpha), never a single hard `0 4px 4px black`. Elevation appears on interaction (hover/press), not as permanent card chrome — resting cards stay close to flat; hover states are where the system spends its shadow budget.
+**The Spring-Ease Rule.** Every elevation transition uses `--ease-spring` (`cubic-bezier(0.16, 1, 0.3, 1)`), never `ease` or `linear`. Buttons lift `-2px` and gain `--shadow-elevation-3` on hover, compress to `scale(0.97)` on press. Icon buttons and bento tiles lift `-2px` to `-4px` with `--shadow-elevation-2`.
+**The Rising-Panel Rule.** Where a black section needs to visually rise over the section before it, wrap it in the `CurvedRise` component: as the panel scrolls into place, its top corners round and its edges pull in from an inset toward full width. This remains the system's primary large-scale elevation gesture and stays motion-driven, not shadow-driven.
 
 ## 5. Components
 
@@ -169,18 +174,22 @@ Flat by default. There is exactly one `box-shadow` in the entire codebase. Depth
 - **Shape:** 4px radius, no exceptions.
 - **Primary:** ink-black background, pure-white text, SuisseIntl 500/450, 14px, 12px/24px padding (hero, CTA) or 10px/20px (nav pill's "Hire Me").
 - **Ghost:** transparent fill, 1px ink-black border, ink-black text, same type and radius as primary.
-- **Hover / Focus:** no hover-state color shift on primary/ghost buttons; the global `:focus-visible` ring (2px electric-yellow, 2px offset) is the only interaction feedback, keyboard-only.
+- **Hover:** the `.btn-shine` class (applied to every primary/ghost CTA) lifts the button `-2px`, applies `--shadow-elevation-3` (dark) or `--shadow-elevation-1` (ghost), and brightens dark fills 8%. Press compresses to `scale(0.97)`.
+- **Focus:** the global `:focus-visible` ring (2px electric-yellow, 2px offset) remains the keyboard-only indicator, layered on top of the hover elevation.
 
 ### Tags / Chips
-- **Skill tag:** surface-mist background at rest, 20px radius, 12px mono, 6px/12px padding. Hovers (and marks "active" state) to mint-pulse.
-- **Available pill:** mint-pulse background, full pill radius, 12px mono, ink-black text — the one place mint appears as a filled background rather than a hover state.
+- **Skill tag:** surface-mist background at rest, 20px radius, 12px mono, 6px/12px padding. Hovers (and marks "active" state) to a glossy top-lit mint gradient (`#eafde3 → mint-pulse`) with an inset top highlight and a soft mint-tinted shadow, plus a `-1px` lift — not a flat color swap.
+- **Available pill:** the same glossy mint gradient + inset highlight, full pill radius, 12px mono, ink-black text — the one place mint appears as a filled background rather than a hover state.
 - **Case-study status badge:** mint-pulse ("SHIPPED") or surface-mist ("DESIGNED") background, 20px radius, 12px mono.
 
 ### Cards / Containers
-- **Corner style:** 24px for content cards (callouts, diagram cards, decision cards), 32px for project cards, 64px for the largest feature surfaces.
+- **Corner style:** 24px for content cards (callouts, diagram cards, decision cards, bento tiles), 32px for project cards, 64px for the largest feature surfaces.
 - **Background:** pure-white on canvas-mist sections; never a card-on-card nesting.
-- **Shadow strategy:** none — see Elevation.
+- **Shadow strategy:** `.card-elevated` — `--shadow-elevation-1` at rest, lifts `-6px` to `--shadow-elevation-3` on hover. Project-card media panels also carry a subtle inset top highlight + bottom seam (`inset 0 1px 0 rgba(255,255,255,.5), inset 0 -1px 0 rgba(0,0,0,.04)`) so the 3D object reads as sitting in a lit tray rather than flat on a rectangle.
 - **Internal padding:** 24px baseline, up to `clamp(24px, 5vw, 40px)` on larger content cards.
+
+### Bento Grid (Skills section)
+The Skills section is a 4-column × 2-row dense grid (`grid-auto-flow: dense`) replacing a flat 3-column layout. SYSTEMS occupies a large 2×2 tile; BACKEND and INFRA fill the remaining 2×1 slots with zero empty cells. Each tile carries distinct low-opacity tinting (neutral/mint/yellow) rather than identical panels — the system's Bento Background Diversity rule. Collapses to a single column on mobile (`< 768px`), tiles at natural size, no span overrides.
 
 ### Navigation
 - **Style:** a floating pure-white pill (48px radius), fixed to the top of the viewport, centered. "A·M" monogram left, links center, filled "Hire Me" button right, all in SuisseIntl 500/14px graphite (hover to ink-black).
@@ -198,9 +207,11 @@ A React Three Fiber scene appears three times: full-size in the hero, small (~16
 - **Do** use Steel Gray / Slate Steel only on black backgrounds, and Deep Graphite only on white/canvas-mist backgrounds — check the actual rendered background before picking a muted-gray token, not just the section's "usual" color.
 - **Do** wrap every WebGL scene in `LazyCanvas` and honor `prefers-reduced-motion` for every animation, including the nav's hover-wave and the CTA-tile diagonal fill.
 - **Do** keep the `// SECTION` mono kicker format consistent wherever it appears — it's a deliberate, named brand system, not decorative scaffolding.
+- **Do** use the `--shadow-elevation-1/2/3` tokens and `--ease-spring` for any new interactive-element shadow or lift — see Elevation. Never a hard single-offset drop-shadow.
+- **Do** give every section a scroll-entry reveal via the existing `data-gsap="heading"|"card"|"stat"|"tags"` attributes (handled globally by `useScrollAnimation.ts`) — no section should mount statically.
 
 ### Don't:
-- **Don't** add drop shadows, gradients, or glassmorphism to any card, pill, or nav surface — see the Flat-By-Default Rule.
+- **Don't** add a hard, single-offset drop shadow (`0 4px 4px black`) to any surface — layered, tinted, low-opacity shadows only (see Elevation's Tinted-Elevation Rule).
 - **Don't** use `#fff100` or `#d1ffca` as a full-section background — both are accents, never surfaces.
 - **Don't** add a third accent color. Mint and yellow are the complete accent palette.
 - **Don't** set display/headline/title type below 32px (the Title floor) or use a fixed px size at any display tier.

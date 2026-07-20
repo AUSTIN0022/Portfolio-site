@@ -34,10 +34,16 @@ export function useScrollAnimation() {
           gsap.from(el, {
             scrollTrigger: { trigger: el, start: 'top 75%' },
             y: 60,
+            scale: 0.94,
             opacity: 0,
             delay: i * 0.15,
             duration: 0.7,
             ease: 'power2.out',
+            // Once the reveal finishes, drop the inline transform GSAP leaves
+            // behind — otherwise it permanently outranks the card's own CSS
+            // hover-lift (.card-elevated:hover), since inline style always
+            // wins over an external stylesheet rule regardless of specificity.
+            clearProps: 'transform',
           })
         })
 

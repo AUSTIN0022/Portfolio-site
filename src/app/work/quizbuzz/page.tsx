@@ -5,6 +5,7 @@ import { ArchDiagram } from '@/components/ui/ArchDiagram'
 import { ArchitectureJourney } from '@/components/ui/ArchitectureJourney'
 import { InfraScaleSimulator } from '@/components/ui/InfraScaleSimulator'
 import { SkillTag } from '@/components/ui/SkillTag'
+import ScrollFloat from '@/components/ui/ScrollFloat'
 import { Nav } from '@/components/nav/Nav'
 import type { Metadata } from 'next'
 import { JsonLd } from '@/components/seo/JsonLd'
@@ -130,7 +131,8 @@ export default function QuizBuzzPage() {
                     >
                         {'// START HERE — WATCH IT ASSEMBLE'}
                     </div>
-                    <h2
+                    <ScrollFloat
+                        as="h2"
                         style={{
                             fontFamily: 'var(--font-suisseintlcond)',
                             fontWeight: 700,
@@ -143,7 +145,7 @@ export default function QuizBuzzPage() {
                         }}
                     >
                         THE ARCHITECTURE JOURNEY.
-                    </h2>
+                    </ScrollFloat>
                     <Lead>
                         The whole system, built in front of you. Scroll to fly the camera across the
                         architecture as one real request travels through it — registration and payment, the
@@ -165,7 +167,8 @@ export default function QuizBuzzPage() {
                     >
                         {'// PRODUCTION ENGINEERING — TAKE THE CONTROLS'}
                     </div>
-                    <h2
+                    <ScrollFloat
+                        as="h2"
                         style={{
                             fontFamily: 'var(--font-suisseintlcond)',
                             fontWeight: 700,
@@ -178,7 +181,7 @@ export default function QuizBuzzPage() {
                         }}
                     >
                         FROM ONE USER TO TEN THOUSAND.
-                    </h2>
+                    </ScrollFloat>
                     <Lead>
                         The Journey showed how QuizBuzz works. This shows how it survives. Scroll to watch a
                         single idle instance meet a live contest — CPU pins, Auto Scaling launches capacity, the

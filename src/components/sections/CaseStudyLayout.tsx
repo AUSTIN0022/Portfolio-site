@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import ScrollFloat from '@/components/ui/ScrollFloat'
 
 interface SidebarLink {
   id: string
@@ -65,7 +66,8 @@ export function CaseStudyLayout({ children, sidebarLinks, projectName, category 
           >
             {category}
           </div>
-          <h1
+          <ScrollFloat
+            as="h1"
             style={{
               fontFamily: 'var(--font-suisseintlcond)',
               fontWeight: 700,
@@ -77,7 +79,7 @@ export function CaseStudyLayout({ children, sidebarLinks, projectName, category 
             }}
           >
             {projectName}
-          </h1>
+          </ScrollFloat>
         </div>
       </div>
 

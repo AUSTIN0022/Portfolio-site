@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import { LazyCanvas } from '@/components/three/LazyCanvas'
 import { StudioLights, StudioEffects } from '@/components/three/StudioRig'
+import ScrollFloat from '@/components/ui/ScrollFloat'
 
 const ProjectObject = dynamic(
   () => import('@/components/three/ProjectObject').then((mod) => mod.ProjectObject),
@@ -14,18 +15,42 @@ const columns = [
     label: 'SYSTEMS.',
     desc: 'Distributed job queues, Redis-backed locking, event-driven architecture, and fault-tolerant async pipelines.',
     objectType: 'systems' as const,
+    tile: 'bento-tile-lg',
+    tint: 'neutral' as const,
+    canvasH: 220,
   },
   {
     label: 'BACKEND.',
     desc: 'Node.js APIs at scale, PostgreSQL with Prisma ORM, RESTful design, authentication, and real-time WebSocket layers.',
     objectType: 'backend' as const,
+    tile: 'bento-tile-sm',
+    tint: 'mint' as const,
+    canvasH: 140,
   },
   {
     label: 'INFRA.',
     desc: 'AWS auto-scaling, Docker containerization, CI/CD pipelines, monitoring, and zero-downtime deployments.',
     objectType: 'infra' as const,
+    tile: 'bento-tile-sm',
+    tint: 'yellow' as const,
+    canvasH: 140,
   },
 ]
+
+const tintStyles = {
+  neutral: {
+    background: 'rgba(255,255,255,0.035)',
+    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 0 0 1px rgba(255,255,255,0.06)',
+  },
+  mint: {
+    background: 'rgba(209,255,202,0.045)',
+    boxShadow: 'inset 0 1px 0 rgba(209,255,202,0.08), inset 0 0 0 1px rgba(209,255,202,0.12)',
+  },
+  yellow: {
+    background: 'rgba(255,241,0,0.04)',
+    boxShadow: 'inset 0 1px 0 rgba(255,241,0,0.08), inset 0 0 0 1px rgba(255,241,0,0.12)',
+  },
+} as const
 
 export function Skills() {
   return (
@@ -36,26 +61,33 @@ export function Skills() {
       style={{ background: 'var(--color-ink-black)', padding: 'var(--section-y) var(--gutter)' }}
     >
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-        {/* Visually hidden: the three column headings below carry the visual
-            design (no kicker/title here by design, matching the Dayos
-            reference layout), but the section still needs an accessible
-            name and a real h2 so heading navigation doesn't jump from
-            other sections' h2s straight to these h3 columns. */}
+        {/* Visually hidden: the tiles below carry the visual design (no
+            kicker/title here by design), but the section still needs an
+            accessible name and a real h2 so heading navigation doesn't jump
+            from other sections' h2s straight to these h3 tiles. */}
         <h2 id="skills-heading" className="sr-only">
           Skills
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'var(--skills-cols)', gap: 'var(--skills-gap)' }}>
+        <div className="bento-skills">
           {columns.map((col, i) => (
-            <div key={i}>
+            <div
+              key={i}
+              className={col.tile}
+              style={{
+                borderRadius: '24px',
+                padding: 'clamp(24px, 3vw, 32px)',
+                ...tintStyles[col.tint],
+              }}
+            >
               {/* The 3D nodes have near-black bases that vanish into this pure-black
                 section. This wrapper is a borderless spotlight — a light tint pooled
                 low and wide (bottom centre, spreading left/right) so it sits right
                 under the component's base and lifts it off the background, WITHOUT
                 changing the component or the section colours. */}
-            <div
+              <div
                 style={{
-                  height: '160px',
-                  marginBottom: '32px',
+                  height: `${col.canvasH}px`,
+                  marginBottom: '28px',
                   borderRadius: '16px',
                   overflow: 'hidden',
                   background:
@@ -75,7 +107,7 @@ export function Skills() {
                   style={{ width: '100%', height: '100%' }}
                 >
                   <StudioLights variant="dark" shadowExtent={2.5} shadowMapSize={512} />
-                  <ProjectObject type={col.objectType} scale={0.7} />
+                  <ProjectObject type={col.objectType} scale={col.tile === 'bento-tile-lg' ? 0.9 : 0.7} />
                   {/* Full post chain, matching the hero: AO for the contact darkening in
                       every seam, then the same NEUTRAL tone curve. Measured at 60fps with
                       five of these live, so the small surfaces get real quality parity
@@ -84,20 +116,20 @@ export function Skills() {
                   <StudioEffects tier="card" aoRadius={0.4} aoIntensity={2.2} />
                 </LazyCanvas>
               </div>
-              <h3
-                data-gsap="heading"
+              <ScrollFloat
+                as="h3"
                 style={{
                   fontFamily: 'var(--font-suisseintlcond)',
                   fontWeight: 700,
-                  fontSize: 'var(--fs-display-md)',
+                  fontSize: col.tile === 'bento-tile-lg' ? 'var(--fs-display)' : 'var(--fs-display-md)',
                   lineHeight: 0.9,
                   letterSpacing: '-0.03em',
                   color: 'var(--color-pure-white)',
-                  marginBottom: '24px',
+                  marginBottom: '20px',
                 }}
               >
                 {col.label}
-              </h3>
+              </ScrollFloat>
               <p
                 style={{
                   fontFamily: 'var(--font-suisseintl)',
@@ -106,6 +138,7 @@ export function Skills() {
                   lineHeight: 1.33,
                   color: 'var(--color-steel-gray)',
                   letterSpacing: '-0.32px',
+                  maxWidth: col.tile === 'bento-tile-lg' ? '520px' : 'none',
                 }}
               >
                 {col.desc}

@@ -1,4 +1,5 @@
 import { MonoKicker } from '@/components/ui/MonoKicker'
+import ScrollFloat from '@/components/ui/ScrollFloat'
 
 const principles = [
   {
@@ -15,7 +16,7 @@ const principles = [
   },
   {
     title: 'OBSERVABILITY BY DEFAULT.',
-    desc: 'You cannot fix what you cannot see. Logs, metrics, and traces are part of the feature — not an afterthought bolted on later.',
+    desc: 'You cannot fix what you cannot see. Logs, metrics, and traces are part of the feature, not an afterthought bolted on later.',
   },
   {
     title: 'SIMPLE SCALES.',
@@ -32,8 +33,8 @@ export function Principles() {
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         <div style={{ marginBottom: '48px' }}>
           <MonoKicker>// HOW I BUILD</MonoKicker>
-          <h2
-            data-gsap="heading"
+          <ScrollFloat
+            as="h2"
             style={{
               fontFamily: 'var(--font-suisseintlcond)',
               fontWeight: 700,
@@ -45,7 +46,7 @@ export function Principles() {
             }}
           >
             FIRST PRINCIPLES.
-          </h2>
+          </ScrollFloat>
           <p
             style={{
               fontFamily: 'var(--font-suisseintl)',

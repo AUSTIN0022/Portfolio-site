@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { SkillTag } from '@/components/ui/SkillTag'
+import ScrollFloat from '@/components/ui/ScrollFloat'
+import StarBorder from '@/components/ui/StarBorder'
 import { LazyCanvas } from '@/components/three/LazyCanvas'
 import { StudioLights, StudioEffects } from '@/components/three/StudioRig'
 import type { Project } from '@/content/projects'
@@ -68,7 +70,8 @@ export function WorkPageCard({ project }: { project: Project }) {
             {project.category}
           </div>
 
-          <h2
+          <ScrollFloat
+            as="h2"
             style={{
               fontFamily: 'var(--font-suisseintlcond)',
               fontWeight: 700,
@@ -80,7 +83,7 @@ export function WorkPageCard({ project }: { project: Project }) {
             }}
           >
             {project.name}
-          </h2>
+          </ScrollFloat>
 
           <p
             style={{
@@ -105,23 +108,26 @@ export function WorkPageCard({ project }: { project: Project }) {
         </div>
 
         <div>
-          <Link
-            href={project.caseStudyUrl}
-            style={{
-              display: 'inline-block',
-              fontFamily: 'var(--font-suisseintl)',
-              fontWeight: 500,
-              fontSize: '14px',
-              color: 'var(--color-ink-black)',
-              border: '1px solid var(--color-ink-black)',
-              borderRadius: '4px',
-              padding: '12px 24px',
-              textDecoration: 'none',
-              letterSpacing: '-0.28px',
-            }}
-          >
-            View Case Study →
-          </Link>
+          <StarBorder as="span">
+            <Link
+              href={project.caseStudyUrl}
+              className="btn-shine btn-shine--ghost"
+              style={{
+                display: 'inline-block',
+                fontFamily: 'var(--font-suisseintl)',
+                fontWeight: 500,
+                fontSize: '14px',
+                color: 'var(--color-ink-black)',
+                border: '1px solid var(--color-ink-black)',
+                borderRadius: '4px',
+                padding: '12px 24px',
+                textDecoration: 'none',
+                letterSpacing: '-0.28px',
+              }}
+            >
+              View Case Study →
+            </Link>
+          </StarBorder>
         </div>
       </div>
     </article>

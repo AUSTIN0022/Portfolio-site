@@ -1,3 +1,5 @@
+import ScrollFloat from '@/components/ui/ScrollFloat'
+
 export function CtaTiles() {
   return (
     <section style={{ background: 'var(--color-pure-white)' }}>
@@ -30,7 +32,8 @@ export function CtaTiles() {
               alignItems: 'flex-start',
             }}
           >
-            <h2
+            <ScrollFloat
+              as="h2"
               style={{
                 fontFamily: 'var(--font-suisseintlcond)',
                 fontWeight: 700,
@@ -41,7 +44,7 @@ export function CtaTiles() {
               }}
             >
               BOOK A CALL
-            </h2>
+            </ScrollFloat>
             <div
               className="cta-icon"
               style={{
@@ -69,7 +72,7 @@ export function CtaTiles() {
               letterSpacing: '-0.28px',
             }}
           >
-            Book a 30-minute intro — I&apos;m looking for backend and infra roles where reliability matters.
+            Book a 30-minute intro. I&apos;m looking for backend and infra roles where reliability matters.
           </p>
         </a>
 
@@ -89,7 +92,8 @@ export function CtaTiles() {
               alignItems: 'flex-start',
             }}
           >
-            <h2
+            <ScrollFloat
+              as="h2"
               style={{
                 fontFamily: 'var(--font-suisseintlcond)',
                 fontWeight: 700,
@@ -100,7 +104,7 @@ export function CtaTiles() {
               }}
             >
               VIEW RESUME
-            </h2>
+            </ScrollFloat>
             <div
               className="cta-icon"
               style={{
@@ -128,7 +132,7 @@ export function CtaTiles() {
               letterSpacing: '-0.28px',
             }}
           >
-            Open my full resume — experience, projects, and education.
+            Open my full resume: experience, projects, and education.
           </p>
         </a>
       </div>

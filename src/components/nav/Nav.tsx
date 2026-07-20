@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { WaveText } from '@/components/ui/WaveText'
+import StarBorder from '@/components/ui/StarBorder'
 
 const navLinks: { label: string; href: string; tip: string }[] = [
   { label: 'Work', href: '/work', tip: 'Selected projects & case studies' },
@@ -240,24 +241,31 @@ export function Nav() {
           </div>
         </motion.div>
 
-        <a
-          href="#contact"
-          className="nav-cta btn-shine btn-shine--dark"
-          style={{
-            background: 'var(--color-ink-black)',
-            color: 'var(--color-pure-white)',
-            fontFamily: 'var(--font-suisseintl)',
-            fontWeight: 450,
-            fontSize: '14px',
-            borderRadius: '999px',
-            padding: '10px 20px',
-            letterSpacing: '-0.028px',
-            textDecoration: 'none',
-            flexShrink: 0,
-          }}
-        >
-          <WaveText>Hire Me</WaveText>
-        </a>
+        {/* nav-cta controls responsive show/hide on its own wrapper span so
+            it never fights StarBorder's own `display: inline-block` at the
+            same specificity. */}
+        <span className="nav-cta" style={{ flexShrink: 0 }}>
+          <StarBorder as="span" radius="999px">
+            <a
+              href="#contact"
+              className="btn-shine btn-shine--dark"
+              style={{
+                background: 'var(--color-ink-black)',
+                color: 'var(--color-pure-white)',
+                fontFamily: 'var(--font-suisseintl)',
+                fontWeight: 450,
+                fontSize: '14px',
+                borderRadius: '999px',
+                padding: '10px 20px',
+                letterSpacing: '-0.028px',
+                textDecoration: 'none',
+                display: 'inline-block',
+              }}
+            >
+              <WaveText>Hire Me</WaveText>
+            </a>
+          </StarBorder>
+        </span>
 
         <button
           type="button"
@@ -564,28 +572,38 @@ export function Nav() {
                   </Link>
                 </motion.div>
               ))}
-              <motion.a
-                variants={menuRow}
-                href="#contact"
-                onClick={() => setOpen(false)}
-                className="btn-shine btn-shine--dark"
-                style={{
-                  background: 'var(--color-ink-black)',
-                  color: 'var(--color-pure-white)',
-                  fontFamily: 'var(--font-suisseintl)',
-                  fontWeight: 500,
-                  fontSize: '15px',
-                  borderRadius: '999px',
-                  padding: '14px 16px',
-                  letterSpacing: '-0.02em',
-                  textDecoration: 'none',
-                  textAlign: 'center',
-                  marginTop: '6px',
-                  boxShadow: 'var(--shadow-elevation-1)',
-                }}
-              >
-                Hire Me
-              </motion.a>
+              <motion.div variants={menuRow} style={{ marginTop: '6px' }}>
+                {/* Full-width in the mobile menu card: StarBorder's outer
+                    frame and inner padding both need an explicit block +
+                    100% width, since a direct flex child gets auto-blockified
+                    and stretched by the parent's flex layout, but this <a>
+                    is no longer that direct child once it's nested inside
+                    the wrapper. */}
+                <StarBorder as="span" radius="999px" style={{ display: 'block', width: '100%' }}>
+                  <a
+                    href="#contact"
+                    onClick={() => setOpen(false)}
+                    className="btn-shine btn-shine--dark"
+                    style={{
+                      background: 'var(--color-ink-black)',
+                      color: 'var(--color-pure-white)',
+                      fontFamily: 'var(--font-suisseintl)',
+                      fontWeight: 500,
+                      fontSize: '15px',
+                      borderRadius: '999px',
+                      padding: '14px 16px',
+                      letterSpacing: '-0.02em',
+                      textDecoration: 'none',
+                      textAlign: 'center',
+                      boxShadow: 'var(--shadow-elevation-1)',
+                      display: 'block',
+                      width: '100%',
+                    }}
+                  >
+                    Hire Me
+                  </a>
+                </StarBorder>
+              </motion.div>
               </motion.div>
             </motion.div>
           </>

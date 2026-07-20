@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Nav } from '@/components/nav/Nav'
 import { SkillTag } from '@/components/ui/SkillTag'
+import ScrollFloat from '@/components/ui/ScrollFloat'
+import StarBorder from '@/components/ui/StarBorder'
 import { nowData } from '@/content/now'
 
 export const metadata: Metadata = {
@@ -102,7 +104,8 @@ export default function NowPage() {
 
           <div style={{ ...kickerStyleDark }}>// NOW</div>
 
-          <h1
+          <ScrollFloat
+            as="h1"
             style={{
               fontFamily: 'var(--font-suisseintlcond)',
               fontWeight: 700,
@@ -116,7 +119,7 @@ export default function NowPage() {
             }}
           >
             WHAT I&apos;M UP TO.
-          </h1>
+          </ScrollFloat>
 
           <p
             style={{
@@ -250,7 +253,7 @@ export default function NowPage() {
               }}
             >
               <div style={{ ...kickerStyleLight }}>// BUILDING</div>
-              <h2 style={{ ...blockHeadingStyle }}>SMARTFORMFLOW.</h2>
+              <ScrollFloat as="h2" style={{ ...blockHeadingStyle }}>SMARTFORMFLOW.</ScrollFloat>
               <p style={{ ...blockBodyStyle }}>
                 Building multi-step conditional logic and a real-time split-pane form preview
                 on top of the live Razorpay payment flow. Currently finishing the pre-launch
@@ -271,7 +274,7 @@ export default function NowPage() {
               }}
             >
               <div style={{ ...kickerStyleLight }}>// LEARNING</div>
-              <h2 style={{ ...blockHeadingStyle }}>DISTRIBUTED SYSTEMS.</h2>
+              <ScrollFloat as="h2" style={{ ...blockHeadingStyle }}>DISTRIBUTED SYSTEMS.</ScrollFloat>
               <p style={{ ...blockBodyStyle }}>
                 Reading Designing Data-Intensive Applications by Martin Kleppmann — working
                 through the replication, partitioning, and consistency chapters. The QuizBuzz
@@ -303,7 +306,7 @@ export default function NowPage() {
               }}
             >
               <div style={{ ...kickerStyleLight }}>// STATUS</div>
-              <h2 style={{ ...blockHeadingStyle }}>OPEN TO ROLES.</h2>
+              <ScrollFloat as="h2" style={{ ...blockHeadingStyle }}>OPEN TO ROLES.</ScrollFloat>
               <p style={{ ...blockBodyStyle }}>
                 Completing my MSc in Computer Science (June–July 2026), with 1.5 years of
                 full-time production experience building backend systems, infrastructure, and
@@ -320,43 +323,51 @@ export default function NowPage() {
                   gap: '12px',
                 }}
               >
-                <a
-                  href="https://cal.com/austinmakasare"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    background: 'var(--color-ink-black)',
-                    color: 'var(--color-pure-white)',
-                    fontFamily: 'var(--font-suisseintl)',
-                    fontWeight: 500,
-                    fontSize: '14px',
-                    borderRadius: '4px',
-                    padding: '10px 20px',
-                    textDecoration: 'none',
-                    letterSpacing: '-0.28px',
-                  }}
-                >
-                  Book a Call
-                </a>
-                <a
-                  href="/austin-makasare-resume.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    background: 'transparent',
-                    color: 'var(--color-ink-black)',
-                    border: '1px solid var(--color-ink-black)',
-                    fontFamily: 'var(--font-suisseintl)',
-                    fontWeight: 500,
-                    fontSize: '14px',
-                    borderRadius: '4px',
-                    padding: '10px 20px',
-                    textDecoration: 'none',
-                    letterSpacing: '-0.28px',
-                  }}
-                >
-                  View Resume →
-                </a>
+                <StarBorder as="span">
+                  <a
+                    href="https://cal.com/austinmakasare"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-shine btn-shine--dark"
+                    style={{
+                      background: 'var(--color-ink-black)',
+                      color: 'var(--color-pure-white)',
+                      fontFamily: 'var(--font-suisseintl)',
+                      fontWeight: 500,
+                      fontSize: '14px',
+                      borderRadius: '4px',
+                      padding: '10px 20px',
+                      textDecoration: 'none',
+                      letterSpacing: '-0.28px',
+                      display: 'inline-block',
+                    }}
+                  >
+                    Book a Call
+                  </a>
+                </StarBorder>
+                <StarBorder as="span">
+                  <a
+                    href="/austin-makasare-resume.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-shine btn-shine--ghost"
+                    style={{
+                      background: 'transparent',
+                      color: 'var(--color-ink-black)',
+                      border: '1px solid var(--color-ink-black)',
+                      fontFamily: 'var(--font-suisseintl)',
+                      fontWeight: 500,
+                      fontSize: '14px',
+                      borderRadius: '4px',
+                      padding: '10px 20px',
+                      textDecoration: 'none',
+                      letterSpacing: '-0.28px',
+                      display: 'inline-block',
+                    }}
+                  >
+                    View Resume →
+                  </a>
+                </StarBorder>
               </div>
             </div>
           </div>
@@ -368,7 +379,8 @@ export default function NowPage() {
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
           <div style={{ ...kickerStyleDark }}>// CURRENT STACK</div>
 
-          <h2
+          <ScrollFloat
+            as="h2"
             style={{
               fontFamily: 'var(--font-suisseintlcond)',
               fontWeight: 700,
@@ -380,7 +392,7 @@ export default function NowPage() {
             }}
           >
             WHAT I&apos;M WORKING WITH.
-          </h2>
+          </ScrollFloat>
 
           {stackGroups.map((group) => (
             <div key={group.label} style={{ marginBottom: '32px' }}>

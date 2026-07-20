@@ -1,5 +1,6 @@
 import { MonoKicker } from '@/components/ui/MonoKicker'
 import { SkillTag } from '@/components/ui/SkillTag'
+import ScrollFloat from '@/components/ui/ScrollFloat'
 
 const skillTags = [
   'Node.js',
@@ -34,8 +35,8 @@ export function About() {
       >
         <div>
           <MonoKicker>// ABOUT ME</MonoKicker>
-          <h2
-            data-gsap="heading"
+          <ScrollFloat
+            as="h2"
             style={{
               fontFamily: 'var(--font-suisseintlcond)',
               fontWeight: 700,
@@ -48,7 +49,7 @@ export function About() {
             }}
           >
             BUILDING THINGS THAT DON&apos;T BREAK.
-          </h2>
+          </ScrollFloat>
         </div>
 
         <div>
@@ -64,7 +65,7 @@ export function About() {
             }}
           >
             I&apos;m a backend engineer and MSc Computer Science student building production-grade
-            systems — from distributed job queues to APIs load-tested to 7,500 concurrent
+            systems, from distributed job queues to APIs load-tested to 7,500 concurrent
             WebSocket users.
           </p>
           <p
@@ -80,7 +81,7 @@ export function About() {
           >
             My work focuses on the unglamorous but critical parts of software: queues that
             don&apos;t lose jobs, locks that don&apos;t deadlock, infrastructure that
-            auto-scales. I care about reliability, not just features — the kind of backend
+            auto-scales. I care about reliability, not just features: the kind of backend
             you don&apos;t get paged for at 3am.
           </p>
           <div data-gsap="tags" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>

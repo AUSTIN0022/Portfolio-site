@@ -1,3 +1,5 @@
+import ScrollFloat from '@/components/ui/ScrollFloat'
+
 interface CaseStudySectionProps {
   id: string
   kicker: string
@@ -19,7 +21,8 @@ export function CaseStudySection({ id, kicker, heading, children }: CaseStudySec
       >
         {kicker}
       </div>
-      <h2
+      <ScrollFloat
+        as="h2"
         style={{
           fontFamily: 'var(--font-suisseintlcond)',
           fontWeight: 700,
@@ -32,7 +35,7 @@ export function CaseStudySection({ id, kicker, heading, children }: CaseStudySec
         }}
       >
         {heading}
-      </h2>
+      </ScrollFloat>
       {children}
     </section>
   )

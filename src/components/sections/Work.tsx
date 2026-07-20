@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { MonoKicker } from '@/components/ui/MonoKicker'
 import { ProjectCard } from '@/components/ui/ProjectCard'
 import { CardScrollbar } from '@/components/ui/CardScrollbar'
+import ScrollFloat from '@/components/ui/ScrollFloat'
 import { projects } from '@/content/projects'
 
 export function Work() {
@@ -21,8 +22,8 @@ export function Work() {
     >
       <div style={{ maxWidth: '1280px', margin: '0 auto 48px', padding: '0 var(--gutter)' }}>
         <MonoKicker>// SELECTED WORK</MonoKicker>
-        <h2
-          data-gsap="heading"
+        <ScrollFloat
+          as="h2"
           style={{
             fontFamily: 'var(--font-suisseintlcond)',
             fontWeight: 700,
@@ -34,7 +35,7 @@ export function Work() {
           }}
         >
           WHAT I&apos;VE SHIPPED.
-        </h2>
+        </ScrollFloat>
       </div>
 
       {/* Cards can overflow right — start aligned with the 1280px content left edge */}

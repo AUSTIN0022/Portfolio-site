@@ -1,0 +1,16 @@
+/* ScrollFloat (React Bits) — structural rules only. Deliberately stripped of
+   the upstream component's own font-size/weight/line-height/text-align:
+   every heading on this site already carries its own typography via inline
+   style (the SuisseIntlCond display system), so the vendored defaults would
+   have fought and won against the site's actual type scale. */
+.scroll-float {
+  overflow: hidden;
+}
+
+.scroll-float-text {
+  display: inline-block;
+}
+
+.scroll-float .char {
+  display: inline-block;
+}

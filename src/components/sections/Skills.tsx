@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { LazyCanvas } from '@/components/three/LazyCanvas'
+import { StudioLights, StudioEffects } from '@/components/three/StudioRig'
 
 const ProjectObject = dynamic(
   () => import('@/components/three/ProjectObject').then((mod) => mod.ProjectObject),
@@ -60,13 +61,25 @@ export function Skills() {
                     'radial-gradient(135% 120% at 50% 60%, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.10) 38%, rgba(255,255,255,0.03) 62%, rgba(255,255,255,0) 82%)',
                 }}
               >
+                {/* The 'dark' rig variant: same studio setup as the hero and the
+                    project cards, but with the rim light pushed much harder. These
+                    components have near-black bases sitting on a pure-black section,
+                    so the rim is the only thing holding an edge against the
+                    background — the CSS spotlight behind the canvas can lift the
+                    area, but it cannot put a highlight on the geometry itself. */}
                 <LazyCanvas
+                  shadows
                   camera={{ position: [0, 0, 4], fov: 50 }}
                   style={{ width: '100%', height: '100%' }}
                 >
-                  <ambientLight intensity={0.6} />
-                  <directionalLight position={[2, 3, 2]} intensity={1} />
+                  <StudioLights variant="dark" shadowExtent={2.5} shadowMapSize={512} />
                   <ProjectObject type={col.objectType} scale={0.7} />
+                  {/* Full post chain, matching the hero: AO for the contact darkening in
+                      every seam, then the same NEUTRAL tone curve. Measured at 60fps with
+                      five of these live, so the small surfaces get real quality parity
+                      rather than a cheaper approximation. `tier="card"` only trims MSAA
+                      and AO sample counts, which are invisible at this size. */}
+                  <StudioEffects tier="card" aoRadius={0.4} aoIntensity={2.2} />
                 </LazyCanvas>
               </div>
               <h3

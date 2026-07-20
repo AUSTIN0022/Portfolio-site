@@ -4,6 +4,7 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { SkillTag } from '@/components/ui/SkillTag'
 import { LazyCanvas } from '@/components/three/LazyCanvas'
+import { StudioLights, StudioEffects } from '@/components/three/StudioRig'
 import type { Project } from '@/content/projects'
 
 const ProjectObject = dynamic(
@@ -25,10 +26,22 @@ export function WorkPageCard({ project }: { project: Project }) {
     >
       {/* LEFT — 3D canvas area, gray background */}
       <div className="workcard-media" style={{ background: 'var(--color-canvas-mist)', position: 'relative' }}>
-        <LazyCanvas camera={{ position: [0, 0, 5], fov: 50 }} style={{ width: '100%', height: '100%' }}>
-          <ambientLight intensity={0.7} />
-          <directionalLight position={[2, 3, 2]} intensity={1} />
+        {/* Same studio rig as the hero and the landing-page cards — this is the
+            /work page's version of ProjectCard and was carrying the identical flat
+            two-light setup. */}
+        <LazyCanvas
+          shadows
+          camera={{ position: [0, 0, 5], fov: 50 }}
+          style={{ width: '100%', height: '100%' }}
+        >
+          <StudioLights variant="light" shadowExtent={2.5} shadowMapSize={512} />
           <ProjectObject type={project.objectType} />
+          {/* Full post chain, matching the hero: AO for the contact darkening in
+              every seam, then the same NEUTRAL tone curve. Measured at 60fps with
+              five of these live, so the small surfaces get real quality parity
+              rather than a cheaper approximation. `tier="card"` only trims MSAA
+              and AO sample counts, which are invisible at this size. */}
+          <StudioEffects tier="card" aoRadius={0.4} aoIntensity={2.2} />
         </LazyCanvas>
       </div>
 

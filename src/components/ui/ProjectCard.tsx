@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import { SkillTag } from '@/components/ui/SkillTag'
 import { LazyCanvas } from '@/components/three/LazyCanvas'
+import { StudioLights, StudioEffects } from '@/components/three/StudioRig'
 import type { Project } from '@/content/projects'
 
 const ProjectObject = dynamic(
@@ -24,10 +25,25 @@ export function ProjectCard({ project }: { project: Project }) {
       }}
     >
       <div style={{ background: 'var(--color-canvas-mist)', height: '280px', position: 'relative' }}>
-        <LazyCanvas camera={{ position: [0, 0, 5], fov: 50 }} style={{ width: '100%', height: '100%' }}>
-          <ambientLight intensity={0.7} />
-          <directionalLight position={[2, 3, 2]} intensity={1} />
+        {/* Same studio rig and post chain as the hero, so a component looks
+            identical here and in the hero diagram. The object rocks continuously,
+            so shadows come from the real shadow map (which follows the motion)
+            rather than a baked ContactShadows plane, which would go stale.
+            `shadowExtent` is tight around a single object instead of the hero's
+            whole 8-node diagram, which keeps the shadow map's texel density high. */}
+        <LazyCanvas
+          shadows
+          camera={{ position: [0, 0, 5], fov: 50 }}
+          style={{ width: '100%', height: '100%' }}
+        >
+          <StudioLights variant="light" shadowExtent={2.5} shadowMapSize={512} />
           <ProjectObject type={project.objectType} />
+          {/* Full post chain, matching the hero: AO for the contact darkening in
+              every seam, then the same NEUTRAL tone curve. Measured at 60fps with
+              five of these live, so the small surfaces get real quality parity
+              rather than a cheaper approximation. `tier="card"` only trims MSAA
+              and AO sample counts, which are invisible at this size. */}
+          <StudioEffects tier="card" aoRadius={0.4} aoIntensity={2.2} />
         </LazyCanvas>
       </div>
 

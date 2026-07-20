@@ -128,7 +128,11 @@ const Database = forwardRef<InfrastructureNodeRef, InfrastructureNodeProps>(({
             bevelSegments: 8,
             bevelSize: bevel,
             bevelThickness: bevel,
-            curveSegments: 32,
+            // 64, not 32. This is the only curved silhouette in the hero, so its
+            // outline is the one place polygon faceting is visible against the
+            // flat background. One geometry shared by all three discs, so the
+            // extra segments cost nothing measurable.
+            curveSegments: 64,
         });
 
         // Center origin vertically and horizontally

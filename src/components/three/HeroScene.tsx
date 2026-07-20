@@ -1,8 +1,9 @@
 'use client'
 
 import { useThree, useFrame } from '@react-three/fiber'
-import { EffectComposer, Bloom, ToneMapping } from '@react-three/postprocessing'
-import { ToneMappingMode } from 'postprocessing'
+import { ContactShadows } from '@react-three/drei'
+import { Bloom } from '@react-three/postprocessing'
+import { StudioLights, StudioEffects } from '@/components/three/StudioRig'
 import { useEffect, useMemo, useRef, Fragment } from 'react'
 import * as THREE from 'three'
 import AppServer from '@/components/3d/AppServer'
@@ -24,9 +25,16 @@ import Storage from '@/components/3d/Storage'
 const CAM_AZ = (8 * Math.PI) / 180
 const CAM_EL = (36 * Math.PI) / 180
 const CAM_FOV = 26
-// Allow content to reach a hair past the frustum edge so the diagram fills more
-// of the frame (a subtle zoom-in, as requested).
-const FIT_MARGIN = 1.08
+// The fraction of the frustum the content is allowed to occupy, in NDC. A point
+// projects to |ndc| = 1 exactly ON the frame edge, so this must be BELOW 1.0 to
+// leave any visible breathing room.
+//
+// It used to be 1.08 — i.e. content was licensed to sit 8% OUTSIDE the visible
+// frame on each axis — which is what sliced the left face off the STORAGE block.
+// 0.92 leaves a real margin, and that margin also absorbs the entrance animation:
+// the nodes scale in on `elastic.out`, which overshoots past its target before
+// settling, so every block is briefly larger than its resting bounds.
+const FIT_MARGIN = 0.92
 const CAM_DIR = new THREE.Vector3(
     Math.cos(CAM_EL) * Math.sin(CAM_AZ),
     Math.sin(CAM_EL),
@@ -43,7 +51,12 @@ const CONTENT_NODES: { p: [number, number]; rx: number; rz: number }[] = [
     { p: [3.0, -2.9], rx: 0.62, rz: 0.5 }, // QUEUE
     { p: [-3.0, 0], rx: 0.67, rz: 0.67 }, // CACHE
     { p: [3.0, 0], rx: 0.68, rz: 0.68 }, // DATABASE
-    { p: [-3.0, 2.9], rx: 0.6, rz: 0.58 }, // STORAGE
+    // STORAGE is the one component that is NOT built on the common 2.1-wide
+    // footprint — its body is 2.4 wide (see W in Storage.tsx), so at scale 0.55
+    // its true half-width is 0.66, not the 0.6 this table used to claim. Being
+    // both under-measured and the left-most node is exactly why it was the block
+    // that got sliced by the frame edge. 0.68 leaves room for the door fronts.
+    { p: [-3.0, 2.9], rx: 0.68, rz: 0.58 }, // STORAGE
     { p: [0, 2.9], rx: 0.85, rz: 0.85 }, // WORKERS
     { p: [3.0, 2.9], rx: 0.62, rz: 0.62 }, // MONITORING
 ]
@@ -365,10 +378,29 @@ export function HeroScene() {
         <>
             <FitCamera />
 
-            {/* LIGHTING — assets ship none; without this the scene is black */}
-            <ambientLight intensity={0.7} />
-            <directionalLight position={[6, 12, 8]} intensity={1.1} />
-            <directionalLight position={[-8, 6, -6]} intensity={0.4} />
+            {/* ---- LIGHTING ----
+                Previously a flat ambient(0.7) + two unshadowed directionals. Ambient
+                adds the SAME value to every surface regardless of its normal, so at
+                0.7 it drowned out the directional shading that gives the blocks their
+                form — everything read as one pale silhouette. StudioRig replaces that
+                with a key/fill/rim setup plus image-based lighting, shared with the
+                project cards and skills columns so every 3D surface on the site
+                renders the same material. */}
+            <StudioLights variant="light" shadowExtent={6} />
+
+            {/* Contact shadow grounds the blocks on the plane. Without it they
+                float — the reference illustration's weight comes largely from
+                this soft occlusion pooling directly under each block. */}
+            <ContactShadows
+                position={[0, -0.243, 0]}
+                scale={16}
+                resolution={1024}
+                blur={2.4}
+                opacity={0.42}
+                far={2.5}
+                color="#6b6f76"
+                frames={1}
+            />
 
             {/* ---- NODES ---- (3×3 grid; scales calibrated to the reference illustration) */}
             <AppServer position={[0, 0, 0]} scale={1.0} {...STATIC} />
@@ -396,21 +428,20 @@ export function HeroScene() {
             {/* ---- DATA PACKET ---- (request/response cycle flowing through the pipes) */}
             <FlowPacket />
 
-            {/* Bloom makes ONLY the bright (>1 luminance, un-tonemapped) blue packet glow;
-                the ceramic blocks stay below the threshold so they don't wash out.
-                EffectComposer takes over rendering and drops R3F's default ACES tone
-                mapping, so we re-apply it as the LAST pass — otherwise the light ceramic
-                pipes render at near-white and disappear into the background. */}
-            <EffectComposer>
+            {/* Shared AO + tone-mapping chain, plus the hero's own Bloom. Bloom makes
+                ONLY the bright (>1 luminance, un-tonemapped) blue packet glow — the
+                ceramic blocks stay below the threshold so they don't wash out. It is
+                passed as a child rather than living in StudioRig because the cards and
+                skills columns have no emissive element to bloom. */}
+            <StudioEffects aoRadius={0.55} aoIntensity={2.6}>
                 <Bloom
                     mipmapBlur
                     luminanceThreshold={1.0}
                     luminanceSmoothing={0.25}
-                    intensity={1.8}
-                    radius={0.75}
+                    intensity={1.4}
+                    radius={0.7}
                 />
-                <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-            </EffectComposer>
+            </StudioEffects>
         </>
     )
 }

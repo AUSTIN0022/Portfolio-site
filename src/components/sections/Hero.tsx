@@ -118,7 +118,12 @@ export function Hero() {
                         overflow: 'hidden',
                     }}
                 >
+                    {/* eager: the hero canvas is above the fold, so gating it behind an
+                        IntersectionObserver callback only delayed the chunk request.
+                        shadows: the 3d components all set castShadow/receiveShadow. */}
                     <LazyCanvas
+                        eager
+                        shadows
                         camera={{ position: [4.9, 18.8, 35], fov: 26 }}
                         style={{ width: '100%', height: '100%' }}
                     >

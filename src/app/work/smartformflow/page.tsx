@@ -3,6 +3,7 @@ import { CaseStudySection } from '@/components/sections/CaseStudySection'
 import { P, Lead, Callout, Metric, MetricGrid, DecisionCard } from '@/components/ui/CaseStudyProse'
 import { SkillTag } from '@/components/ui/SkillTag'
 import { Nav } from '@/components/nav/Nav'
+import { Footer } from '@/components/sections/Footer'
 import type { Metadata } from 'next'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { projectSchema, breadcrumbSchema } from '@/lib/seo/jsonLd'
@@ -21,16 +22,6 @@ export const metadata: Metadata = {
     type: 'article',
   },
 }
-
-const sidebarLinks = [
-  { id: 'overview', label: 'OVERVIEW' },
-  { id: 'problem', label: 'PROBLEM' },
-  { id: 'system', label: 'SYSTEM DESIGN' },
-  { id: 'decisions', label: 'DECISIONS' },
-  { id: 'multitenancy', label: 'MULTI-TENANCY' },
-  { id: 'results', label: 'RESULTS' },
-  { id: 'lessons', label: 'LESSONS' },
-]
 
 const overviewStack = [
   'Node.js',
@@ -65,7 +56,6 @@ export default function SmartFormFlowPage() {
       />
       <Nav />
       <CaseStudyLayout
-        sidebarLinks={sidebarLinks}
         projectName="SMARTFORMFLOW"
         category="FULLSTACK · SAAS · ASYNC · 2025–2026"
       >
@@ -244,6 +234,7 @@ export default function SmartFormFlowPage() {
           </Callout>
         </CaseStudySection>
       </CaseStudyLayout>
+      <Footer />
     </>
   )
 }

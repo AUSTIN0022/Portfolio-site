@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Nav } from '@/components/nav/Nav'
+import { Footer } from '@/components/sections/Footer'
 import ScrollFloat from '@/components/ui/ScrollFloat'
-import StarBorder from '@/components/ui/StarBorder'
 import { projects } from '@/content/projects'
 import { WorkPageCard } from './WorkPageCard'
 import { JsonLd } from '@/components/seo/JsonLd'
@@ -190,53 +190,27 @@ export default function WorkPage() {
             </ScrollFloat>
           </div>
           <div style={{ display: 'flex', gap: '16px', flexShrink: 0 }}>
-            <StarBorder as="span" style={{ flexShrink: 0 }}>
-              <a
-                href="https://cal.com/austinmakasare"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-shine btn-shine--dark"
-                style={{
-                  background: 'var(--color-pure-white)',
-                  color: 'var(--color-ink-black)',
-                  fontFamily: 'var(--font-suisseintl)',
-                  fontWeight: 500,
-                  fontSize: '14px',
-                  borderRadius: '4px',
-                  padding: '12px 24px',
-                  textDecoration: 'none',
-                  letterSpacing: '-0.28px',
-                  display: 'inline-block',
-                }}
-              >
-                Book a Call
-              </a>
-            </StarBorder>
-            <StarBorder as="span" style={{ flexShrink: 0 }}>
-              <a
-                href="mailto:austinmakasare00@gmail.com"
-                className="btn-shine btn-shine--ghost"
-                style={{
-                  background: 'transparent',
-                  color: 'var(--color-pure-white)',
-                  border: '1px solid var(--color-border-on-dark)',
-                  fontFamily: 'var(--font-suisseintl)',
-                  fontWeight: 500,
-                  fontSize: '14px',
-                  borderRadius: '4px',
-                  padding: '12px 24px',
-                  textDecoration: 'none',
-                  letterSpacing: '-0.28px',
-                  display: 'inline-block',
-                }}
-              >
-                Email
-              </a>
-            </StarBorder>
+            <a
+              href="https://cal.com/austinmakasare"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-sketch btn-sketch--primary btn-sketch--on-dark"
+              style={{ flexShrink: 0 }}
+            >
+              Book a Call
+            </a>
+            <a
+              href="mailto:austinmakasare00@gmail.com"
+              className="btn-sketch btn-sketch--on-dark"
+              style={{ flexShrink: 0 }}
+            >
+              Email
+            </a>
           </div>
         </div>
       </div>
       </main>
+      <Footer />
     </>
   )
 }

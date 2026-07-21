@@ -4,7 +4,6 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { SkillTag } from '@/components/ui/SkillTag'
 import ScrollFloat from '@/components/ui/ScrollFloat'
-import StarBorder from '@/components/ui/StarBorder'
 import { LazyCanvas } from '@/components/three/LazyCanvas'
 import { StudioLights, StudioEffects } from '@/components/three/StudioRig'
 import type { Project } from '@/content/projects'
@@ -108,26 +107,9 @@ export function WorkPageCard({ project }: { project: Project }) {
         </div>
 
         <div>
-          <StarBorder as="span">
-            <Link
-              href={project.caseStudyUrl}
-              className="btn-shine btn-shine--ghost"
-              style={{
-                display: 'inline-block',
-                fontFamily: 'var(--font-suisseintl)',
-                fontWeight: 500,
-                fontSize: '14px',
-                color: 'var(--color-ink-black)',
-                border: '1px solid var(--color-ink-black)',
-                borderRadius: '4px',
-                padding: '12px 24px',
-                textDecoration: 'none',
-                letterSpacing: '-0.28px',
-              }}
-            >
-              View Case Study →
-            </Link>
-          </StarBorder>
+          <Link href={project.caseStudyUrl} className="btn-sketch">
+            View Case Study →
+          </Link>
         </div>
       </div>
     </article>

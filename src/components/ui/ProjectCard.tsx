@@ -2,7 +2,6 @@
 
 import dynamic from 'next/dynamic'
 import { SkillTag } from '@/components/ui/SkillTag'
-import StarBorder from '@/components/ui/StarBorder'
 import { LazyCanvas } from '@/components/three/LazyCanvas'
 import { StudioLights, StudioEffects } from '@/components/three/StudioRig'
 import type { Project } from '@/content/projects'
@@ -99,26 +98,9 @@ export function ProjectCard({ project }: { project: Project }) {
             <SkillTag key={t}>{t}</SkillTag>
           ))}
         </div>
-        <StarBorder as="span">
-          <a
-            href={project.caseStudyUrl}
-            className="btn-shine btn-shine--ghost"
-            style={{
-              display: 'inline-block',
-              fontFamily: 'var(--font-suisseintl)',
-              fontWeight: 500,
-              fontSize: '14px',
-              color: 'var(--color-ink-black)',
-              border: '1px solid var(--color-ink-black)',
-              borderRadius: '4px',
-              padding: '10px 20px',
-              textDecoration: 'none',
-              letterSpacing: '-0.28px',
-            }}
-          >
-            View Case Study →
-          </a>
-        </StarBorder>
+        <a href={project.caseStudyUrl} className="btn-sketch" style={{ padding: '10px 20px' }}>
+          View Case Study →
+        </a>
       </div>
     </article>
   )

@@ -1,20 +1,133 @@
 import { MonoKicker } from '@/components/ui/MonoKicker'
-import { SkillTag } from '@/components/ui/SkillTag'
 import ScrollFloat from '@/components/ui/ScrollFloat'
+import LogoLoop, { type LogoItem } from '@/components/ui/LogoLoop'
+import { LogoTooltip } from '@/components/ui/LogoTooltip'
+import {
+  SiNodedotjs,
+  SiTypescript,
+  SiPostgresql,
+  SiRedis,
+  SiNextdotjs,
+  SiPrisma,
+  SiDocker,
+} from 'react-icons/si'
+import { FaAws } from 'react-icons/fa6'
+import { MdApi, MdBolt, MdAccountTree, MdQueue } from 'react-icons/md'
 
-const skillTags = [
-  'Node.js',
-  'TypeScript',
-  'PostgreSQL',
-  'Redis',
-  'BullMQ',
-  'Next.js',
-  'Prisma',
-  'AWS',
-  'Docker',
-  'REST APIs',
-  'Event-driven',
-  'System Design',
+const iconColor = 'var(--color-graphite)'
+
+// Every item is a real mark. simple-icons has no BullMQ or AWS entry (AWS
+// was dropped for trademark reasons), and "REST APIs" / "Event-driven" /
+// "System Design" are architecture concepts, not products — those five get
+// the closest representative icon instead of a brand logo. Every icon is
+// wrapped in LogoTooltip so hovering it (rather than reading the marquee
+// mid-scroll) reveals the name it stands for.
+const techLogos: LogoItem[] = [
+  {
+    node: (
+      <LogoTooltip label="Node.js">
+        <SiNodedotjs color={iconColor} />
+      </LogoTooltip>
+    ),
+    title: 'Node.js',
+    href: 'https://nodejs.org',
+  },
+  {
+    node: (
+      <LogoTooltip label="TypeScript">
+        <SiTypescript color={iconColor} />
+      </LogoTooltip>
+    ),
+    title: 'TypeScript',
+    href: 'https://www.typescriptlang.org',
+  },
+  {
+    node: (
+      <LogoTooltip label="PostgreSQL">
+        <SiPostgresql color={iconColor} />
+      </LogoTooltip>
+    ),
+    title: 'PostgreSQL',
+    href: 'https://www.postgresql.org',
+  },
+  {
+    node: (
+      <LogoTooltip label="Redis">
+        <SiRedis color={iconColor} />
+      </LogoTooltip>
+    ),
+    title: 'Redis',
+    href: 'https://redis.io',
+  },
+  {
+    node: (
+      <LogoTooltip label="BullMQ">
+        <MdQueue color={iconColor} />
+      </LogoTooltip>
+    ),
+    title: 'BullMQ',
+    href: 'https://docs.bullmq.io',
+  },
+  {
+    node: (
+      <LogoTooltip label="Next.js">
+        <SiNextdotjs color={iconColor} />
+      </LogoTooltip>
+    ),
+    title: 'Next.js',
+    href: 'https://nextjs.org',
+  },
+  {
+    node: (
+      <LogoTooltip label="Prisma">
+        <SiPrisma color={iconColor} />
+      </LogoTooltip>
+    ),
+    title: 'Prisma',
+    href: 'https://www.prisma.io',
+  },
+  {
+    node: (
+      <LogoTooltip label="AWS">
+        <FaAws color={iconColor} />
+      </LogoTooltip>
+    ),
+    title: 'AWS',
+    href: 'https://aws.amazon.com',
+  },
+  {
+    node: (
+      <LogoTooltip label="Docker">
+        <SiDocker color={iconColor} />
+      </LogoTooltip>
+    ),
+    title: 'Docker',
+    href: 'https://www.docker.com',
+  },
+  {
+    node: (
+      <LogoTooltip label="REST APIs">
+        <MdApi color={iconColor} />
+      </LogoTooltip>
+    ),
+    title: 'REST APIs',
+  },
+  {
+    node: (
+      <LogoTooltip label="Event-driven">
+        <MdBolt color={iconColor} />
+      </LogoTooltip>
+    ),
+    title: 'Event-driven',
+  },
+  {
+    node: (
+      <LogoTooltip label="System Design">
+        <MdAccountTree color={iconColor} />
+      </LogoTooltip>
+    ),
+    title: 'System Design',
+  },
 ]
 
 export function About() {
@@ -84,10 +197,21 @@ export function About() {
             auto-scales. I care about reliability, not just features: the kind of backend
             you don&apos;t get paged for at 3am.
           </p>
-          <div data-gsap="tags" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {skillTags.map((tag) => (
-              <SkillTag key={tag}>{tag}</SkillTag>
-            ))}
+          <div
+            data-gsap="tags"
+            style={{ height: '56px', position: 'relative', overflow: 'hidden' }}
+          >
+            <LogoLoop
+              logos={techLogos}
+              speed={60}
+              direction="left"
+              logoHeight={40}
+              gap={48}
+              fadeOut
+              fadeOutColor="var(--color-canvas-mist)"
+              scaleOnHover
+              ariaLabel="Technologies I work with"
+            />
           </div>
         </div>
       </div>

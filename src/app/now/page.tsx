@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Nav } from '@/components/nav/Nav'
+import { Footer } from '@/components/sections/Footer'
 import { SkillTag } from '@/components/ui/SkillTag'
 import ScrollFloat from '@/components/ui/ScrollFloat'
-import StarBorder from '@/components/ui/StarBorder'
 import { nowData } from '@/content/now'
 
 export const metadata: Metadata = {
@@ -323,51 +323,24 @@ export default function NowPage() {
                   gap: '12px',
                 }}
               >
-                <StarBorder as="span">
-                  <a
-                    href="https://cal.com/austinmakasare"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-shine btn-shine--dark"
-                    style={{
-                      background: 'var(--color-ink-black)',
-                      color: 'var(--color-pure-white)',
-                      fontFamily: 'var(--font-suisseintl)',
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      borderRadius: '4px',
-                      padding: '10px 20px',
-                      textDecoration: 'none',
-                      letterSpacing: '-0.28px',
-                      display: 'inline-block',
-                    }}
-                  >
-                    Book a Call
-                  </a>
-                </StarBorder>
-                <StarBorder as="span">
-                  <a
-                    href="/austin-makasare-resume.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-shine btn-shine--ghost"
-                    style={{
-                      background: 'transparent',
-                      color: 'var(--color-ink-black)',
-                      border: '1px solid var(--color-ink-black)',
-                      fontFamily: 'var(--font-suisseintl)',
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      borderRadius: '4px',
-                      padding: '10px 20px',
-                      textDecoration: 'none',
-                      letterSpacing: '-0.28px',
-                      display: 'inline-block',
-                    }}
-                  >
-                    View Resume →
-                  </a>
-                </StarBorder>
+                <a
+                  href="https://cal.com/austinmakasare"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-sketch btn-sketch--primary"
+                  style={{ padding: '10px 20px' }}
+                >
+                  Book a Call
+                </a>
+                <a
+                  href="/austin-makasare-resume.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-sketch"
+                  style={{ padding: '10px 20px' }}
+                >
+                  View Resume →
+                </a>
               </div>
             </div>
           </div>
@@ -431,6 +404,7 @@ export default function NowPage() {
         </div>
       </div>
       </main>
+      <Footer />
     </>
   )
 }

@@ -5,8 +5,8 @@ import { ArchDiagram } from '@/components/ui/ArchDiagram'
 import { ArchitectureJourney } from '@/components/ui/ArchitectureJourney'
 import { InfraScaleSimulator } from '@/components/ui/InfraScaleSimulator'
 import { SkillTag } from '@/components/ui/SkillTag'
-import ScrollFloat from '@/components/ui/ScrollFloat'
 import { Nav } from '@/components/nav/Nav'
+import { Footer } from '@/components/sections/Footer'
 import type { Metadata } from 'next'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { projectSchema, breadcrumbSchema } from '@/lib/seo/jsonLd'
@@ -23,19 +23,6 @@ export const metadata: Metadata = {
         type: 'article',
     },
 }
-
-const sidebarLinks = [
-    { id: 'overview', label: 'OVERVIEW' },
-    { id: 'problem', label: 'PROBLEM' },
-    { id: 'journey', label: 'THE JOURNEY' },
-    { id: 'scale', label: 'AT SCALE' },
-    { id: 'system', label: 'INFRASTRUCTURE' },
-    { id: 'architecture', label: 'DEEP DIVE' },
-    { id: 'decisions', label: 'IMPLEMENTATION' },
-    { id: 'loadtest', label: 'LOAD TESTING' },
-    { id: 'results', label: 'RESULTS' },
-    { id: 'lessons', label: 'LESSONS' },
-]
 
 const overviewStack = [
     'Node.js',
@@ -70,7 +57,6 @@ export default function QuizBuzzPage() {
             />
             <Nav />
             <CaseStudyLayout
-                sidebarLinks={sidebarLinks}
                 projectName="QUIZBUZZ"
                 category="BACKEND · REAL-TIME · INFRA · 2024–2026"
             >
@@ -119,33 +105,7 @@ export default function QuizBuzzPage() {
                     </Callout>
                 </CaseStudySection>
 
-                <div id="journey" data-section style={{ marginBottom: '96px', scrollMarginTop: '80px' }}>
-                    <div
-                        style={{
-                            fontFamily: 'var(--font-suisseintlmono)',
-                            fontSize: '12px',
-                            color: 'var(--color-muted-on-light)',
-                            letterSpacing: '-0.36px',
-                            marginBottom: '12px',
-                        }}
-                    >
-                        {'// START HERE — WATCH IT ASSEMBLE'}
-                    </div>
-                    <ScrollFloat
-                        as="h2"
-                        style={{
-                            fontFamily: 'var(--font-suisseintlcond)',
-                            fontWeight: 700,
-                            fontSize: 'var(--fs-display-md)',
-                            lineHeight: 0.9,
-                            letterSpacing: '-0.03em',
-                            color: 'var(--color-ink-black)',
-                            marginBottom: '16px',
-                            textWrap: 'balance',
-                        }}
-                    >
-                        THE ARCHITECTURE JOURNEY.
-                    </ScrollFloat>
+                <CaseStudySection id="journey" kicker="// START HERE — WATCH IT ASSEMBLE" heading="THE ARCHITECTURE JOURNEY.">
                     <Lead>
                         The whole system, built in front of you. Scroll to fly the camera across the
                         architecture as one real request travels through it — registration and payment, the
@@ -153,42 +113,16 @@ export default function QuizBuzzPage() {
                         diagrams and decisions that follow are the proof.
                     </Lead>
                     <ArchitectureJourney />
-                </div>
+                </CaseStudySection>
 
-                <div id="scale" data-section style={{ marginBottom: '96px', scrollMarginTop: '80px' }}>
-                    <div
-                        style={{
-                            fontFamily: 'var(--font-suisseintlmono)',
-                            fontSize: '12px',
-                            color: 'var(--color-muted-on-light)',
-                            letterSpacing: '-0.36px',
-                            marginBottom: '12px',
-                        }}
-                    >
-                        {'// PRODUCTION ENGINEERING — TAKE THE CONTROLS'}
-                    </div>
-                    <ScrollFloat
-                        as="h2"
-                        style={{
-                            fontFamily: 'var(--font-suisseintlcond)',
-                            fontWeight: 700,
-                            fontSize: 'var(--fs-display-md)',
-                            lineHeight: 0.9,
-                            letterSpacing: '-0.03em',
-                            color: 'var(--color-ink-black)',
-                            marginBottom: '16px',
-                            textWrap: 'balance',
-                        }}
-                    >
-                        FROM ONE USER TO TEN THOUSAND.
-                    </ScrollFloat>
+                <CaseStudySection id="scale" kicker="// PRODUCTION ENGINEERING — TAKE THE CONTROLS" heading="FROM ONE USER TO TEN THOUSAND.">
                     <Lead>
                         The Journey showed how QuizBuzz works. This shows how it survives. Scroll to watch a
                         single idle instance meet a live contest — CPU pins, Auto Scaling launches capacity, the
                         load balancer spreads it out — then take the controls and push the system yourself.
                     </Lead>
                     <InfraScaleSimulator />
-                </div>
+                </CaseStudySection>
 
                 <CaseStudySection id="system" kicker="// INFRASTRUCTURE" heading="DUAL-MODE INFRA.">
                     <Lead>
@@ -541,6 +475,7 @@ export default function QuizBuzzPage() {
                     </Callout>
                 </CaseStudySection>
             </CaseStudyLayout>
+            <Footer />
         </>
     )
 }

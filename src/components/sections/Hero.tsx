@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion'
 import { AvailablePill } from '@/components/ui/AvailablePill'
 import { RotatingWord } from '@/components/ui/RotatingWord'
-import StarBorder from '@/components/ui/StarBorder'
 import { LazyCanvas } from '@/components/three/LazyCanvas'
 import { HeroScene } from '@/components/three/HeroScene'
 
@@ -75,48 +74,17 @@ export function Hero() {
                     </p>
 
                     <div style={{ display: 'flex', gap: '16px' }}>
-                        <StarBorder as="span">
-                            <a
-                                href="#work"
-                                className="btn-shine btn-shine--dark"
-                                style={{
-                                    background: 'var(--color-ink-black)',
-                                    color: 'var(--color-pure-white)',
-                                    fontFamily: 'var(--font-suisseintl)',
-                                    fontWeight: 500,
-                                    fontSize: '14px',
-                                    borderRadius: '4px',
-                                    padding: '12px 24px',
-                                    textDecoration: 'none',
-                                    boxShadow: 'var(--shadow-elevation-1)',
-                                    display: 'inline-block',
-                                }}
-                            >
-                                See What I&apos;ve Shipped
-                            </a>
-                        </StarBorder>
-                        <StarBorder as="span">
-                            <a
-                                href="https://cal.com/austinmakasare"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn-shine btn-shine--ghost"
-                                style={{
-                                    background: 'transparent',
-                                    color: 'var(--color-ink-black)',
-                                    border: '1px solid var(--color-ink-black)',
-                                    fontFamily: 'var(--font-suisseintl)',
-                                    fontWeight: 500,
-                                    fontSize: '14px',
-                                    borderRadius: '4px',
-                                    padding: '12px 24px',
-                                    textDecoration: 'none',
-                                    display: 'inline-block',
-                                }}
-                            >
-                                Book a Call
-                            </a>
-                        </StarBorder>
+                        <a href="#work" className="btn-sketch btn-sketch--primary">
+                            See What I&apos;ve Shipped
+                        </a>
+                        <a
+                            href="https://cal.com/austinmakasare"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-sketch"
+                        >
+                            Book a Call
+                        </a>
                     </div>
                 </div>
 

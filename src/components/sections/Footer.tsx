@@ -38,9 +38,13 @@ export function Footer() {
     <footer
       id="contact"
       className="surface-ambient"
-      style={{ background: 'var(--color-ink-black)', padding: 'var(--section-y) var(--gutter) 40px' }}
+      style={{
+        background: 'var(--color-ink-black)',
+        padding: 'var(--section-y) var(--gutter) 0',
+        overflow: 'hidden',
+      }}
     >
-      <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '1280px', margin: '0 auto', paddingBottom: '40px' }}>
         <div
           style={{
             display: 'grid',
@@ -199,6 +203,32 @@ export function Footer() {
             </a>
           </div>
         </div>
+      </div>
+
+      {/* Giant background wordmark — decorative only (aria-hidden, no
+          pointer events). The gradient fades the letterforms down into the
+          footer's own ink-black, so the type reads as sinking into the
+          background rather than sitting flush on top of it. */}
+      <div
+        aria-hidden
+        style={{
+          marginTop: 'clamp(16px, 4vw, 32px)',
+          lineHeight: 0.82,
+          fontFamily: 'var(--font-suisseintlcond)',
+          fontWeight: 700,
+          fontSize: 'clamp(6rem, 27vw, 22rem)',
+          letterSpacing: '-0.02em',
+          textAlign: 'center',
+          whiteSpace: 'nowrap',
+          userSelect: 'none',
+          pointerEvents: 'none',
+          backgroundImage: 'linear-gradient(180deg, #4a4a4a 0%, #222222 55%, var(--color-ink-black) 92%)',
+          WebkitBackgroundClip: 'text',
+          backgroundClip: 'text',
+          color: 'transparent',
+        }}
+      >
+        AUSTIN
       </div>
     </footer>
   )

@@ -96,9 +96,6 @@
   --now-main-cols: minmax(0, 1fr);
   --now-gap: 40px;
 
-  --case-cols: minmax(0, 1fr);
-  --case-gap: 48px;
-
   --workcard-cols: minmax(0, 1fr);
   --workcard-h: auto;
   --workcard-media-h: 260px;
@@ -129,7 +126,6 @@
     --skills-cols: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
     --cta-cols: minmax(0, 1fr) minmax(0, 1fr);
     --now-main-cols: minmax(0, 40fr) minmax(0, 60fr);
-    --case-cols: 180px minmax(0, 1fr);
     --workcard-cols: minmax(0, 45fr) minmax(0, 55fr);
     --workcard-h: 480px;
   }
@@ -148,7 +144,6 @@
     --footer-cols: 300px minmax(0, 1fr);
     --footer-gap: 80px;
     --now-gap: 64px;
-    --case-gap: 80px;
   }
 }
 
@@ -324,20 +319,84 @@ a:hover > .wave-text span,
   }
 }
 
-/* Case-study side nav: hidden on mobile (replaced by Nav dropdown),
-   a sticky column on desktop */
-.case-sidebar {
-  display: none;
+/* ============================================================
+   Case-study scroll timeline — each CaseStudySection's title pins in
+   the left rail while its content scrolls past (the section nav now
+   lives in that pinning, not a separate link list), and a gradient
+   beam in .case-beam-track/.case-beam (drawn by CaseStudyLayout,
+   sized off the combined height of every section) tracks how far
+   through the piece the reader has scrolled. Both the dot markers and
+   the beam share the same left origin (0 for the dot, 7px for the
+   2px-wide beam so it's centered under a 16px dot) because both are
+   positioned relative to ancestors that start flush at the same x —
+   .case-section and .case-main respectively.
+   ============================================================ */
+.case-section-row {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.case-section-rail {
+  position: static;
+  padding-left: 32px;
+}
+.case-dot {
+  position: absolute;
+  left: 0;
+  top: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-canvas-mist);
+  border: 1px solid var(--color-muted-on-light);
+  z-index: 2;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.case-section-content {
+  min-width: 0;
+  flex: 1;
 }
 @media (min-width: 768px) {
-  .case-sidebar {
-    display: flex;
+  .case-section-row {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 40px;
+  }
+  .case-section-rail {
     position: sticky;
-    top: 80px;
-    flex-direction: column;
-    gap: 0;
-    overflow: visible;
-    padding-bottom: 0;
+    top: 120px;
+    width: 260px;
+    flex-shrink: 0;
+  }
+}
+
+.case-beam-track {
+  display: none;
+  position: absolute;
+  left: 7px;
+  top: 0;
+  width: 2px;
+  overflow: hidden;
+  background: linear-gradient(to bottom, transparent 0%, #cbced3 8%, #cbced3 92%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+.case-beam {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  width: 2px;
+  border-radius: 999px;
+  /* Solid, not a fade-to-dim gradient — the old top-to-bottom fade meant
+     the color dimmed as the beam grew taller with scroll, so most of it
+     read as dull grayish-yellow instead of matching the dot's full
+     electric-yellow fill. */
+  background: var(--color-electric-yellow);
+  box-shadow: 0 0 6px 1px rgba(255, 241, 0, 0.9), 0 0 18px 3px rgba(255, 241, 0, 0.55);
+}
+@media (min-width: 768px) {
+  .case-beam-track {
+    display: block;
   }
 }
 
@@ -428,40 +487,37 @@ a:hover > .wave-text span,
 }
 
 /* ============================================================
-   Case-study chapter numbering — mirrors the Principles list. A CSS
-   counter on the existing [data-section] markers stamps a big muted
-   two-digit number above each section heading; the counter resets
-   per case-study main so every page starts at 01. Pure CSS, so both
-   case studies (and any future one) number themselves automatically.
+   Case-study chapter numbering — a CSS counter on the [data-section]
+   markers stamps a two-digit number ("01", "02"...) at the top of
+   each section's rail, above its kicker; the counter resets per
+   case-study main so every page starts at 01. Also where each
+   section's own position/spacing lives: [data-section] is the
+   positioning root .case-dot anchors against, and the beam line
+   (drawn once by CaseStudyLayout, see .case-beam-track above) relies
+   on every section starting flush at the same left edge.
    ============================================================ */
 .case-main {
   counter-reset: case-section;
 }
 .case-main [data-section] {
   counter-increment: case-section;
+  position: relative;
+  margin-bottom: 96px;
 }
-.case-main [data-section]::before {
+.case-main [data-section]:last-child {
+  margin-bottom: 0;
+}
+.case-section-rail::before {
   content: counter(case-section, decimal-leading-zero);
   display: block;
+  font-variant-numeric: tabular-nums;
   font-family: var(--font-suisseintlcond);
   font-weight: 700;
-  font-size: clamp(2.25rem, 7vw, 3.25rem);
+  font-size: 1.5rem;
   line-height: 0.9;
   letter-spacing: -0.03em;
   color: #b4b9c0;
-  margin-bottom: 16px;
-}
-
-/* Numbered sidebar TOC index — the two-digit number that leads each
-   case-study nav link. Muted by default, solid black on the active
-   section, matching the chapter number it points to. */
-.case-nav-num {
-  font-variant-numeric: tabular-nums;
-  color: #b4b9c0;
-  transition: color 0.2s ease;
-}
-.case-nav-link[data-active='true'] .case-nav-num {
-  color: var(--color-ink-black);
+  margin-bottom: 8px;
 }
 
 /* ============================================================
@@ -613,25 +669,55 @@ a:hover > .wave-text span,
     radial-gradient(ellipse 760px 480px at 92% 4%, rgba(255, 241, 0, 0.05), transparent 58%);
 }
 
-/* Shared glossy hover/press treatment for solid + outline buttons. Adds the
-   lift-and-glow a flat color swatch can't give: a soft directional shadow
-   on hover, a tactile compress on press. Layered on top of each button's
-   own inline background/border, so it never fights the existing palette. */
-.btn-shine {
-  transition: transform 0.4s var(--ease-spring), box-shadow 0.4s var(--ease-spring), filter 0.3s ease;
+/* ============================================================
+   Sketch button — the site's one shared CTA treatment: a bordered
+   chip with a hard offset shadow that snaps in on hover, deliberately
+   flat/graphic against the rest of the site's spring-eased motion.
+   `--primary` swaps to a solid fill (was the old btn-shine--dark);
+   default is the outline (was btn-shine--ghost). `--pill` keeps the
+   radius-full shape for the buttons nested in Nav's floating island.
+   `--on-dark` is for the two CTAs that sit directly on a black
+   section (work/page.tsx) — a black border/shadow would disappear
+   against that background, so it flips to a white frame instead.
+   ============================================================ */
+.btn-sketch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 6px;
+  border: 1px solid var(--color-ink-black);
+  background: var(--color-pure-white);
+  color: var(--color-ink-black);
+  font-family: var(--font-suisseintl);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: -0.28px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
-.btn-shine--dark:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-elevation-3);
-  filter: brightness(1.08);
+.btn-sketch:hover {
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
 }
-.btn-shine--ghost:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-elevation-1);
+.btn-sketch--primary {
+  background: var(--color-ink-black);
+  color: var(--color-pure-white);
 }
-.btn-shine:active {
-  transform: translateY(0) scale(0.97);
-  filter: none;
+.btn-sketch--pill {
+  border-radius: 999px;
+}
+.btn-sketch--on-dark {
+  border-color: var(--color-pure-white);
+  background: transparent;
+  color: var(--color-pure-white);
+}
+.btn-sketch--on-dark.btn-sketch--primary {
+  background: var(--color-pure-white);
+  color: var(--color-ink-black);
+}
+.btn-sketch--on-dark:hover {
+  box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 1);
 }
 
 /* Project / work cards — flat white tiles get real elevation: a soft

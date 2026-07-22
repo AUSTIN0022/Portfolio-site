@@ -1,17 +1,21 @@
 'use client'
 
-import dynamic from 'next/dynamic'
+import Image from 'next/image'
+import { motion } from 'framer-motion'
 import { SkillTag } from '@/components/ui/SkillTag'
-import { LazyCanvas } from '@/components/three/LazyCanvas'
-import { StudioLights, StudioEffects } from '@/components/three/StudioRig'
 import type { Project } from '@/content/projects'
 
-const ProjectObject = dynamic(
-  () => import('@/components/three/ProjectObject').then((mod) => mod.ProjectObject),
-  { ssr: false }
-)
+const projectImageMap: Record<string, string> = {
+  monitor: '/item-images/monitor.webp',
+  forms: '/item-images/laptop.webp',
+  systems: '/item-images/queue.webp',
+  backend: '/item-images/app-server.webp',
+  infra: '/item-images/instance.webp',
+}
 
 export function ProjectCard({ project }: { project: Project }) {
+  const imgSrc = projectImageMap[project.objectType] || '/item-images/monitor.webp'
+
   return (
     <article
       data-gsap="card"
@@ -30,29 +34,30 @@ export function ProjectCard({ project }: { project: Project }) {
           background: 'var(--color-canvas-mist)',
           height: '280px',
           position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(0,0,0,0.04)',
         }}
       >
-        {/* Same studio rig and post chain as the hero, so a component looks
-            identical here and in the hero diagram. The object rocks continuously,
-            so shadows come from the real shadow map (which follows the motion)
-            rather than a baked ContactShadows plane, which would go stale.
-            `shadowExtent` is tight around a single object instead of the hero's
-            whole 8-node diagram, which keeps the shadow map's texel density high. */}
-        <LazyCanvas
-          shadows
-          camera={{ position: [0, 0, 5], fov: 50 }}
-          style={{ width: '100%', height: '100%' }}
+        <motion.div
+          style={{
+            position: 'relative',
+            width: '75%',
+            height: '75%',
+          }}
+          animate={{ y: [0, -5, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          whileHover={{ scale: 1.04 }}
         >
-          <StudioLights variant="light" shadowExtent={2.5} shadowMapSize={512} />
-          <ProjectObject type={project.objectType} />
-          {/* Full post chain, matching the hero: AO for the contact darkening in
-              every seam, then the same NEUTRAL tone curve. Measured at 60fps with
-              five of these live, so the small surfaces get real quality parity
-              rather than a cheaper approximation. `tier="card"` only trims MSAA
-              and AO sample counts, which are invisible at this size. */}
-          <StudioEffects tier="card" aoRadius={0.4} aoIntensity={2.2} />
-        </LazyCanvas>
+          <Image
+            src={imgSrc}
+            alt={project.name}
+            fill
+            sizes="400px"
+            style={{ objectFit: 'contain' }}
+          />
+        </motion.div>
       </div>
 
       <div style={{ padding: '24px' }}>

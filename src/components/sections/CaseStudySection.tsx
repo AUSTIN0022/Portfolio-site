@@ -39,15 +39,25 @@ export function CaseStudySection({ id, kicker, heading, children }: CaseStudySec
     const main = beamCtx?.mainRef.current
     const dot = dotRef.current
     if (!main || !dot) return
+
+    let rafId = 0
     const measure = () => {
-      const dotRect = dot.getBoundingClientRect()
-      const mainRect = main.getBoundingClientRect()
-      setDotOffset(dotRect.top - mainRect.top + dotRect.height / 2)
+      if (rafId) cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(() => {
+        if (!main || !dot) return
+        const dotRect = dot.getBoundingClientRect()
+        const mainRect = main.getBoundingClientRect()
+        const newOffset = dotRect.top - mainRect.top + dotRect.height / 2
+        setDotOffset((prev) => (Math.abs(prev - newOffset) > 1 ? newOffset : prev))
+      })
     }
+
     measure()
-    const ro = new ResizeObserver(measure)
-    ro.observe(main)
-    return () => ro.disconnect()
+    window.addEventListener('resize', measure, { passive: true })
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId)
+      window.removeEventListener('resize', measure)
+    }
   }, [beamCtx])
 
   const dotBackground = useTransform(beamHeight, (h) =>

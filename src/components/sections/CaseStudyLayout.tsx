@@ -35,11 +35,22 @@ export function CaseStudyLayout({ children, projectName, category }: CaseStudyLa
   useEffect(() => {
     const el = mainRef.current
     if (!el) return
-    const measure = () => setHeight(el.getBoundingClientRect().height)
+    let rafId = 0
+    const measure = () => {
+      if (rafId) cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(() => {
+        if (!el) return
+        const newHeight = el.getBoundingClientRect().height
+        setHeight((prev) => (Math.abs(prev - newHeight) > 2 ? newHeight : prev))
+      })
+    }
     measure()
     const ro = new ResizeObserver(measure)
     ro.observe(el)
-    return () => ro.disconnect()
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId)
+      ro.disconnect()
+    }
   }, [])
 
   const { scrollYProgress } = useScroll({

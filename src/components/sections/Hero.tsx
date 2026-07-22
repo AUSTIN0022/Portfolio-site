@@ -3,8 +3,7 @@
 import { motion } from 'framer-motion'
 import { AvailablePill } from '@/components/ui/AvailablePill'
 import { RotatingWord } from '@/components/ui/RotatingWord'
-import { LazyCanvas } from '@/components/three/LazyCanvas'
-import { HeroScene } from '@/components/three/HeroScene'
+import { HeroDiagram } from '@/components/sections/HeroDiagram'
 
 export function Hero() {
     return (
@@ -94,19 +93,12 @@ export function Hero() {
                         height: 'var(--hero-canvas-h)',
                         position: 'relative',
                         overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                     }}
                 >
-                    {/* eager: the hero canvas is above the fold, so gating it behind an
-                        IntersectionObserver callback only delayed the chunk request.
-                        shadows: the 3d components all set castShadow/receiveShadow. */}
-                    <LazyCanvas
-                        eager
-                        shadows
-                        camera={{ position: [4.9, 18.8, 35], fov: 26 }}
-                        style={{ width: '100%', height: '100%' }}
-                    >
-                        <HeroScene />
-                    </LazyCanvas>
+                    <HeroDiagram />
                 </div>
             </div>
         </section>

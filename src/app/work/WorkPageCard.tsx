@@ -1,19 +1,23 @@
 'use client'
 
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
+import Image from 'next/image'
+import { motion } from 'framer-motion'
 import { SkillTag } from '@/components/ui/SkillTag'
 import ScrollFloat from '@/components/ui/ScrollFloat'
-import { LazyCanvas } from '@/components/three/LazyCanvas'
-import { StudioLights, StudioEffects } from '@/components/three/StudioRig'
 import type { Project } from '@/content/projects'
 
-const ProjectObject = dynamic(
-  () => import('@/components/three/ProjectObject').then((m) => m.ProjectObject),
-  { ssr: false }
-)
+const projectImageMap: Record<string, string> = {
+  monitor: '/item-images/monitor.webp',
+  forms: '/item-images/laptop.webp',
+  systems: '/item-images/queue.webp',
+  backend: '/item-images/app-server.webp',
+  infra: '/item-images/instance.webp',
+}
 
 export function WorkPageCard({ project }: { project: Project }) {
+  const imgSrc = projectImageMap[project.objectType] || '/item-images/monitor.webp'
+
   return (
     <article
       style={{
@@ -25,25 +29,36 @@ export function WorkPageCard({ project }: { project: Project }) {
         height: 'var(--workcard-h)',
       }}
     >
-      {/* LEFT — 3D canvas area, gray background */}
-      <div className="workcard-media" style={{ background: 'var(--color-canvas-mist)', position: 'relative' }}>
-        {/* Same studio rig as the hero and the landing-page cards — this is the
-            /work page's version of ProjectCard and was carrying the identical flat
-            two-light setup. */}
-        <LazyCanvas
-          shadows
-          camera={{ position: [0, 0, 5], fov: 50 }}
-          style={{ width: '100%', height: '100%' }}
+      {/* LEFT — Media area with optimized PNG visual */}
+      <div
+        className="workcard-media"
+        style={{
+          background: 'var(--color-canvas-mist)',
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '24px',
+        }}
+      >
+        <motion.div
+          style={{
+            position: 'relative',
+            width: '80%',
+            height: '80%',
+          }}
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+          whileHover={{ scale: 1.05 }}
         >
-          <StudioLights variant="light" shadowExtent={2.5} shadowMapSize={512} />
-          <ProjectObject type={project.objectType} />
-          {/* Full post chain, matching the hero: AO for the contact darkening in
-              every seam, then the same NEUTRAL tone curve. Measured at 60fps with
-              five of these live, so the small surfaces get real quality parity
-              rather than a cheaper approximation. `tier="card"` only trims MSAA
-              and AO sample counts, which are invisible at this size. */}
-          <StudioEffects tier="card" aoRadius={0.4} aoIntensity={2.2} />
-        </LazyCanvas>
+          <Image
+            src={imgSrc}
+            alt={project.name}
+            fill
+            sizes="500px"
+            style={{ objectFit: 'contain' }}
+          />
+        </motion.div>
       </div>
 
       {/* RIGHT — content */}

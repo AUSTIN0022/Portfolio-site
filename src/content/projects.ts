@@ -1,4 +1,4 @@
-import type { ObjectType } from '@/components/three/ProjectObject'
+export type ObjectType = 'monitor' | 'forms' | 'systems' | 'backend' | 'infra'
 
 export interface Project {
   id: string

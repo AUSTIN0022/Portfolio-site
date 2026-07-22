@@ -77,43 +77,65 @@ export default function ScrollFloat({
     const el = containerRef.current
     if (!el || !isPlainString) return
 
-    const scroller = scrollContainerRef?.current ?? window
-    const charElements = el.querySelectorAll('.char')
-    if (!charElements.length) return
+    let mm: gsap.MatchMedia | null = null
 
-    const mm = gsap.matchMedia()
+    const initGsap = () => {
+      const scroller = scrollContainerRef?.current ?? window
+      const charElements = el.querySelectorAll('.char')
+      if (!charElements.length) return
 
-    mm.add('(prefers-reduced-motion: no-preference)', () => {
-      gsap.fromTo(
-        charElements,
-        {
-          willChange: 'opacity, transform',
-          opacity: 0,
-          yPercent: 120,
-          scaleY: 2.3,
-          scaleX: 0.7,
-          transformOrigin: '50% 0%',
-        },
-        {
-          duration: animationDuration,
-          ease,
-          opacity: 1,
-          yPercent: 0,
-          scaleY: 1,
-          scaleX: 1,
-          stagger,
-          scrollTrigger: {
-            trigger: el,
-            scroller,
-            start: scrollStart,
-            end: scrollEnd,
-            scrub: true,
+      mm = gsap.matchMedia()
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        gsap.fromTo(
+          charElements,
+          {
+            willChange: 'opacity, transform',
+            opacity: 0,
+            yPercent: 120,
+            scaleY: 2.3,
+            scaleX: 0.7,
+            transformOrigin: '50% 0%',
           },
-        }
-      )
-    })
+          {
+            duration: animationDuration,
+            ease,
+            opacity: 1,
+            yPercent: 0,
+            scaleY: 1,
+            scaleX: 1,
+            stagger,
+            onComplete: () => {
+              gsap.set(charElements, { clearProps: 'willChange' })
+            },
+            scrollTrigger: {
+              trigger: el,
+              scroller,
+              start: scrollStart,
+              end: scrollEnd,
+              scrub: 0.5,
+              fastScrollEnd: true,
+            },
+          }
+        )
+      })
+    }
 
-    return () => mm.revert()
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          initGsap()
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '200px' }
+    )
+
+    observer.observe(el)
+
+    return () => {
+      observer.disconnect()
+      if (mm) mm.revert()
+    }
   }, [isPlainString, scrollContainerRef, animationDuration, ease, scrollStart, scrollEnd, stagger])
 
   // `as any`: a polymorphic `as`-prop component genuinely can't be typed

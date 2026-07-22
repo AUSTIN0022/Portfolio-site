@@ -2,8 +2,8 @@ import { CaseStudyLayout } from '@/components/sections/CaseStudyLayout'
 import { CaseStudySection } from '@/components/sections/CaseStudySection'
 import { P, Lead, Callout, Metric, MetricGrid, DecisionCard } from '@/components/ui/CaseStudyProse'
 import { ArchDiagram } from '@/components/ui/ArchDiagram'
-import { ArchitectureJourney } from '@/components/ui/ArchitectureJourney'
-import { InfraScaleSimulator } from '@/components/ui/InfraScaleSimulator'
+import { LazyArchitectureJourney } from '@/components/ui/LazyArchitectureJourney'
+import { LazyInfraScaleSimulator } from '@/components/ui/LazyInfraScaleSimulator'
 import { SkillTag } from '@/components/ui/SkillTag'
 import { Nav } from '@/components/nav/Nav'
 import { Footer } from '@/components/sections/Footer'
@@ -112,7 +112,7 @@ export default function QuizBuzzPage() {
                         real-time engine, background workers, and the infrastructure underneath. The detailed
                         diagrams and decisions that follow are the proof.
                     </Lead>
-                    <ArchitectureJourney />
+                    <LazyArchitectureJourney />
                 </CaseStudySection>
 
                 <CaseStudySection id="scale" kicker="// PRODUCTION ENGINEERING — TAKE THE CONTROLS" heading="FROM ONE USER TO TEN THOUSAND.">
@@ -121,7 +121,7 @@ export default function QuizBuzzPage() {
                         single idle instance meet a live contest — CPU pins, Auto Scaling launches capacity, the
                         load balancer spreads it out — then take the controls and push the system yourself.
                     </Lead>
-                    <InfraScaleSimulator />
+                    <LazyInfraScaleSimulator />
                 </CaseStudySection>
 
                 <CaseStudySection id="system" kicker="// INFRASTRUCTURE" heading="DUAL-MODE INFRA.">

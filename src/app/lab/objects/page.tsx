@@ -1,60 +1,25 @@
 'use client'
 
-import { Canvas } from '@react-three/fiber'
-import { ProjectObject, type ObjectType } from '@/components/three/ProjectObject'
+import Image from 'next/image'
 
-// Mirrors the two real contexts: project cards (light bg, camera z=5) and the
-// skills columns (black bg, camera z=4, scale 0.7).
-const PROJECT_CARDS: { name: string; type: ObjectType }[] = [
-    { name: 'QUIZBUZZ (monitor)', type: 'monitor' },
-    { name: 'SMARTFORMFLOW (forms)', type: 'forms' },
+const ITEMS = [
+    { name: 'QUIZBUZZ (monitor)', src: '/item-images/monitor.webp' },
+    { name: 'SMARTFORMFLOW (laptop)', src: '/item-images/laptop.webp' },
+    { name: 'SYSTEMS (queue)', src: '/item-images/queue.webp' },
+    { name: 'BACKEND (app-server)', src: '/item-images/app-server.webp' },
+    { name: 'INFRA (instance)', src: '/item-images/instance.webp' },
 ]
-const SKILL_CARDS: { name: string; type: ObjectType }[] = [
-    { name: 'SYSTEMS', type: 'systems' },
-    { name: 'BACKEND', type: 'backend' },
-    { name: 'INFRA', type: 'infra' },
-]
-
-function Lights() {
-    return (
-        <>
-            <ambientLight intensity={0.7} />
-            <directionalLight position={[2, 3, 2]} intensity={1} />
-        </>
-    )
-}
 
 export default function ObjectsLabPage() {
     return (
-        <div style={{ padding: 12, background: '#e9eaec' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-                {PROJECT_CARDS.map((c) => (
-                    <div key={c.type} style={{ background: '#e5e7eb', borderRadius: 16, height: 280, position: 'relative' }}>
-                        <div style={{ position: 'absolute', top: 8, left: 12, zIndex: 1, fontFamily: 'monospace', fontSize: 12 }}>{c.name}</div>
-                        <Canvas frameloop="always" dpr={[1, 1.5]} camera={{ position: [0, 0, 5], fov: 50 }}>
-                            <Lights />
-                            <ProjectObject type={c.type} />
-                        </Canvas>
-                    </div>
-                ))}
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-                {SKILL_CARDS.map((c) => (
-                    <div key={c.type} style={{ background: '#000000', borderRadius: 16, padding: 20, position: 'relative' }}>
-                        <div style={{ position: 'absolute', top: 8, left: 12, zIndex: 1, fontFamily: 'monospace', fontSize: 12, color: '#fff' }}>{c.name}</div>
-                        <div
-                            style={{
-                                height: 160,
-                                borderRadius: 16,
-                                overflow: 'hidden',
-                                background:
-                                    'radial-gradient(135% 120% at 50% 60%, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.10) 38%, rgba(255,255,255,0.03) 62%, rgba(255,255,255,0) 82%)',
-                            }}
-                        >
-                            <Canvas frameloop="always" dpr={[1, 1.5]} camera={{ position: [0, 0, 4], fov: 50 }}>
-                                <Lights />
-                                <ProjectObject type={c.type} scale={0.7} />
-                            </Canvas>
+        <div style={{ padding: 24, background: '#e9eaec', minHeight: '100vh' }}>
+            <h1 style={{ fontFamily: 'monospace', fontSize: 16, marginBottom: 16 }}>COMPONENT VISUALS GALLERY</h1>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+                {ITEMS.map((item) => (
+                    <div key={item.name} style={{ background: '#fff', borderRadius: 16, padding: 20, height: 260, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div style={{ fontFamily: 'monospace', fontSize: 12, marginBottom: 12, width: '100%' }}>{item.name}</div>
+                        <div style={{ position: 'relative', width: '80%', height: '80%' }}>
+                            <Image src={item.src} alt={item.name} fill style={{ objectFit: 'contain' }} />
                         </div>
                     </div>
                 ))}

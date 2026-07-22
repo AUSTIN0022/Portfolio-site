@@ -9,37 +9,62 @@ interface ArchDiagramProps {
   id: string // unique id for mermaid to target
 }
 
+let mermaidInitialized = false
+
 export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps) {
-  const ref = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const renderRef = useRef<HTMLDivElement>(null)
   const [error, setError] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '0px' }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!isVisible) return
     let cancelled = false
+
     async function render() {
       try {
         const mermaid = (await import('mermaid')).default
-        mermaid.initialize({
-          startOnLoad: false,
-          theme: 'neutral',
-          themeVariables: {
-            primaryColor: '#f3f3f3',
-            primaryTextColor: '#000000',
-            primaryBorderColor: '#000000',
-            lineColor: '#444444',
-            secondaryColor: '#e5e7eb',
-            tertiaryColor: '#ffffff',
-            background: '#ffffff',
-            mainBkg: '#f3f3f3',
-            nodeBorder: '#000000',
-            clusterBkg: '#f3f3f3',
-            titleColor: '#000000',
-            edgeLabelBackground: '#ffffff',
-            fontFamily: 'var(--font-suisseintl), ui-sans-serif, system-ui, sans-serif',
-          },
-        })
+        if (!mermaidInitialized) {
+          mermaid.initialize({
+            startOnLoad: false,
+            theme: 'neutral',
+            themeVariables: {
+              primaryColor: '#f3f3f3',
+              primaryTextColor: '#000000',
+              primaryBorderColor: '#000000',
+              lineColor: '#444444',
+              secondaryColor: '#e5e7eb',
+              tertiaryColor: '#ffffff',
+              background: '#ffffff',
+              mainBkg: '#f3f3f3',
+              nodeBorder: '#000000',
+              clusterBkg: '#f3f3f3',
+              titleColor: '#000000',
+              edgeLabelBackground: '#ffffff',
+              fontFamily: 'var(--font-suisseintl), ui-sans-serif, system-ui, sans-serif',
+            },
+          })
+          mermaidInitialized = true
+        }
         const { svg } = await mermaid.render(id, chart)
-        if (!cancelled && ref.current) {
-          ref.current.innerHTML = svg
+        if (!cancelled && renderRef.current) {
+          renderRef.current.innerHTML = svg
         }
       } catch {
         if (!cancelled) setError(true)
@@ -49,10 +74,11 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
     return () => {
       cancelled = true
     }
-  }, [chart, id])
+  }, [chart, id, isVisible])
 
   return (
     <div
+      ref={containerRef}
       style={{
         background: 'var(--color-pure-white)',
         borderRadius: '24px',
@@ -110,7 +136,7 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
           borderRadius: '12px',
           padding: '32px',
           overflowX: 'auto',
-          minHeight: '200px',
+          minHeight: '280px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -130,7 +156,7 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
             {chart}
           </pre>
         ) : (
-          <div ref={ref} style={{ width: '100%', maxWidth: '900px' }} aria-label={title} />
+          <div ref={renderRef} style={{ width: '100%', maxWidth: '900px' }} aria-label={title} />
         )}
       </div>
     </div>

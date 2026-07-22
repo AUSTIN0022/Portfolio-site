@@ -123,7 +123,6 @@ export function InfraScaleSimulator() {
   const trackRef = useRef<HTMLDivElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
   const [beatIdx, setBeatIdx] = useState(0)
-  const [progress, setProgress] = useState(0)
   const [playground, setPlayground] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
   const [pgP, setPgP] = useState(5000)
@@ -188,7 +187,7 @@ export function InfraScaleSimulator() {
     window.scrollTo({ top: top + (i / (BEATS.length - 1)) * dist, behavior: 'smooth' })
   }
 
-  useEffect(() => engine(trackRef, wrapRef, ctrl, setBeatIdx, setProgress, setNotice), [])
+  useEffect(() => engine(trackRef, wrapRef, ctrl, setBeatIdx, setNotice), [])
 
   // Playground control handlers
   const onParticipants = (v: number) => { 
@@ -360,7 +359,7 @@ export function InfraScaleSimulator() {
               {/* Milestone rail (story only) */}
               {!playground && (
                 <div className="is-rail">
-                  <div className="is-rail-fill" style={{ transform: `scaleX(${progress})` }} />
+                  <div className="is-rail-fill" style={{ transform: `scaleX(${(beatIdx / (BEATS.length - 1)).toFixed(4)})` }} />
                   <div className="is-rail-ticks">
                     {BEATS.map((b, i) => (
                       <button key={b.key} type="button" className="is-tick" data-on={i <= beatIdx ? '1' : '0'} data-cur={i === beatIdx ? '1' : '0'} onClick={() => jumpToBeat(i)} aria-label={`Jump to beat ${i + 1}: ${b.title}`} />
@@ -741,7 +740,6 @@ function engine(
   wrapRef: React.RefObject<HTMLDivElement | null>,
   ctrl: React.RefObject<{ playground: boolean; participants: number; lastParticipants: number; mode: 'idle' | 'live'; redisDownUntil: number; cmd: string | null; noticeMsg: string | null; noticeUntil: number }>,
   setBeatIdx: (n: number) => void,
-  setProgress: (n: number) => void,
   setNotice: (s: string | null) => void,
 ) {
   const track = trackRef.current
@@ -749,15 +747,66 @@ function engine(
   if (!track || !wrap) return () => {}
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-  const $ = <T extends Element>(sel: string) => wrap.querySelector<T>(sel)
-  const $$ = <T extends Element>(sel: string) => Array.from(wrap.querySelectorAll<T>(sel))
-  const slotEls = $$<SVGGElement>('[data-slot]')
-  const albEl = $<SVGGElement>('[data-node="alb"]')
-  const redisEl = $<SVGGElement>('[data-node="redis"]')
+  // ── Cache DOM References once on mount ──
+  const slotEls = Array.from(wrap.querySelectorAll<SVGGElement>('[data-slot]'))
+  const albEl = wrap.querySelector<SVGGElement>('[data-node="alb"]')
+  const redisEl = wrap.querySelector<SVGGElement>('[data-node="redis"]')
+
+  // Slot element sub-references
+  const slotCaches = slotEls.map((el, i) => ({
+    el,
+    albWire: wrap.querySelector(`[data-alb-wire="${i}"]`),
+    albPacket: wrap.querySelector(`[data-alb-packet="${i}"]`),
+    redPacket: wrap.querySelector(`[data-packet="red-slot-${i}"]`),
+    rdsPacket: wrap.querySelector(`[data-packet="rds-slot-${i}"]`),
+    redWire: wrap.querySelector(`[data-wire="red-wire-${i}"]`),
+    rdsWire: wrap.querySelector(`[data-wire="rds-wire-${i}"]`),
+    lifeLab: el.querySelector('[data-life]'),
+    cpuBar: el.querySelector<SVGRectElement>('[data-bar="cpu"]'),
+    memBar: el.querySelector<SVGRectElement>('[data-bar="mem"]'),
+  }))
+
+  const readoutMap = new Map<string, Element[]>()
+  wrap.querySelectorAll('[data-readout]').forEach((el) => {
+    const key = el.getAttribute('data-readout')
+    if (key) {
+      const list = readoutMap.get(key) || []
+      list.push(el)
+      readoutMap.set(key, list)
+    }
+  })
+
+  const gaugeMap = new Map<string, { fill: HTMLElement | null; val: HTMLElement | null }>()
+  ;['cpu', 'mem', 'rps', 'lat', 'cache', 'cost'].forEach((name) => {
+    gaugeMap.set(name, {
+      fill: wrap.querySelector<HTMLElement>(`[data-gauge="${name}"] [data-fill]`),
+      val: wrap.querySelector<HTMLElement>(`[data-gauge="${name}"] [data-val]`),
+    })
+  })
+
+  const ringGaugeMap = new Map<string, { circle: SVGCircleElement | null; label: SVGElement | null }>()
+  ;['cpu', 'mem', 'lat', 'rps'].forEach((name) => {
+    ringGaugeMap.set(name, {
+      circle: wrap.querySelector<SVGCircleElement>(`[data-ring-fill="${name}"]`),
+      label: wrap.querySelector<SVGElement>(`[data-ring-text="${name}"]`),
+    })
+  })
+
+  const redPoolPackets = Array.from(wrap.querySelectorAll('[data-pool-packet="redis"]'))
+  const rdsPoolPackets = Array.from(wrap.querySelectorAll('[data-pool-packet="rds"]'))
+  const costFill = wrap.querySelector<HTMLElement>('[data-gauge="cost"] [data-fill]')
+  const costVal = wrap.querySelector<HTMLElement>('[data-gauge="cost"] [data-val]')
+  const islandCostVal = wrap.querySelector<HTMLElement>('[data-readout="island-cost"]')
+  const islandDot = wrap.querySelector<HTMLElement>('[data-readout="island-status-dot"]')
+  const islandText = wrap.querySelector<HTMLElement>('[data-readout="island-status-text"]')
+  const islandMiniInfo = wrap.querySelector<HTMLElement>('[data-readout="island-mini-info"]')
+  const modeChip = wrap.querySelector<HTMLElement>('[data-readout="mode"]')
+  const th = wrap.querySelector<HTMLElement>('.is-threshold')
 
   let instances: Inst[] = [{ state: 'healthy', since: 0, stage: 3 }]
   let liveStart = 0
   let raf = 0
+  let isVisible = true
   let lastBeat = -1
   let lastNoticeShown: string | null = null
 
@@ -766,100 +815,111 @@ function engine(
   let lastHealthyCount = 1
   let lastTripped = false
 
-  const setSlot = (el: SVGGElement, inst: Inst | undefined, cpu: number, mem: number, i: number) => {
-    // Update ALB connection wire & packets
-    const albWire = wrap.querySelector(`[data-alb-wire="${i}"]`)
-    const albPacket = wrap.querySelector(`[data-alb-packet="${i}"]`)
-    if (albWire) {
-      if (inst && inst.state === 'healthy') {
-        albWire.setAttribute('opacity', '0.3')
-      } else if (inst && inst.state === 'pending') {
-        albWire.setAttribute('opacity', '0.12')
-      } else {
-        albWire.setAttribute('opacity', '0')
+  // Viewport observer to freeze rAF loop when offscreen
+  const io = new IntersectionObserver(
+    ([entry]) => {
+      const prev = isVisible
+      isVisible = entry.isIntersecting
+      if (!prev && isVisible) {
+        raf = requestAnimationFrame(frame)
       }
+    },
+    { threshold: 0.05 }
+  )
+  io.observe(track)
+
+  const setSlot = (c: (typeof slotCaches)[0], inst: Inst | undefined, cpu: number, mem: number) => {
+    if (c.albWire) {
+      const targetOp = inst && inst.state === 'healthy' ? '0.3' : inst && inst.state === 'pending' ? '0.12' : '0'
+      if (c.albWire.getAttribute('opacity') !== targetOp) c.albWire.setAttribute('opacity', targetOp)
     }
-    if (albPacket) {
-      if (inst && inst.state === 'healthy') {
-        albPacket.setAttribute('opacity', '0.8')
-      } else {
-        albPacket.setAttribute('opacity', '0')
-      }
+    if (c.albPacket) {
+      const targetOp = inst && inst.state === 'healthy' ? '0.8' : '0'
+      if (c.albPacket.getAttribute('opacity') !== targetOp) c.albPacket.setAttribute('opacity', targetOp)
     }
 
     if (!inst) {
-      el.dataset.state = 'off'
-      // Hide packet & wire
-      const redPacket = wrap.querySelector(`[data-packet="red-slot-${i}"]`)
-      const rdsPacket = wrap.querySelector(`[data-packet="rds-slot-${i}"]`)
-      if (redPacket) redPacket.setAttribute('opacity', '0')
-      if (rdsPacket) rdsPacket.setAttribute('opacity', '0')
-      const redWire = wrap.querySelector(`[data-wire="red-wire-${i}"]`)
-      const rdsWire = wrap.querySelector(`[data-wire="rds-wire-${i}"]`)
-      if (redWire) { redWire.setAttribute('opacity', '0.12'); redWire.setAttribute('stroke', '#3a3a46') }
-      if (rdsWire) { rdsWire.setAttribute('opacity', '0.12'); rdsWire.setAttribute('stroke', '#3a3a46') }
+      if (c.el.dataset.state !== 'off') c.el.dataset.state = 'off'
+      if (c.redPacket && c.redPacket.getAttribute('opacity') !== '0') c.redPacket.setAttribute('opacity', '0')
+      if (c.rdsPacket && c.rdsPacket.getAttribute('opacity') !== '0') c.rdsPacket.setAttribute('opacity', '0')
+      if (c.redWire) {
+        if (c.redWire.getAttribute('opacity') !== '0.12') c.redWire.setAttribute('opacity', '0.12')
+        if (c.redWire.getAttribute('stroke') !== '#3a3a46') c.redWire.setAttribute('stroke', '#3a3a46')
+      }
+      if (c.rdsWire) {
+        if (c.rdsWire.getAttribute('opacity') !== '0.12') c.rdsWire.setAttribute('opacity', '0.12')
+        if (c.rdsWire.getAttribute('stroke') !== '#3a3a46') c.rdsWire.setAttribute('stroke', '#3a3a46')
+      }
       return
     }
-    el.dataset.state = inst.state
-    if (inst.state === 'pending') {
-      const lab = el.querySelector('[data-life]')
-      if (lab) lab.textContent = LIFE_STAGES[Math.min(inst.stage, 3)]
+    if (c.el.dataset.state !== inst.state) c.el.dataset.state = inst.state
+    if (inst.state === 'pending' && c.lifeLab) {
+      const text = LIFE_STAGES[Math.min(inst.stage, 3)]
+      if (c.lifeLab.textContent !== text) c.lifeLab.textContent = text
     }
-    const cpuBar = el.querySelector<SVGRectElement>('[data-bar="cpu"]')
-    const memBar = el.querySelector<SVGRectElement>('[data-bar="mem"]')
     const hot = cpu >= 88
     const show = inst.state === 'healthy'
-    if (cpuBar) {
-      cpuBar.setAttribute('width', `${(show ? cpu : 0) * 0.7}`)
-      cpuBar.setAttribute('fill', hot ? C.danger : C.worker)
+    if (c.cpuBar) {
+      c.cpuBar.setAttribute('width', `${(show ? cpu : 0) * 0.7}`)
+      const fill = hot ? C.danger : C.worker
+      if (c.cpuBar.getAttribute('fill') !== fill) c.cpuBar.setAttribute('fill', fill)
     }
-    if (memBar) memBar.setAttribute('width', `${(show ? mem : 0) * 0.7}`)
+    if (c.memBar) c.memBar.setAttribute('width', `${(show ? mem : 0) * 0.7}`)
 
-    // Update connection packets & wires
-    const redPacket = wrap.querySelector(`[data-packet="red-slot-${i}"]`)
-    const rdsPacket = wrap.querySelector(`[data-packet="rds-slot-${i}"]`)
-    if (redPacket) redPacket.setAttribute('opacity', show ? '0.7' : '0')
-    if (rdsPacket) rdsPacket.setAttribute('opacity', show ? '0.7' : '0')
-
-    const redWire = wrap.querySelector(`[data-wire="red-wire-${i}"]`)
-    const rdsWire = wrap.querySelector(`[data-wire="rds-wire-${i}"]`)
-    if (redWire) {
-      redWire.setAttribute('opacity', show ? '0.45' : '0.12')
-      redWire.setAttribute('stroke', show ? C.infra : '#3a3a46')
+    if (c.redPacket) {
+      const op = show ? '0.7' : '0'
+      if (c.redPacket.getAttribute('opacity') !== op) c.redPacket.setAttribute('opacity', op)
     }
-    if (rdsWire) {
-      rdsWire.setAttribute('opacity', show ? '0.45' : '0.12')
-      rdsWire.setAttribute('stroke', show ? C.infra : '#3a3a46')
+    if (c.rdsPacket) {
+      const op = show ? '0.7' : '0'
+      if (c.rdsPacket.getAttribute('opacity') !== op) c.rdsPacket.setAttribute('opacity', op)
+    }
+
+    if (c.redWire) {
+      const op = show ? '0.45' : '0.12'
+      const stroke = show ? C.infra : '#3a3a46'
+      if (c.redWire.getAttribute('opacity') !== op) c.redWire.setAttribute('opacity', op)
+      if (c.redWire.getAttribute('stroke') !== stroke) c.redWire.setAttribute('stroke', stroke)
+    }
+    if (c.rdsWire) {
+      const op = show ? '0.45' : '0.12'
+      const stroke = show ? C.infra : '#3a3a46'
+      if (c.rdsWire.getAttribute('opacity') !== op) c.rdsWire.setAttribute('opacity', op)
+      if (c.rdsWire.getAttribute('stroke') !== stroke) c.rdsWire.setAttribute('stroke', stroke)
     }
   }
 
   const setGauge = (name: string, pct: number, value: string, danger = false) => {
-    const fill = $<HTMLElement>(`[data-gauge="${name}"] [data-fill]`)
-    const val = $<HTMLElement>(`[data-gauge="${name}"] [data-val]`)
-    if (fill) {
-      fill.style.transform = `scaleX(${clamp(pct, 0, 100) / 100})`
-      fill.dataset.danger = danger ? '1' : '0'
+    const g = gaugeMap.get(name)
+    if (!g) return
+    if (g.fill) {
+      g.fill.style.transform = `scaleX(${clamp(pct, 0, 100) / 100})`
+      g.fill.dataset.danger = danger ? '1' : '0'
     }
-    if (val) val.textContent = value
+    if (g.val && g.val.textContent !== value) g.val.textContent = value
   }
   const setText = (name: string, value: string) => {
-    const els = wrap.querySelectorAll(`[data-readout="${name}"]`)
-    els.forEach((el) => {
-      el.textContent = value
-    })
+    const list = readoutMap.get(name)
+    if (!list) return
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].textContent !== value) list[i].textContent = value
+    }
   }
   const setRingGauge = (name: string, value: number, textVal: string) => {
     const CIRC = 175.93
-    const circle = $<SVGCircleElement>(`[data-ring-fill="${name}"]`)
-    const label = $<SVGElement>(`[data-ring-text="${name}"]`)
-    if (circle) {
+    const rg = ringGaugeMap.get(name)
+    if (!rg) return
+    if (rg.circle) {
       const offset = CIRC - (clamp(value, 0, 100) / 100) * CIRC
-      circle.setAttribute('stroke-dashoffset', String(offset))
+      const sOffset = String(offset)
+      if (rg.circle.getAttribute('stroke-dashoffset') !== sOffset) rg.circle.setAttribute('stroke-dashoffset', sOffset)
     }
-    if (label) label.textContent = textVal
+    if (rg.label && rg.label.textContent !== textVal) rg.label.textContent = textVal
   }
 
   const frame = (now: number) => {
+    if (!isVisible) return
+
     const rect = track.getBoundingClientRect()
     const vh = window.innerHeight
     const total = rect.height - vh
@@ -870,14 +930,12 @@ function engine(
     const man = ctrl.current
     const redisDown = now < man.redisDownUntil
 
-    // process queued command (kill needs the instances closure)
     if (man.cmd === 'kill') {
       const victim = [...instances].reverse().find((i) => i.state === 'healthy')
       if (victim) { victim.state = 'dead'; victim.since = now }
       man.cmd = null
     }
 
-    // Resolve participants / mode / desired-instances
     let participants: number
     let mode: 'idle' | 'live'
     let desired: number
@@ -896,14 +954,11 @@ function engine(
     }
     man.lastParticipants = participants
 
-    // Live-clock bookkeeping
     if (mode === 'live' && liveStart === 0) liveStart = now
     if (mode === 'idle') liveStart = 0
 
-    // ── Instance state machine ──
     const healthyCount = () => instances.filter((i) => i.state === 'healthy').length
     const pendingCount = () => instances.filter((i) => i.state === 'pending').length
-    // advance pending lifecycle
     instances.forEach((inst) => {
       if (inst.state === 'pending' && now - inst.since > (reduce ? 60 : LIFECYCLE_MS)) {
         inst.stage += 1
@@ -911,12 +966,9 @@ function engine(
         if (inst.stage >= 3) inst.state = 'healthy'
       }
     })
-    // remove faded-out dead instances
     instances = instances.filter((inst) => !(inst.state === 'dead' && now - inst.since > DEAD_FADE_MS))
-    // scale out / in toward desired
     const eff = healthyCount() + pendingCount()
     if (mode === 'idle') {
-      // collapse to a single admin instance
       if (eff > 1) {
         const extra = instances.filter((i) => i.state === 'healthy').slice(1)
         extra.forEach((i) => { i.state = 'dead'; i.since = now })
@@ -932,51 +984,48 @@ function engine(
     const healthy = healthyCount()
     const sim = simulate(participants, mode, healthy, redisDown)
 
-    // Render instance slots
-    slotEls.forEach((el, i) => {
+    slotCaches.forEach((c, i) => {
       const inst = instances[i]
       const jitter = inst?.state === 'healthy' ? Math.sin(now / 500 + i) * 3 : 0
-      setSlot(el, inst, sim.cpu + jitter, sim.mem, i)
+      setSlot(c, inst, sim.cpu + jitter, sim.mem)
     })
-    if (albEl) albEl.style.opacity = mode === 'idle' ? '0.28' : '1'
-    if (redisEl) redisEl.dataset.down = redisDown ? '1' : '0'
+    if (albEl) {
+      const targetOp = mode === 'idle' ? '0.28' : '1'
+      if (albEl.style.opacity !== targetOp) albEl.style.opacity = targetOp
+    }
+    if (redisEl) {
+      const targetDown = redisDown ? '1' : '0'
+      if (redisEl.dataset.down !== targetDown) redisEl.dataset.down = targetDown
+    }
 
-    // Connection pool DB packet updates
-    const redPoolPackets = $$('[data-pool-packet="redis"]')
-    const rdsPoolPackets = $$('[data-pool-packet="rds"]')
     const showRed = healthy > 0 && !redisDown
     const showRds = healthy > 0
-    redPoolPackets.forEach(p => p.setAttribute('opacity', showRed ? '0.8' : '0'))
-    rdsPoolPackets.forEach(p => p.setAttribute('opacity', showRds ? '0.8' : '0'))
+    const targetRedOp = showRed ? '0.8' : '0'
+    const targetRdsOp = showRds ? '0.8' : '0'
+    redPoolPackets.forEach((p) => {
+      if (p.getAttribute('opacity') !== targetRedOp) p.setAttribute('opacity', targetRedOp)
+    })
+    rdsPoolPackets.forEach((p) => {
+      if (p.getAttribute('opacity') !== targetRdsOp) p.setAttribute('opacity', targetRdsOp)
+    })
 
-    // Gauges
     setGauge('cpu', sim.cpu, `${sim.cpu}%`, sim.cpu >= 88)
     setGauge('mem', sim.mem, `${sim.mem}%`, sim.mem >= 90)
     setGauge('rps', (sim.rps / 5600) * 100, fmt(sim.rps))
     setGauge('lat', clamp((sim.latency / 300) * 100, 0, 100), `${sim.latency} ms`, sim.latency > 150)
     setGauge('cache', sim.cacheHit, `${sim.cacheHit}%`, redisDown)
-    const costFill = $<HTMLElement>('[data-gauge="cost"] [data-fill]')
     if (costFill) costFill.style.transform = `scaleX(${mode === 'idle' ? 0.15 : clamp(healthy / MAX_INSTANCES, 0, 1)})`
-    const costVal = $<HTMLElement>('[data-gauge="cost"] [data-val]')
-    if (costVal) costVal.textContent = sim.costLabel
+    if (costVal && costVal.textContent !== sim.costLabel) costVal.textContent = sim.costLabel
 
     const tripped = mode === 'live' && sim.cpu >= SCALE_THRESHOLD
 
-    // Metric Rings (Mobile)
     setRingGauge('cpu', sim.cpu, `${sim.cpu}%`)
     setRingGauge('mem', sim.mem, `${sim.mem}%`)
     setRingGauge('lat', clamp((sim.latency / 300) * 100, 0, 100), `${sim.latency}ms`)
     setRingGauge('rps', (sim.rps / 5600) * 100, fmt(sim.rps))
     
-    // Cost (Mobile)
-    const islandCostVal = $<HTMLElement>('[data-readout="island-cost"]')
-    if (islandCostVal) islandCostVal.textContent = sim.costLabel
+    if (islandCostVal && islandCostVal.textContent !== sim.costLabel) islandCostVal.textContent = sim.costLabel
 
-    // Status (Mobile collapsed and expanded status bar summaries)
-    const islandDot = $<HTMLElement>('[data-readout="island-status-dot"]')
-    const islandText = $<HTMLElement>('[data-readout="island-status-text"]')
-    const islandMiniInfo = $<HTMLElement>('[data-readout="island-mini-info"]')
-    
     let dotColor = '🟢'
     let statusText = ''
     let miniInfoText = `${healthy} EC2 · ${mode === 'idle' ? '0' : fmt(participants)} Users`
@@ -998,58 +1047,60 @@ function engine(
       statusText = `Stable · ${healthy} EC2 · ${sim.latency}ms P95`
     }
     
-    if (islandDot) islandDot.textContent = dotColor
-    if (islandText) islandText.textContent = statusText
-    if (islandMiniInfo) islandMiniInfo.textContent = miniInfoText
+    if (islandDot && islandDot.textContent !== dotColor) islandDot.textContent = dotColor
+    if (islandText && islandText.textContent !== statusText) islandText.textContent = statusText
+    if (islandMiniInfo && islandMiniInfo.textContent !== miniInfoText) islandMiniInfo.textContent = miniInfoText
 
-    // Haptics (Vibration Feedback)
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
       if (lastMode !== null && lastMode !== mode) {
-        navigator.vibrate(15) // light tap for Idle <-> Live
+        navigator.vibrate(15)
       }
       if (healthy > lastHealthyCount) {
-        navigator.vibrate(25) // soft pulse when EC2 becomes healthy
+        navigator.vibrate(25)
       }
       if (tripped && !lastTripped) {
-        navigator.vibrate(80) // stronger pulse for autoscaling spike
+        navigator.vibrate(80)
       }
     }
     lastMode = mode
     lastHealthyCount = healthy
     lastTripped = tripped
 
-    // Mission-control readouts
     setText('participants', mode === 'idle' ? '0' : fmt(participants))
     setText('instances', `${healthy}×`)
     setText('status', mode === 'idle' ? 'Idle' : redisDown ? 'Degraded' : sim.stressed ? 'Under load' : 'Running')
     setText('asg', tripped ? 'Triggered' : 'Enabled')
-    const modeChip = $<HTMLElement>('[data-readout="mode"]')
-    if (modeChip) { modeChip.textContent = mode === 'idle' ? '🌙 IDLE' : '⚡ LIVE'; modeChip.dataset.mode = mode }
-    // clock + elapsed
+    if (modeChip) {
+      const text = mode === 'idle' ? '🌙 IDLE' : '⚡ LIVE'
+      if (modeChip.textContent !== text) modeChip.textContent = text
+      if (modeChip.dataset.mode !== mode) modeChip.dataset.mode = mode
+    }
     const d = new Date()
     setText('clock', `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`)
     const elapsed = liveStart ? Math.floor((now - liveStart) / 1000) : 0
     setText('elapsed', `${pad(Math.floor(elapsed / 60))}:${pad(elapsed % 60)}`)
-    // threshold line
-    const th = $<HTMLElement>('.is-threshold')
-    if (th) th.dataset.tripped = tripped ? '1' : '0'
+    if (th) {
+      const targetTripped = tripped ? '1' : '0'
+      if (th.dataset.tripped !== targetTripped) th.dataset.tripped = targetTripped
+    }
     setText('thresholdtext', tripped ? `CPU ${sim.cpu}% · threshold ${SCALE_THRESHOLD}% — scaling policy triggered` : `CPU ${sim.cpu}% · threshold ${SCALE_THRESHOLD}%`)
 
-    // stress vignette
-    wrap.dataset.stress = sim.stressed ? '1' : '0'
+    const targetStress = sim.stressed ? '1' : '0'
+    if (wrap.dataset.stress !== targetStress) wrap.dataset.stress = targetStress
 
-    // notice display (deduped)
     const showMsg = now < man.noticeUntil ? man.noticeMsg : null
     if (showMsg !== lastNoticeShown) { lastNoticeShown = showMsg; setNotice(showMsg) }
 
     if (active !== lastBeat) { lastBeat = active; setBeatIdx(active) }
-    setProgress(p)
 
     raf = requestAnimationFrame(frame)
   }
   raf = requestAnimationFrame(frame)
 
-  return () => { if (raf) cancelAnimationFrame(raf) }
+  return () => {
+    io.disconnect()
+    if (raf) cancelAnimationFrame(raf)
+  }
 }
 
 function Gauge({ name, label, isText }: { name: string; label: string; isText?: boolean }) {

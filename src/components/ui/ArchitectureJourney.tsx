@@ -220,9 +220,9 @@ function pointOnPath(ids: string[], t: number) {
 export function ArchitectureJourney() {
   const trackRef = useRef<HTMLDivElement>(null)
   const svgWrapRef = useRef<HTMLDivElement>(null)
+  const railFillRef = useRef<HTMLDivElement>(null)
   const [stageIdx, setStageIdx] = useState(0)
   const [nodesOnline, setNodesOnline] = useState(2)
-  const [progress, setProgress] = useState(0)
 
   // Memoized so caption/counter state changes never reconcile the SVG.
   const scene = useMemo(() => <Scene />, [])
@@ -243,17 +243,19 @@ export function ArchitectureJourney() {
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const nodeEls = new Map<string, SVGGElement>()
-    const edgeEls = new Map<string, SVGGElement>()
+    const edgeEls = new Map<string, { el: SVGGElement; path: SVGPathElement | null; packet: SVGGElement | null }>()
     const edgeLen = new Map<string, number>()
     wrap.querySelectorAll<SVGGElement>('[data-node]').forEach((el) => nodeEls.set(el.dataset.node!, el))
     wrap.querySelectorAll<SVGGElement>('[data-edge]').forEach((el) => {
-      edgeEls.set(el.dataset.edge!, el)
-      const path = el.querySelector('path')
+      const key = el.dataset.edge!
+      const path = el.querySelector<SVGPathElement>('path')
+      const packet = el.querySelector<SVGGElement>('[data-packet]')
+      edgeEls.set(key, { el, path, packet })
       if (path) {
         const len = path.getTotalLength()
-        edgeLen.set(el.dataset.edge!, len)
+        edgeLen.set(key, len)
         path.style.strokeDasharray = `${len}`
-        path.style.strokeDashoffset = `${len}` // start undrawn
+        path.style.strokeDashoffset = `${len}`
       }
     })
     const hero = wrap.querySelector<SVGGElement>('[data-hero]')
@@ -262,13 +264,28 @@ export function ArchitectureJourney() {
     const born = new Set<string>()
 
     let raf = 0
+    let isVisible = true
     let lastStage = -1
     let lastOnline = -1
     let lastP = 0
     let lastSeg = -1
 
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        const prev = isVisible
+        isVisible = entry.isIntersecting
+        if (!prev && isVisible) {
+          render()
+        }
+      },
+      { threshold: 0.05 }
+    )
+    io.observe(track)
+
     const render = () => {
       raf = 0
+      if (!isVisible) return
+
       const rect = track.getBoundingClientRect()
       const vh = window.innerHeight
       const total = rect.height - vh
@@ -287,9 +304,9 @@ export function ArchitectureJourney() {
       const tx = VB_W / 2 - fx * fs
       const ty = VB_H / 2 - fy * fs
       camera.setAttribute('transform', `translate(${tx.toFixed(2)} ${ty.toFixed(2)}) scale(${fs.toFixed(4)})`)
-      // Subtle motion blur proportional to camera velocity.
       const blur = reduce ? 0 : clamp(vel * 260, 0, 1.6)
-      camera.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : 'none'
+      const targetFilter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : 'none'
+      if (camera.style.filter !== targetFilter) camera.style.filter = targetFilter
 
       const active = Math.round(fi)
       const stage = STAGES[active]
@@ -304,15 +321,17 @@ export function ArchitectureJourney() {
         const built = n.appear <= active
         if (built) online++
         const on = isAll || activeSet!.has(n.id)
-        el.style.opacity = built ? (on ? '1' : '0.18') : '0'
-        el.style.setProperty('--glow', built && on && !reduce ? '16px' : '0px')
-        el.dataset.on = built && on ? '1' : '0'
-        // Birth animation once, when a node first comes online.
+        const targetOp = built ? (on ? '1' : '0.18') : '0'
+        if (el.style.opacity !== targetOp) el.style.opacity = targetOp
+        const targetGlow = built && on && !reduce ? '16px' : '0px'
+        el.style.setProperty('--glow', targetGlow)
+        const targetOn = built && on ? '1' : '0'
+        if (el.dataset.on !== targetOn) el.dataset.on = targetOn
         if (built && !born.has(n.id)) {
           born.add(n.id)
           if (!reduce) {
             el.classList.remove('aj-birth')
-            void el.getBBox() // reflow to restart
+            void el.getBBox()
             el.classList.add('aj-birth')
           }
         } else if (!built && born.has(n.id)) {
@@ -324,23 +343,29 @@ export function ArchitectureJourney() {
       // Edges — draw-in, emphasis, packet visibility.
       EDGES.forEach((e) => {
         const key = `${e.from}__${e.to}`
-        const el = edgeEls.get(key)
-        if (!el) return
+        const cached = edgeEls.get(key)
+        if (!cached) return
         const built = e.appear <= active
         const on = isAll || (activeSet!.has(e.from) && activeSet!.has(e.to))
-        el.style.opacity = built ? (on ? '1' : '0.12') : '0'
-        const path = el.querySelector<SVGPathElement>('path')
+        const targetOp = built ? (on ? '1' : '0.12') : '0'
+        if (cached.el.style.opacity !== targetOp) cached.el.style.opacity = targetOp
         const len = edgeLen.get(key) ?? 0
-        if (path) path.style.strokeDashoffset = built ? '0' : `${len}`
-        const packet = el.querySelector<SVGGElement>('[data-packet]')
-        if (packet) packet.style.display = on && e.animated && !reduce ? 'block' : 'none'
+        if (cached.path) {
+          const targetOffset = built ? '0' : `${len}`
+          if (cached.path.style.strokeDashoffset !== targetOffset) cached.path.style.strokeDashoffset = targetOffset
+        }
+        if (cached.packet) {
+          const targetDisplay = on && e.animated && !reduce ? 'block' : 'none'
+          if (cached.packet.style.display !== targetDisplay) cached.packet.style.display = targetDisplay
+        }
       })
 
       // Hero request token — travels the whole path, narrated per hop.
       if (hero) {
         const ht = clamp((p - 0.12) / (0.9 - 0.12), 0, 1)
         const visible = p > 0.12 && p < 0.98
-        hero.style.opacity = visible ? '1' : '0'
+        const targetOp = visible ? '1' : '0'
+        if (hero.style.opacity !== targetOp) hero.style.opacity = targetOp
         if (visible) {
           const pos = pointOnPath(REQUEST_PATH, ht)
           hero.setAttribute('transform', `translate(${pos.x.toFixed(1)} ${pos.y.toFixed(1)})`)
@@ -354,7 +379,10 @@ export function ArchitectureJourney() {
       }
 
       // Convergence swarm — "10k sockets" streaming in, live/submit beats.
-      if (swarm) swarm.style.display = !reduce && (active === 2 || active === 3) ? 'block' : 'none'
+      if (swarm) {
+        const targetDisplay = !reduce && (active === 2 || active === 3) ? 'block' : 'none'
+        if (swarm.style.display !== targetDisplay) swarm.style.display = targetDisplay
+      }
 
       if (active !== lastStage) {
         lastStage = active
@@ -364,16 +392,20 @@ export function ArchitectureJourney() {
         lastOnline = online
         setNodesOnline(online)
       }
-      setProgress(p)
+      if (railFillRef.current) {
+        railFillRef.current.style.transform = `scaleX(${p.toFixed(4)})`
+      }
     }
 
     const onScroll = () => {
+      if (!isVisible) return
       if (!raf) raf = requestAnimationFrame(render)
     }
     render()
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
     return () => {
+      io.disconnect()
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
       if (raf) cancelAnimationFrame(raf)
@@ -436,7 +468,7 @@ export function ArchitectureJourney() {
 
           {/* Milestone rail — clickable */}
           <div className="aj-rail">
-            <div className="aj-rail-fill" style={{ transform: `scaleX(${progress})` }} />
+            <div ref={railFillRef} className="aj-rail-fill" style={{ transform: 'scaleX(0)' }} />
             <div className="aj-rail-ticks">
               {STAGES.map((s, i) => (
                 <button

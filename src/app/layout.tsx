@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import Script from 'next/script'
 import { Barlow_Condensed, JetBrains_Mono, Inter } from 'next/font/google'
 import { Providers } from './providers'
 import { ServiceWorkerCleanup } from '@/components/util/ServiceWorkerCleanup'
@@ -91,11 +92,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       className={`${suisseCondFallback.variable} ${suisseMonoFallback.variable} ${suisseFallback.variable}`}
+      suppressHydrationWarning
     >
       {/* suppressHydrationWarning: browser extensions (Grammarly etc.) mutate
           <body> with data-gr-* attributes before React hydrates, which is
-          otherwise reported as a hydration mismatch we can't control. */}
+          otherwise reported as a hydration mismatch we can't control. The
+          <html> tag also gets a hydration-warning suppression below, since
+          the inline script sets data-theme on it before React ever runs. */}
       <body suppressHydrationWarning>
+        {/* Sets [data-theme] on <html> before first paint (Next's
+            beforeInteractive strategy runs it before hydration, so there's no
+            flash of the wrong theme). Mirrors ThemeToggle/themeStore's own
+            storage key and fallback-to-system-preference logic. */}
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`(function(){try{var t=localStorage.getItem('theme-preference');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.setAttribute('data-theme',t)}catch(e){}})();`}
+        </Script>
         <JsonLd data={[personSchema(), websiteSchema()]} />
         <ServiceWorkerCleanup />
         <a href="#main-content" className="skip-link">

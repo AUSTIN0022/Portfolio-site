@@ -2,9 +2,12 @@
 
 import * as React from 'react'
 import dynamic from 'next/dynamic'
+import { usePathname } from 'next/navigation'
 import { gsap } from 'gsap'
 import { ensurePaintballAudioRunning, playPaintballShotSound } from '@/lib/playPaintballShotSound'
 import { notifyShootModeSubscribers, SHOOT_MODE_STORAGE_KEY } from '@/lib/shootModeStore'
+import { AvailablePill } from '@/components/ui/AvailablePill'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 const SPLAT_FADE_MS = 520
 const SPLAT_TOTAL_LIFETIME_MS = 3200
@@ -305,6 +308,8 @@ function writeStateToStorage(isOn: boolean): void {
 }
 
 export default function FloatingShootToggle(): React.JSX.Element {
+  const pathname = usePathname()
+  const isHome = pathname === '/'
   const [isOn, setIsOn] = React.useState<boolean>(false)
   const [showGunCursor, setShowGunCursor] = React.useState<boolean>(false)
   const [dateTimeText, setDateTimeText] = React.useState<string>('')
@@ -761,6 +766,14 @@ export default function FloatingShootToggle(): React.JSX.Element {
           <GunViewer aimX={aimX} aimY={aimY} />
         </div>
       )}
+
+      {/* Top-right HUD — status pill (home only) + theme toggle. Fixed like
+          Nav, so it stays visible on scroll in either direction. The shoot
+          toggle stays in its original spot in the bottom HUD below. */}
+      <div className="shoot-top-hud" data-shoot-ui="1">
+        {isHome && <AvailablePill>OPEN TO WORK</AvailablePill>}
+        <ThemeToggle />
+      </div>
 
       {/* Bottom HUD */}
       <div className="shoot-hud" data-shoot-ui="1">

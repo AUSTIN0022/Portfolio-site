@@ -36,8 +36,8 @@ export function LogoTooltip({ label, children }: { label: string; children: Reac
               position: 'fixed',
               top: pos.top - 10,
               left: pos.left,
-              background: 'var(--color-ink-black)',
-              color: 'var(--color-pure-white)',
+              background: 'var(--color-fg)',
+              color: 'var(--color-bg)',
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '11px',
               letterSpacing: '-0.01em',
@@ -61,7 +61,7 @@ export function LogoTooltip({ label, children }: { label: string; children: Reac
                 height: 0,
                 borderLeft: '5px solid transparent',
                 borderRight: '5px solid transparent',
-                borderTop: '5px solid var(--color-ink-black)',
+                borderTop: '5px solid var(--color-fg)',
               }}
             />
           </span>,

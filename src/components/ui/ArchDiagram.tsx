@@ -99,7 +99,7 @@ export function ArchDiagram({ title, description, chart, id, index }: ArchDiagra
     <div
       ref={containerRef}
       style={{
-        background: 'var(--color-pure-white)',
+        background: 'var(--color-bg)',
         borderRadius: '24px',
         padding: 'clamp(24px, 5vw, 40px)',
         marginBottom: '32px',
@@ -113,7 +113,7 @@ export function ArchDiagram({ title, description, chart, id, index }: ArchDiagra
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
             fontSize: '12px',
-            color: 'var(--color-muted-on-light)',
+            color: 'var(--color-fg-subtle)',
             letterSpacing: '-0.36px',
             marginBottom: '8px',
           }}
@@ -127,7 +127,7 @@ export function ArchDiagram({ title, description, chart, id, index }: ArchDiagra
             fontSize: '28px',
             lineHeight: 1.0,
             letterSpacing: '-0.84px',
-            color: 'var(--color-ink-black)',
+            color: 'var(--color-fg)',
           }}
         >
           {title}
@@ -139,7 +139,7 @@ export function ArchDiagram({ title, description, chart, id, index }: ArchDiagra
               fontWeight: 400,
               fontSize: '14px',
               lineHeight: 1.5,
-              color: 'var(--color-muted-on-light)',
+              color: 'var(--color-fg-subtle)',
               letterSpacing: '-0.28px',
               marginTop: '8px',
             }}
@@ -152,7 +152,7 @@ export function ArchDiagram({ title, description, chart, id, index }: ArchDiagra
       {/* Diagram render area */}
       <div
         style={{
-          background: 'var(--color-surface-mist)',
+          background: 'var(--color-chip-bg)',
           borderRadius: '12px',
           padding: '32px',
           overflowX: 'auto',
@@ -167,7 +167,7 @@ export function ArchDiagram({ title, description, chart, id, index }: ArchDiagra
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '11px',
-              color: 'var(--color-graphite)',
+              color: 'var(--color-fg-muted)',
               whiteSpace: 'pre-wrap',
               wordBreak: 'break-word',
               lineHeight: 1.6,

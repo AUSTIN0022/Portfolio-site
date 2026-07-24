@@ -10,10 +10,13 @@ const rows = [
 
 export function Now() {
   return (
-    <section id="now" style={{ background: 'var(--color-canvas-mist)', padding: 'var(--section-y) var(--gutter)' }}>
+    <section id="now" style={{ background: 'var(--color-bg)', padding: 'var(--section-y) var(--gutter)' }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-        <MonoKicker>// NOW</MonoKicker>
+        <div data-gsap="heading">
+          <MonoKicker>// NOW</MonoKicker>
+        </div>
         <div
+          data-gsap-group
           style={{
             marginTop: '48px',
             display: 'flex',
@@ -25,19 +28,20 @@ export function Now() {
           {rows.map((row, i) => (
             <div
               key={i}
+              data-gsap="card"
               style={{
                 display: 'grid',
                 gridTemplateColumns: '120px minmax(0, 1fr)',
                 gap: '24px',
                 padding: '24px 0',
-                borderBottom: '1px solid var(--color-ink-black)',
+                borderBottom: '1px solid var(--color-fg)',
               }}
             >
               <div
                 style={{
                   fontFamily: 'var(--font-suisseintlmono)',
                   fontSize: '12px',
-                  color: 'var(--color-graphite)',
+                  color: 'var(--color-fg-muted)',
                   letterSpacing: '-0.36px',
                   display: 'flex',
                   alignItems: 'center',
@@ -53,7 +57,7 @@ export function Now() {
                   fontWeight: 400,
                   fontSize: '16px',
                   lineHeight: 1.33,
-                  color: 'var(--color-ink-black)',
+                  color: 'var(--color-fg)',
                   letterSpacing: '-0.32px',
                 }}
               >
@@ -68,14 +72,14 @@ export function Now() {
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '12px',
-              color: 'var(--color-graphite)',
+              color: 'var(--color-fg-muted)',
               letterSpacing: '-0.36px',
               textDecoration: 'none',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
             }}
-            className="hover:text-black transition-colors duration-200"
+            className="hover:text-[var(--color-fg)] transition-colors duration-200"
           >
             What I&apos;m working on →
           </Link>

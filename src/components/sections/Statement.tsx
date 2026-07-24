@@ -1,5 +1,3 @@
-import ScrollFloat from '@/components/ui/ScrollFloat'
-
 export function Statement() {
   return (
     <section
@@ -14,8 +12,8 @@ export function Statement() {
         textAlign: 'center',
       }}
     >
-      <ScrollFloat
-        as="p"
+      <p
+        data-gsap="heading"
         style={{
           fontFamily: 'var(--font-suisseintlcond)',
           fontWeight: 700,
@@ -28,7 +26,7 @@ export function Statement() {
         }}
       >
         PRINCIPLES ARE CHEAP. HERE&apos;S THE PROOF.
-      </ScrollFloat>
+      </p>
     </section>
   )
 }

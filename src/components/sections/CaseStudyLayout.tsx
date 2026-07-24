@@ -61,7 +61,7 @@ export function CaseStudyLayout({ children, projectName, category }: CaseStudyLa
   const beamOpacity = useTransform(scrollYProgress, [0, 0.1], [0, 1])
 
   return (
-    <div style={{ background: 'var(--color-canvas-mist)', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--color-bg)', minHeight: '100vh' }}>
       {/* Top bar */}
       <div style={{ background: 'var(--color-ink-black)' }}>
         <div style={{ padding: 'clamp(96px, 16vw, 120px) var(--gutter) var(--section-y)', maxWidth: '1280px', margin: '0 auto' }}>

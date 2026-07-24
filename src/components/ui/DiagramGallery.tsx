@@ -234,7 +234,7 @@ function DiagramCarousel({ diagrams }: { diagrams: DiagramData[] }) {
             type="button"
             className="icon-btn"
             aria-label="Previous diagram"
-            style={{ width: 48, height: 48, border: '1px solid var(--color-ink-black)', borderRadius: '50%', background: 'transparent', flexShrink: 0 }}
+            style={{ width: 48, height: 48, border: '1px solid var(--color-fg)', borderRadius: '50%', background: 'transparent', flexShrink: 0 }}
             onClick={goPrev}
           >
             <span aria-hidden>←</span>
@@ -244,7 +244,7 @@ function DiagramCarousel({ diagrams }: { diagrams: DiagramData[] }) {
             type="button"
             className="icon-btn"
             aria-label="Next diagram"
-            style={{ width: 48, height: 48, border: '1px solid var(--color-ink-black)', borderRadius: '50%', background: 'transparent', flexShrink: 0 }}
+            style={{ width: 48, height: 48, border: '1px solid var(--color-fg)', borderRadius: '50%', background: 'transparent', flexShrink: 0 }}
             onClick={goNext}
           >
             <span aria-hidden>→</span>
@@ -386,7 +386,7 @@ function DiagramCard({
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            color: 'var(--color-graphite)',
+            color: 'var(--color-fg-muted)',
           }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">

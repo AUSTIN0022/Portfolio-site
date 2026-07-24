@@ -27,22 +27,30 @@ export default function Home() {
       <main id="main-content">
         <Hero />
         <DomainMarquee />
-        <CurvedRise>
+        <CurvedRise behind="var(--color-bg)">
           <StatsStrip />
         </CurvedRise>
-        <About />
+        <CurvedRise panel="var(--color-bg)" behind="var(--color-ink-black)">
+          <About />
+        </CurvedRise>
         <Principles />
-        <CurvedRise>
+        <CurvedRise behind="var(--color-bg)">
           <Statement />
         </CurvedRise>
-        <Work />
-        <CurvedRise>
+        <CurvedRise panel="var(--color-bg)" behind="var(--color-ink-black)">
+          <Work />
+        </CurvedRise>
+        <CurvedRise behind="var(--color-bg)">
           <Skills />
         </CurvedRise>
-        <Now />
+        <CurvedRise panel="var(--color-bg)" behind="var(--color-ink-black)">
+          <Now />
+        </CurvedRise>
         <CtaTiles />
       </main>
-      <Footer />
+      <CurvedRise behind="var(--color-bg)">
+        <Footer />
+      </CurvedRise>
     </>
   )
 }

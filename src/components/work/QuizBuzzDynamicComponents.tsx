@@ -59,7 +59,7 @@ export function ArchDiagram(props: ComponentProps<typeof ArchDiagramComponent>) 
       fallback={
         <div
           style={{
-            background: 'var(--color-pure-white)',
+            background: 'var(--color-bg)',
             borderRadius: '24px',
             padding: 'clamp(24px, 5vw, 40px)',
             marginBottom: '32px',
@@ -68,7 +68,7 @@ export function ArchDiagram(props: ComponentProps<typeof ArchDiagramComponent>) 
         >
           <div
             style={{
-              background: 'var(--color-surface-mist)',
+              background: 'var(--color-chip-bg)',
               borderRadius: '12px',
               height: '240px',
               width: '100%',

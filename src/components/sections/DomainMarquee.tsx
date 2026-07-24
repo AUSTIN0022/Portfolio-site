@@ -13,7 +13,7 @@ const rowFont = {
   fontWeight: 700,
   letterSpacing: '-0.03em',
   lineHeight: 0.9,
-  color: 'var(--color-ink-black)',
+  color: 'var(--color-fg)',
 } as const
 
 const wordStyle = { ...rowFont, fontSize: 'clamp(4.5rem, 13vw, 13rem)' }
@@ -21,7 +21,7 @@ const ampStyle = {
   ...rowFont,
   fontWeight: 400,
   fontSize: 'clamp(2.25rem, 6vw, 5rem)',
-  color: 'var(--color-muted-on-light)',
+  color: 'var(--color-fg-subtle)',
   margin: '0 clamp(20px, 4vw, 56px)',
 }
 
@@ -109,10 +109,16 @@ export function DomainMarquee() {
       style={{
         position: 'relative',
         overflow: 'hidden',
-        background: 'var(--color-canvas-mist)',
+        background: 'var(--color-bg)',
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
+        // Extra bottom-only padding: the CurvedRise wrap on the section below
+        // pulls it up by 64px (marginTop: -overlap), which was eating into
+        // this section's naturally-centered bottom gap and making it read
+        // tighter than the top gap. This keeps both keyword rows fully clear
+        // of the black band until the user scrolls further.
+        paddingBottom: 'clamp(96px, 12vw, 160px)',
       }}
     >
       <div
@@ -122,7 +128,7 @@ export function DomainMarquee() {
           inset: '0 auto 0 0',
           width: '10vw',
           minWidth: '60px',
-          background: 'linear-gradient(90deg, var(--color-canvas-mist), transparent)',
+          background: 'linear-gradient(90deg, var(--color-bg), transparent)',
           zIndex: 2,
           pointerEvents: 'none',
         }}
@@ -134,7 +140,7 @@ export function DomainMarquee() {
           inset: '0 0 0 auto',
           width: '10vw',
           minWidth: '60px',
-          background: 'linear-gradient(270deg, var(--color-canvas-mist), transparent)',
+          background: 'linear-gradient(270deg, var(--color-bg), transparent)',
           zIndex: 2,
           pointerEvents: 'none',
         }}

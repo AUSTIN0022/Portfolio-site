@@ -1,7 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-canvas-mist: #e5e7eb;
+  /* Pure white — the single light-mode canvas every non-black section shares
+     (Hero through Now, plus CtaTiles). Was a cool #e5e7eb gray, then briefly
+     a warm off-white; both created a second "white-ish" tone that clashed
+     wherever a pure-white button, card, or chip sat on top of it (a visibly
+     mismatched box). Matching this to --color-pure-white exactly removes
+     that seam everywhere at once — cards, buttons, and tags now sit flush
+     on the section behind them, separated only by their own shadow/border,
+     never by a color mismatch. */
+  --color-canvas-mist: #ffffff;
   --color-pure-white: #ffffff;
   --color-surface-mist: #f3f3f3;
   --color-ink-black: #000000;
@@ -57,6 +65,32 @@
   --radius-3xl-2: 32px;
   --radius-full: 48px;
   --radius-full-2: 64px;
+}
+
+/* ============================================================
+   Theme tokens — light/dark toggle. Only the LIGHT canvas sections (Hero
+   through Now, plus CtaTiles) and the shared button/card/tag/chip classes
+   read these. The permanently-black bands (StatsStrip, Statement, Skills,
+   Footer) keep using the literal --color-ink-black/--color-pure-white
+   tokens directly and are deliberately untouched by the toggle — they're
+   a fixed design band in both themes, not "dark mode content." Applied via
+   [data-theme] on <html>, set by an inline bootstrap script in layout.tsx
+   (before first paint, so there's no flash of the wrong theme) and flipped
+   at runtime by ThemeToggle.
+   ============================================================ */
+:root {
+  --color-bg: #ffffff;
+  --color-fg: #000000;
+  --color-fg-muted: #444444;
+  --color-fg-subtle: #666666;
+  --color-chip-bg: #f3f3f3;
+}
+:root[data-theme='dark'] {
+  --color-bg: #000000;
+  --color-fg: #ffffff;
+  --color-fg-muted: #b3b3b3;
+  --color-fg-subtle: #999999;
+  --color-chip-bg: #1a1a1a;
 }
 
 :root {
@@ -174,9 +208,18 @@ body {
      JS finishes loading) — electric yellow instead of black so that gap reads
      as branded, not broken. Sections then layer their own backgrounds on top. */
   background-color: var(--color-electric-yellow);
-  color: var(--color-ink-black);
+  color: var(--color-fg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Same transition on every section/footer so the light/dark toggle crossfades
+   backgrounds instead of snapping instantly (the permanently-black bands never
+   change color, so this is a no-op there). */
+section,
+footer {
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 /* No @font-face rules here: Suisse Int'l is a licensed typeface not present
@@ -252,10 +295,14 @@ a:hover > .wave-text span,
    ============================================================ */
 
 /* Stat cells: stacked rows get a top rule; the horizontal row
-   (>=640px) gets a left rule and left padding instead. */
+   (>=640px) gets a left rule and centered content instead. Each number is
+   centered within its own equal-width column — previously left-aligned,
+   which left a large dead zone after the last ("2YR") column since its
+   content didn't fill the 1fr track, making the strip read as off-center. */
 .stat-cell {
   padding: 20px 0;
   border-top: 1px solid #222;
+  text-align: center;
 }
 .stat-cell:first-child {
   padding-top: 0;
@@ -263,7 +310,7 @@ a:hover > .wave-text span,
 }
 @media (min-width: 640px) {
   .stat-cell {
-    padding: 0 0 0 var(--gutter);
+    padding: 0 var(--gutter);
     border-top: none;
     border-left: 1px solid #222;
   }
@@ -271,11 +318,16 @@ a:hover > .wave-text span,
     padding-left: 0;
     border-left: none;
   }
+  .stat-cell:last-child {
+    padding-right: 0;
+  }
 }
 
-/* CTA tiles: divider flips from bottom (stacked) to right (side-by-side). */
+/* CTA tiles: divider flips from bottom (stacked) to right (side-by-side).
+   A theme-aware tint, not canvas-mist — the tiles share the canvas's own
+   background (see CtaTiles.tsx), so a same-color divider would be invisible. */
 .cta-tile {
-  border-bottom: 1px solid var(--color-canvas-mist);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-fg) 8%, transparent);
 }
 .cta-tile:last-child {
   border-bottom: none;
@@ -288,7 +340,7 @@ a:hover > .wave-text span,
     border-bottom: none;
   }
   .cta-tile:not(:last-child) {
-    border-right: 1px solid var(--color-canvas-mist);
+    border-right: 1px solid color-mix(in srgb, var(--color-fg) 8%, transparent);
   }
 }
 
@@ -675,13 +727,13 @@ a:hover > .wave-text span,
   gap: 10px 24px;
   align-items: start;
   padding: 24px 20px;
-  border-top: 1px solid #d0d3d7;
+  border-top: 1px solid color-mix(in srgb, var(--color-fg) 18%, transparent);
   border-radius: 12px;
   position: relative;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 .principle-row:last-child {
-  border-bottom: 1px solid #d0d3d7;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-fg) 18%, transparent);
 }
 .principle-num {
   font-family: var(--font-suisseintlcond);
@@ -689,7 +741,7 @@ a:hover > .wave-text span,
   font-size: clamp(2.25rem, 7vw, 3.25rem);
   line-height: 0.9;
   letter-spacing: -0.03em;
-  color: #b4b9c0;
+  color: color-mix(in srgb, var(--color-fg) 30%, transparent);
   transition: color 0.3s ease;
 }
 .principle-row::before {
@@ -706,11 +758,11 @@ a:hover > .wave-text span,
 }
 .principle-row:hover,
 .principle-row:focus-within {
-  background: #dbdee2;
+  background: color-mix(in srgb, var(--color-fg) 13%, var(--color-bg));
 }
 .principle-row:hover .principle-num,
 .principle-row:focus-within .principle-num {
-  color: var(--color-ink-black);
+  color: var(--color-fg);
 }
 .principle-row:hover::before,
 .principle-row:focus-within::before {
@@ -810,7 +862,7 @@ a:hover > .wave-text span,
   position: relative;
   height: 8px;
   border-radius: 999px;
-  background: #cbced3;
+  background: color-mix(in srgb, var(--color-fg) 18%, var(--color-bg));
   cursor: pointer;
   touch-action: none;
 }
@@ -820,11 +872,11 @@ a:hover > .wave-text span,
   left: 0;
   height: 100%;
   border-radius: 999px;
-  background: var(--color-ink-black);
+  background: var(--color-fg);
   transition: background 0.2s ease;
 }
 .card-scrollbar:hover .card-scrollbar-thumb {
-  background: #222222;
+  background: color-mix(in srgb, var(--color-fg) 87%, transparent);
 }
 
 /* ============================================================
@@ -957,9 +1009,9 @@ a:hover > .wave-text span,
   justify-content: center;
   padding: 12px 24px;
   border-radius: 6px;
-  border: 1px solid var(--color-ink-black);
-  background: var(--color-pure-white);
-  color: var(--color-ink-black);
+  border: 1px solid var(--color-fg);
+  background: var(--color-bg);
+  color: var(--color-fg);
   font-family: var(--font-suisseintl);
   font-weight: 500;
   font-size: 14px;
@@ -969,11 +1021,13 @@ a:hover > .wave-text span,
   transition: box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 .btn-sketch:hover {
-  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+  box-shadow: 4px 4px 0px 0px var(--color-fg);
 }
+/* Primary swaps to a solid inverted fill: black-on-white in light mode,
+   white-on-black in dark mode — stays a strong CTA against either canvas. */
 .btn-sketch--primary {
-  background: var(--color-ink-black);
-  color: var(--color-pure-white);
+  background: var(--color-fg);
+  color: var(--color-bg);
 }
 .btn-sketch--pill {
   border-radius: 999px;
@@ -1007,13 +1061,13 @@ a:hover > .wave-text span,
    "button-in-button" chip rather than a naked outline; on hover it leans
    diagonally toward its own arrow, like the icon is being pulled by it. */
 .icon-btn {
-  background: rgba(0, 0, 0, 0.03);
+  background: color-mix(in srgb, var(--color-fg) 3%, transparent);
   transition: transform 0.35s var(--ease-spring), box-shadow 0.35s var(--ease-spring), background 0.35s ease, color 0.35s ease;
 }
 .icon-btn:hover {
   transform: translate(1px, -2px);
   box-shadow: var(--shadow-elevation-2);
-  background: rgba(0, 0, 0, 0.05);
+  background: color-mix(in srgb, var(--color-fg) 5%, transparent);
 }
 .icon-btn:active {
   transform: translateY(0) scale(0.94);
@@ -1025,14 +1079,22 @@ a:hover > .wave-text span,
    background moves. A faint rest-state tint gives it a nested chip feel
    even before hover. */
 .cta-icon {
-  background: rgba(0, 0, 0, 0.02);
+  background: color-mix(in srgb, var(--color-fg) 2%, transparent);
   transition: transform 0.5s var(--ease-spring), background 0.5s var(--ease-spring), color 0.5s var(--ease-spring), border-color 0.5s var(--ease-spring);
+}
+/* The diagonal fill (.cta-tile-fill) is always electric-yellow regardless of
+   theme, so the heading/description/icon sitting on top of it must always
+   stay dark too — --cta-fg overrides the theme-aware --color-fg fallback
+   those elements read (see CtaTiles.tsx) only while hovered. */
+.cta-tile:hover {
+  --cta-fg: var(--color-ink-black);
+  --cta-fg-muted: var(--color-graphite);
 }
 .cta-tile:hover .cta-icon {
   transform: translate(2px, -2px) rotate(45deg);
-  background: var(--color-ink-black);
+  background: var(--cta-fg);
   color: var(--color-electric-yellow);
-  border-color: var(--color-ink-black);
+  border-color: var(--cta-fg);
 }
 
 /* LogoLoop hover tooltip — mirrors the Nav island's own tooltip idiom
@@ -1299,6 +1361,23 @@ body.shoot-mode-active *::selection {
   pointer-events: none;
 }
 .shoot-hud-item {
+  pointer-events: auto;
+}
+
+/* Top-right HUD — status pill + shoot toggle, fixed like Nav so it never
+   scrolls away. Sits at a lower z-index than Nav's own island (50) so Nav
+   wins the rare overlap on very narrow viewports instead of drawing over it. */
+.shoot-top-hud {
+  position: fixed;
+  top: max(16px, env(safe-area-inset-top));
+  right: 16px;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+.shoot-top-hud > * {
   pointer-events: auto;
 }
 .shoot-hud-clock {

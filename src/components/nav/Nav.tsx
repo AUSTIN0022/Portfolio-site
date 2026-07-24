@@ -169,7 +169,7 @@ export function Nav() {
           left: '50%',
           transformOrigin: 'center top',
           zIndex: 50,
-          background: 'var(--color-pure-white)',
+          background: 'var(--color-bg)',
           borderRadius: '48px',
           display: 'flex',
           alignItems: 'center',
@@ -185,7 +185,7 @@ export function Nav() {
             fontFamily: 'var(--font-suisseintl)',
             fontWeight: 500,
             fontSize: '16px',
-            color: 'var(--color-ink-black)',
+            color: 'var(--color-fg)',
             letterSpacing: '-0.02em',
             textDecoration: 'none',
             paddingLeft: '8px',
@@ -228,11 +228,11 @@ export function Nav() {
                   fontFamily: 'var(--font-suisseintl)',
                   fontWeight: 500,
                   fontSize: linkFontSize,
-                  color: 'var(--color-graphite)',
+                  color: 'var(--color-fg-muted)',
                   letterSpacing: '-0.028px',
                   textDecoration: 'none',
                 }}
-                className="hover:text-black transition-colors duration-200"
+                className="hover:text-[var(--color-fg)] transition-colors duration-200"
               >
                 <WaveText>{label}</WaveText>
               </Link>
@@ -262,7 +262,7 @@ export function Nav() {
             border: 'none',
             background: 'transparent',
             cursor: 'pointer',
-            color: 'var(--color-ink-black)',
+            color: 'var(--color-fg)',
             borderRadius: '50%',
             flexShrink: 0,
           }}
@@ -330,8 +330,8 @@ export function Nav() {
                 left: tip.x,
                 marginTop: '14px',
                 transformOrigin: 'center top',
-                background: 'var(--color-ink-black)',
-                color: 'var(--color-pure-white)',
+                background: 'var(--color-fg)',
+                color: 'var(--color-bg)',
                 fontFamily: 'var(--font-suisseintl)',
                 fontWeight: 450,
                 fontSize: '12px',
@@ -356,7 +356,7 @@ export function Nav() {
                   height: 0,
                   borderLeft: '5px solid transparent',
                   borderRight: '5px solid transparent',
-                  borderBottom: '6px solid var(--color-ink-black)',
+                  borderBottom: '6px solid var(--color-fg)',
                 }}
               />
               {tip.text}
@@ -417,7 +417,7 @@ export function Nav() {
                 left: '50%',
                 transformOrigin: 'center top',
                 zIndex: 49,
-                background: 'var(--color-pure-white)',
+                background: 'var(--color-bg)',
                 boxShadow: '0 24px 60px rgba(0,0,0,0.22)',
                 overflow: 'hidden',
                 display: 'flex',
@@ -457,7 +457,7 @@ export function Nav() {
                     fontFamily: 'var(--font-suisseintl)',
                     fontWeight: 500,
                     fontSize: '16px',
-                    color: 'var(--color-ink-black)',
+                    color: 'var(--color-fg)',
                     letterSpacing: '-0.02em',
                   }}
                 >
@@ -476,7 +476,7 @@ export function Nav() {
                     border: 'none',
                     background: 'transparent',
                     cursor: 'pointer',
-                    color: 'var(--color-ink-black)',
+                    color: 'var(--color-fg)',
                     borderRadius: '50%',
                     marginRight: '-6px',
                   }}
@@ -529,7 +529,7 @@ export function Nav() {
                         fontFamily: 'var(--font-suisseintl)',
                         fontWeight: 500,
                         fontSize: '16px',
-                        color: 'var(--color-ink-black)',
+                        color: 'var(--color-fg)',
                         letterSpacing: '-0.02em',
                       }}
                     >
@@ -542,7 +542,7 @@ export function Nav() {
                         fontFamily: 'var(--font-suisseintl)',
                         fontWeight: 450,
                         fontSize: '12px',
-                        color: 'var(--color-graphite)',
+                        color: 'var(--color-fg-muted)',
                         letterSpacing: '-0.01em',
                       }}
                     >

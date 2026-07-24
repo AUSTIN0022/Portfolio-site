@@ -7,7 +7,7 @@ export function P({ children }: { children: React.ReactNode }) {
         fontWeight: 400,
         fontSize: '16px',
         lineHeight: 1.6,
-        color: 'var(--color-ink-black)',
+        color: 'var(--color-fg)',
         letterSpacing: '-0.32px',
         marginBottom: '20px',
       }}
@@ -26,7 +26,7 @@ export function Lead({ children }: { children: React.ReactNode }) {
         fontWeight: 400,
         fontSize: '20px',
         lineHeight: 1.4,
-        color: 'var(--color-ink-black)',
+        color: 'var(--color-fg)',
         letterSpacing: '-0.22px',
         marginBottom: '32px',
       }}
@@ -41,7 +41,7 @@ export function Callout({ label, children }: { label: string; children: React.Re
   return (
     <div
       style={{
-        background: 'var(--color-pure-white)',
+        background: 'var(--color-bg)',
         borderRadius: '24px',
         padding: '32px',
         marginBottom: '24px',
@@ -51,7 +51,7 @@ export function Callout({ label, children }: { label: string; children: React.Re
         style={{
           fontFamily: 'var(--font-suisseintlmono)',
           fontSize: '12px',
-          color: 'var(--color-muted-on-light)',
+          color: 'var(--color-fg-subtle)',
           letterSpacing: '-0.36px',
           marginBottom: '12px',
         }}
@@ -64,7 +64,7 @@ export function Callout({ label, children }: { label: string; children: React.Re
           fontWeight: 400,
           fontSize: '16px',
           lineHeight: 1.5,
-          color: 'var(--color-ink-black)',
+          color: 'var(--color-fg)',
           letterSpacing: '-0.32px',
         }}
       >
@@ -85,7 +85,7 @@ export function Metric({ value, label }: { value: string; label: string }) {
           fontSize: 'var(--fs-display-lg)',
           lineHeight: 0.9,
           letterSpacing: '-0.03em',
-          color: 'var(--color-ink-black)',
+          color: 'var(--color-fg)',
           marginBottom: '8px',
         }}
       >
@@ -95,7 +95,7 @@ export function Metric({ value, label }: { value: string; label: string }) {
         style={{
           fontFamily: 'var(--font-suisseintlmono)',
           fontSize: '12px',
-          color: 'var(--color-muted-on-light)',
+          color: 'var(--color-fg-subtle)',
           letterSpacing: '-0.36px',
         }}
       >
@@ -113,7 +113,7 @@ export function MetricGrid({ children }: { children: React.ReactNode }) {
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
         gap: 'clamp(24px, 4vw, 48px)',
-        background: 'var(--color-pure-white)',
+        background: 'var(--color-bg)',
         borderRadius: '24px',
         padding: 'clamp(28px, 5vw, 48px)',
         marginBottom: '40px',
@@ -143,7 +143,7 @@ export function DecisionCard({
   return (
     <div
       style={{
-        background: 'var(--color-pure-white)',
+        background: 'var(--color-bg)',
         borderRadius: '24px',
         padding: '32px',
         marginBottom: '24px',
@@ -158,7 +158,7 @@ export function DecisionCard({
           fontWeight: 700,
           fontSize: '48px',
           lineHeight: 0.9,
-          color: 'var(--color-canvas-mist)',
+          color: 'color-mix(in srgb, var(--color-fg) 15%, transparent)',
           letterSpacing: '-1.44px',
         }}
       >
@@ -172,7 +172,7 @@ export function DecisionCard({
             fontSize: 'clamp(1.375rem, 2vw, 1.625rem)',
             lineHeight: 1.05,
             letterSpacing: '-0.03em',
-            color: 'var(--color-ink-black)',
+            color: 'var(--color-fg)',
             marginBottom: '20px',
           }}
         >
@@ -183,8 +183,10 @@ export function DecisionCard({
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '12px',
-              color: shipped ? 'var(--color-ink-black)' : 'var(--color-muted-on-light)',
-              background: shipped ? 'var(--color-mint-pulse)' : 'var(--color-surface-mist)',
+              // mint-pulse is a fixed light color regardless of theme, so its
+              // text stays fixed-dark too, matching the yellow-fill CTA fix
+              color: shipped ? 'var(--color-ink-black)' : 'var(--color-fg-subtle)',
+              background: shipped ? 'var(--color-mint-pulse)' : 'var(--color-chip-bg)',
               borderRadius: '20px',
               padding: '3px 10px',
               letterSpacing: '-0.36px',
@@ -198,7 +200,7 @@ export function DecisionCard({
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
             fontSize: '12px',
-            color: 'var(--color-muted-on-light)',
+            color: 'var(--color-fg-subtle)',
             letterSpacing: '-0.36px',
             marginBottom: '6px',
           }}
@@ -211,7 +213,7 @@ export function DecisionCard({
             fontWeight: 500,
             fontSize: '16px',
             lineHeight: 1.4,
-            color: 'var(--color-ink-black)',
+            color: 'var(--color-fg)',
             letterSpacing: '-0.32px',
             marginBottom: '20px',
           }}
@@ -222,7 +224,7 @@ export function DecisionCard({
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
             fontSize: '12px',
-            color: 'var(--color-muted-on-light)',
+            color: 'var(--color-fg-subtle)',
             letterSpacing: '-0.36px',
             marginBottom: '6px',
           }}
@@ -235,7 +237,7 @@ export function DecisionCard({
             fontWeight: 400,
             fontSize: '15px',
             lineHeight: 1.5,
-            color: 'var(--color-graphite)',
+            color: 'var(--color-fg-muted)',
             letterSpacing: '-0.32px',
             marginBottom: '20px',
           }}
@@ -246,7 +248,7 @@ export function DecisionCard({
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
             fontSize: '12px',
-            color: 'var(--color-muted-on-light)',
+            color: 'var(--color-fg-subtle)',
             letterSpacing: '-0.36px',
             marginBottom: '6px',
           }}
@@ -259,7 +261,7 @@ export function DecisionCard({
             fontWeight: 400,
             fontSize: '15px',
             lineHeight: 1.5,
-            color: 'var(--color-graphite)',
+            color: 'var(--color-fg-muted)',
             letterSpacing: '-0.32px',
           }}
         >

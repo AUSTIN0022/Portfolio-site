@@ -1,5 +1,4 @@
 import { MonoKicker } from '@/components/ui/MonoKicker'
-import ScrollFloat from '@/components/ui/ScrollFloat'
 import { SkillTag } from '@/components/ui/SkillTag'
 import {
   SiNodedotjs,
@@ -17,7 +16,7 @@ import { MdApi, MdBolt, MdAccountTree, MdQueue } from 'react-icons/md'
 // no simple-icons entry, and "REST APIs" / "Event-driven" / "System Design"
 // are architecture concepts, not products) — everything else gets its real
 // brand color instead of the site's usual monochrome icon treatment.
-const neutralColor = 'var(--color-graphite)'
+const neutralColor = 'var(--color-fg-muted)'
 const iconStyle = { display: 'inline-flex', marginRight: '6px', verticalAlign: '-2px' }
 
 // Every item is a real mark, always shown with its label — no marquee, no
@@ -44,7 +43,7 @@ export function About() {
   return (
     <section
       id="about"
-      style={{ background: 'var(--color-canvas-mist)', padding: 'var(--section-y) var(--gutter)' }}
+      style={{ background: 'var(--color-bg)', padding: 'var(--section-y) var(--gutter)' }}
     >
       <div
         style={{
@@ -56,23 +55,22 @@ export function About() {
           alignItems: 'start',
         }}
       >
-        <div>
+        <div data-gsap="heading">
           <MonoKicker>// ABOUT ME</MonoKicker>
-          <ScrollFloat
-            as="h2"
+          <h2
             style={{
               fontFamily: 'var(--font-suisseintlcond)',
               fontWeight: 700,
               fontSize: 'var(--fs-display)',
               lineHeight: 0.9,
               letterSpacing: '-0.03em',
-              color: 'var(--color-ink-black)',
+              color: 'var(--color-fg)',
               marginTop: '16px',
               textWrap: 'balance',
             }}
           >
             BUILDING THINGS THAT DON&apos;T BREAK.
-          </ScrollFloat>
+          </h2>
         </div>
 
         <div>
@@ -82,7 +80,7 @@ export function About() {
               fontWeight: 400,
               fontSize: '20px',
               lineHeight: 1.25,
-              color: 'var(--color-ink-black)',
+              color: 'var(--color-fg)',
               letterSpacing: '-0.22px',
               marginBottom: '24px',
             }}
@@ -97,7 +95,7 @@ export function About() {
               fontWeight: 400,
               fontSize: '16px',
               lineHeight: 1.33,
-              color: 'var(--color-ink-black)',
+              color: 'var(--color-fg)',
               letterSpacing: '-0.32px',
               marginBottom: '40px',
             }}

@@ -54,12 +54,17 @@ export function HeroDiagram() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
-        {/* Soft Ambient Radial Glow behind the illustration */}
+        {/* Ambient glow behind the illustration — theme-aware (white smoke in
+            dark mode, dark smoke in light mode) via --color-fg, so it always
+            reads as a soft backlight instead of a flat gray smudge. Kept
+            subtle and centered (10% mix, heavy blur) so it blends from the
+            middle out rather than washing the whole card. */}
         <div
           style={{
             position: 'absolute',
             inset: '-10%',
-            background: 'radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.12) 0%, rgba(255, 255, 255, 0) 70%)',
+            background:
+              'radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-fg) 10%, transparent) 0%, transparent 70%)',
             pointerEvents: 'none',
             borderRadius: '50%',
             filter: 'blur(30px)',
@@ -78,7 +83,7 @@ export function HeroDiagram() {
           }}
         >
           <Image
-            src="/item-images/hero-illustration-1x1.webp"
+            src="/hero-illustration-1x1-removebg-preview.png"
             alt="Backend Infrastructure Architecture Diagram"
             fill
             priority
@@ -96,9 +101,9 @@ export function HeroDiagram() {
             position: 'absolute',
             top: '8%',
             right: '4%',
-            background: 'rgba(255, 255, 255, 0.92)',
+            background: 'color-mix(in srgb, var(--color-bg) 92%, transparent)',
             backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(0, 0, 0, 0.08)',
+            border: '1px solid color-mix(in srgb, var(--color-fg) 8%, transparent)',
             boxShadow: '0 8px 20px rgba(0, 0, 0, 0.06)',
             borderRadius: '20px',
             padding: '8px 14px',
@@ -123,7 +128,7 @@ export function HeroDiagram() {
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '11px',
               fontWeight: 600,
-              color: 'var(--color-ink-black)',
+              color: 'var(--color-fg)',
               letterSpacing: '-0.2px',
             }}
           >
@@ -139,9 +144,9 @@ export function HeroDiagram() {
             position: 'absolute',
             bottom: '12%',
             left: '2%',
-            background: 'rgba(255, 255, 255, 0.92)',
+            background: 'color-mix(in srgb, var(--color-bg) 92%, transparent)',
             backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(0, 0, 0, 0.08)',
+            border: '1px solid color-mix(in srgb, var(--color-fg) 8%, transparent)',
             boxShadow: '0 8px 20px rgba(0, 0, 0, 0.06)',
             borderRadius: '20px',
             padding: '8px 14px',
@@ -166,7 +171,7 @@ export function HeroDiagram() {
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '11px',
               fontWeight: 600,
-              color: 'var(--color-ink-black)',
+              color: 'var(--color-fg)',
               letterSpacing: '-0.2px',
             }}
           >

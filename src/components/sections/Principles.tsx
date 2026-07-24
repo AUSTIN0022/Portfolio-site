@@ -1,5 +1,4 @@
 import { MonoKicker } from '@/components/ui/MonoKicker'
-import ScrollFloat from '@/components/ui/ScrollFloat'
 
 const principles = [
   {
@@ -28,32 +27,31 @@ export function Principles() {
   return (
     <section
       id="principles"
-      style={{ background: 'var(--color-canvas-mist)', padding: 'var(--section-y) var(--gutter)' }}
+      style={{ background: 'var(--color-bg)', padding: 'var(--section-y) var(--gutter)' }}
     >
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-        <div style={{ marginBottom: '48px' }}>
+        <div style={{ marginBottom: '48px' }} data-gsap="heading">
           <MonoKicker>// HOW I BUILD</MonoKicker>
-          <ScrollFloat
-            as="h2"
+          <h2
             style={{
               fontFamily: 'var(--font-suisseintlcond)',
               fontWeight: 700,
               fontSize: 'var(--fs-display)',
               lineHeight: 0.9,
               letterSpacing: '-0.03em',
-              color: 'var(--color-ink-black)',
+              color: 'var(--color-fg)',
               marginTop: '16px',
             }}
           >
             FIRST PRINCIPLES.
-          </ScrollFloat>
+          </h2>
           <p
             style={{
               fontFamily: 'var(--font-suisseintl)',
               fontWeight: 400,
               fontSize: '16px',
               lineHeight: 1.33,
-              color: 'var(--color-graphite)',
+              color: 'var(--color-fg-muted)',
               letterSpacing: '-0.32px',
               marginTop: '16px',
               maxWidth: '520px',
@@ -66,7 +64,7 @@ export function Principles() {
 
         <div>
           {principles.map((p, i) => (
-            <div key={p.title} className="principle-row">
+            <div key={p.title} className="principle-row" data-gsap="card">
               <span className="principle-num">{String(i + 1).padStart(2, '0')}</span>
               <h3
                 style={{
@@ -75,7 +73,7 @@ export function Principles() {
                   fontSize: 'var(--fs-display-md)',
                   lineHeight: 0.95,
                   letterSpacing: '-0.03em',
-                  color: 'var(--color-ink-black)',
+                  color: 'var(--color-fg)',
                 }}
               >
                 {p.title}
@@ -86,7 +84,7 @@ export function Principles() {
                   fontWeight: 400,
                   fontSize: '15px',
                   lineHeight: 1.4,
-                  color: 'var(--color-graphite)',
+                  color: 'var(--color-fg-muted)',
                   letterSpacing: '-0.3px',
                 }}
               >

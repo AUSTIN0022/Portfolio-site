@@ -54,7 +54,7 @@ const kickerStyleDark: React.CSSProperties = {
 
 const kickerStyleLight: React.CSSProperties = {
   ...kickerStyleDark,
-  color: 'var(--color-muted-on-light)',
+  color: 'var(--color-fg-subtle)',
 }
 
 const blockHeadingStyle: React.CSSProperties = {
@@ -63,7 +63,7 @@ const blockHeadingStyle: React.CSSProperties = {
   fontSize: 'var(--fs-display-md)',
   lineHeight: 0.9,
   letterSpacing: '-0.03em',
-  color: 'var(--color-ink-black)',
+  color: 'var(--color-fg)',
   marginBottom: '20px',
 }
 
@@ -72,7 +72,7 @@ const blockBodyStyle: React.CSSProperties = {
   fontWeight: 400,
   fontSize: '16px',
   lineHeight: 1.6,
-  color: 'var(--color-ink-black)',
+  color: 'var(--color-fg)',
   letterSpacing: '-0.32px',
 }
 
@@ -139,7 +139,7 @@ export default function NowPage() {
       </div>
 
       {/* B: Two-column main content */}
-      <div style={{ background: 'var(--color-canvas-mist)', padding: 'var(--section-y) var(--gutter)' }}>
+      <div style={{ background: 'var(--color-bg)', padding: 'var(--section-y) var(--gutter)' }}>
         <div
           style={{
             maxWidth: '1280px',
@@ -154,7 +154,7 @@ export default function NowPage() {
           <div
             className="now-aside"
             style={{
-              background: 'var(--color-pure-white)',
+              background: 'var(--color-bg)',
               borderRadius: '32px',
               padding: 'clamp(24px, 5vw, 40px)',
             }}
@@ -163,7 +163,7 @@ export default function NowPage() {
               style={{
                 fontFamily: 'var(--font-suisseintlmono)',
                 fontSize: '12px',
-                color: 'var(--color-muted-on-light)',
+                color: 'var(--color-fg-subtle)',
                 letterSpacing: '-0.36px',
                 marginBottom: '24px',
               }}
@@ -179,14 +179,14 @@ export default function NowPage() {
                   gridTemplateColumns: '100px minmax(0, 1fr)',
                   gap: '16px',
                   padding: '20px 0',
-                  borderBottom: i < arr.length - 1 ? '1px solid var(--color-canvas-mist)' : 'none',
+                  borderBottom: i < arr.length - 1 ? '1px solid color-mix(in srgb, var(--color-fg) 10%, transparent)' : 'none',
                 }}
               >
                 <div
                   style={{
                     fontFamily: 'var(--font-suisseintlmono)',
                     fontSize: '12px',
-                    color: 'var(--color-muted-on-light)',
+                    color: 'var(--color-fg-subtle)',
                     letterSpacing: '-0.36px',
                     display: 'flex',
                     alignItems: 'flex-start',
@@ -203,7 +203,7 @@ export default function NowPage() {
                     fontWeight: 400,
                     fontSize: '15px',
                     lineHeight: 1.4,
-                    color: 'var(--color-ink-black)',
+                    color: 'var(--color-fg)',
                     letterSpacing: '-0.3px',
                   }}
                 >
@@ -212,7 +212,7 @@ export default function NowPage() {
               </div>
             ))}
 
-            <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--color-canvas-mist)' }}>
+            <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid color-mix(in srgb, var(--color-fg) 10%, transparent)' }}>
               <span
                 style={{
                   background: 'var(--color-mint-pulse)',
@@ -232,7 +232,7 @@ export default function NowPage() {
                   fontWeight: 400,
                   fontSize: '13px',
                   lineHeight: 1.4,
-                  color: 'var(--color-muted-on-light)',
+                  color: 'var(--color-fg-subtle)',
                   letterSpacing: '-0.28px',
                   marginTop: '12px',
                 }}
@@ -246,7 +246,7 @@ export default function NowPage() {
           <div>
             <div
               style={{
-                background: 'var(--color-pure-white)',
+                background: 'var(--color-bg)',
                 borderRadius: '24px',
                 padding: 'clamp(24px, 5vw, 40px)',
                 marginBottom: '24px',
@@ -267,7 +267,7 @@ export default function NowPage() {
 
             <div
               style={{
-                background: 'var(--color-pure-white)',
+                background: 'var(--color-bg)',
                 borderRadius: '24px',
                 padding: 'clamp(24px, 5vw, 40px)',
                 marginBottom: '24px',
@@ -299,7 +299,7 @@ export default function NowPage() {
 
             <div
               style={{
-                background: 'var(--color-pure-white)',
+                background: 'var(--color-bg)',
                 borderRadius: '24px',
                 padding: 'clamp(24px, 5vw, 40px)',
                 marginBottom: '24px',
@@ -318,7 +318,7 @@ export default function NowPage() {
                 style={{
                   marginTop: '24px',
                   paddingTop: '24px',
-                  borderTop: '1px solid var(--color-canvas-mist)',
+                  borderTop: '1px solid color-mix(in srgb, var(--color-fg) 10%, transparent)',
                   display: 'flex',
                   gap: '12px',
                 }}

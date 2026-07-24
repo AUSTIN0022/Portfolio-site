@@ -134,7 +134,7 @@ export default function WorkPage() {
       </div>
 
       {/* C: Project cards */}
-      <div style={{ background: 'var(--color-canvas-mist)', padding: 'var(--section-y) var(--gutter)' }}>
+      <div style={{ background: 'var(--color-bg)', padding: 'var(--section-y) var(--gutter)' }}>
         <div
           style={{
             maxWidth: '1280px',
@@ -151,7 +151,7 @@ export default function WorkPage() {
       </div>
 
       {/* D: Bottom CTA strip */}
-      <div style={{ background: 'var(--color-canvas-mist)', padding: '0 var(--gutter) var(--section-y)' }}>
+      <div style={{ background: 'var(--color-bg)', padding: '0 var(--gutter) var(--section-y)' }}>
         <div
           className="workcta"
           style={{

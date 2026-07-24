@@ -5,7 +5,7 @@ export function MonoKicker({ children, style, className }: { children: React.Rea
       style={{
         fontFamily: 'var(--font-suisseintlmono)',
         fontSize: '12px',
-        color: 'var(--color-muted-on-light)',
+        color: 'var(--color-fg-subtle)',
         letterSpacing: '-0.36px',
         lineHeight: 1.3,
         ...style,

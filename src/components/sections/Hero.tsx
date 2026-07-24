@@ -1,7 +1,5 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { AvailablePill } from '@/components/ui/AvailablePill'
 import { RotatingWord } from '@/components/ui/RotatingWord'
 import { HeroDiagram } from '@/components/sections/HeroDiagram'
 
@@ -9,7 +7,7 @@ export function Hero() {
     return (
         <section
             className="hero-section"
-            style={{ background: 'var(--color-canvas-mist)', minHeight: 'var(--hero-min-h)' }}
+            style={{ background: 'var(--color-bg)', minHeight: 'var(--hero-min-h)' }}
         >
             <div
                 className="hero-inner"
@@ -22,25 +20,21 @@ export function Hero() {
                     gap: '40px',
                 }}
             >
-                <div>
+                <div data-gsap="heading">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
                         <span
                             style={{
                                 fontFamily: 'var(--font-suisseintlmono)',
                                 fontSize: '12px',
-                                color: 'var(--color-graphite)',
+                                color: 'var(--color-fg-muted)',
                                 letterSpacing: '-0.36px',
                             }}
                         >
             // AUSTIN MAKASARE
                         </span>
-                        <AvailablePill>OPEN TO BACKEND ROLES</AvailablePill>
                     </div>
 
-                    <motion.h1
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+                    <h1
                         className="hero-headline"
                         data-shoot-target="1"
                         data-shoot-granularity="char"
@@ -50,14 +44,14 @@ export function Hero() {
                             fontSize: 'clamp(38px, 7vw, 68px)',
                             lineHeight: 0.9,
                             letterSpacing: '-0.03em',
-                            color: 'var(--color-ink-black)',
+                            color: 'var(--color-fg)',
                             maxWidth: '680px',
                             marginBottom: '32px',
                             textWrap: 'balance',
                         }}
                     >
                         BACKEND ENGINEER BUILDING <RotatingWord /> THAT SCALE.
-                    </motion.h1>
+                    </h1>
 
                     <p
                         style={{
@@ -65,7 +59,7 @@ export function Hero() {
                             fontWeight: 400,
                             fontSize: '18px',
                             lineHeight: 1.25,
-                            color: 'var(--color-graphite)',
+                            color: 'var(--color-fg-muted)',
                             maxWidth: '480px',
                             letterSpacing: '-0.18px',
                             marginBottom: '40px',

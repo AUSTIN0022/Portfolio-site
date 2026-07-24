@@ -61,10 +61,10 @@ export function CaseStudySection({ id, kicker, heading, children }: CaseStudySec
   }, [beamCtx])
 
   const dotBackground = useTransform(beamHeight, (h) =>
-    h >= dotOffset ? 'var(--color-electric-yellow)' : 'var(--color-canvas-mist)'
+    h >= dotOffset ? 'var(--color-electric-yellow)' : 'var(--color-bg)'
   )
   const dotBorderColor = useTransform(beamHeight, (h) =>
-    h >= dotOffset ? 'var(--color-electric-yellow)' : 'var(--color-muted-on-light)'
+    h >= dotOffset ? 'var(--color-electric-yellow)' : 'var(--color-fg-subtle)'
   )
   const dotShadow = useTransform(beamHeight, (h) =>
     h >= dotOffset ? '0 0 6px 1px rgba(255, 241, 0, 0.7)' : 'none'
@@ -84,7 +84,7 @@ export function CaseStudySection({ id, kicker, heading, children }: CaseStudySec
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '12px',
-              color: 'var(--color-muted-on-light)',
+              color: 'var(--color-fg-subtle)',
               letterSpacing: '-0.36px',
               marginBottom: '12px',
             }}
@@ -99,7 +99,7 @@ export function CaseStudySection({ id, kicker, heading, children }: CaseStudySec
               fontSize: 'clamp(1.5rem, 1.7vw, 1.875rem)',
               lineHeight: 0.95,
               letterSpacing: '-0.03em',
-              color: 'var(--color-ink-black)',
+              color: 'var(--color-fg)',
               textWrap: 'balance',
             }}
           >

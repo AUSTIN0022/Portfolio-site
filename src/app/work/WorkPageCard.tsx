@@ -21,7 +21,7 @@ export function WorkPageCard({ project }: { project: Project }) {
   return (
     <article
       style={{
-        background: 'var(--color-pure-white)',
+        background: 'var(--color-bg)',
         borderRadius: '32px',
         overflow: 'hidden',
         display: 'grid',
@@ -33,7 +33,7 @@ export function WorkPageCard({ project }: { project: Project }) {
       <div
         className="workcard-media"
         style={{
-          background: 'var(--color-canvas-mist)',
+          background: 'var(--color-bg)',
           position: 'relative',
           display: 'flex',
           alignItems: 'center',
@@ -76,7 +76,7 @@ export function WorkPageCard({ project }: { project: Project }) {
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '12px',
-              color: 'var(--color-graphite)',
+              color: 'var(--color-fg-muted)',
               letterSpacing: '-0.36px',
               marginBottom: '16px',
             }}
@@ -92,7 +92,7 @@ export function WorkPageCard({ project }: { project: Project }) {
               fontSize: 'var(--fs-display-lg)',
               lineHeight: 0.9,
               letterSpacing: '-0.03em',
-              color: 'var(--color-ink-black)',
+              color: 'var(--color-fg)',
               marginBottom: '20px',
             }}
           >
@@ -105,7 +105,7 @@ export function WorkPageCard({ project }: { project: Project }) {
               fontWeight: 400,
               fontSize: '16px',
               lineHeight: 1.4,
-              color: 'var(--color-graphite)',
+              color: 'var(--color-fg-muted)',
               letterSpacing: '-0.32px',
               maxWidth: '400px',
               marginBottom: '24px',

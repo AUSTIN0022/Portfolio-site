@@ -2,16 +2,29 @@ export function AvailablePill({ children }: { children: React.ReactNode }) {
   return (
     <span
       style={{
-        background: 'linear-gradient(180deg, #eafde3 0%, var(--color-mint-pulse) 100%)',
-        color: 'var(--color-ink-black)',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '7px',
+        background: 'var(--color-chip-bg)',
+        color: 'var(--color-fg)',
         fontFamily: 'var(--font-suisseintlmono)',
         fontSize: '12px',
         borderRadius: '48px',
-        padding: '4px 12px',
+        padding: '4px 12px 4px 10px',
         letterSpacing: '-0.36px',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), 0 2px 8px rgba(209,255,202,0.45)',
       }}
     >
+      <span
+        aria-hidden
+        style={{
+          width: '6px',
+          height: '6px',
+          borderRadius: '50%',
+          background: 'var(--color-green)',
+          boxShadow: '0 0 0 3px rgba(68, 248, 122, 0.18)',
+          flexShrink: 0,
+        }}
+      />
       {children}
     </span>
   )

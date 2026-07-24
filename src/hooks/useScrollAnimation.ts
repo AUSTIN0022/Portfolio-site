@@ -30,20 +30,36 @@ export function useScrollAnimation() {
           })
         })
 
-        document.querySelectorAll('[data-gsap="card"]').forEach((el, i) => {
-          gsap.from(el, {
-            scrollTrigger: { trigger: el, start: 'top 75%' },
-            y: 60,
-            scale: 0.94,
-            opacity: 0,
-            delay: i * 0.15,
-            duration: 0.7,
-            ease: 'power2.out',
-            // Once the reveal finishes, drop the inline transform GSAP leaves
-            // behind — otherwise it permanently outranks the card's own CSS
-            // hover-lift (.card-elevated:hover), since inline style always
-            // wins over an external stylesheet rule regardless of specificity.
-            clearProps: 'transform',
+        // Stagger is scoped per [data-gsap-group] container, not per
+        // page-wide index — a flat querySelectorAll index would give a card
+        // near the bottom of the page (e.g. Skills' 3rd tile) a large fixed
+        // `delay` inherited from every unrelated card above it, even though
+        // its own ScrollTrigger fires independently much later on scroll.
+        // Falls back to the immediate parent when a card has no explicit
+        // group marker (e.g. it isn't wrapped one-per-item like Work's track).
+        const cardGroups = new Map<Element, Element[]>()
+        document.querySelectorAll('[data-gsap="card"]').forEach((el) => {
+          const group = el.closest('[data-gsap-group]') ?? el.parentElement
+          if (!group) return
+          if (!cardGroups.has(group)) cardGroups.set(group, [])
+          cardGroups.get(group)!.push(el)
+        })
+        cardGroups.forEach((group) => {
+          group.forEach((el, i) => {
+            gsap.from(el, {
+              scrollTrigger: { trigger: el, start: 'top 75%' },
+              y: 60,
+              scale: 0.94,
+              opacity: 0,
+              delay: i * 0.15,
+              duration: 0.7,
+              ease: 'power2.out',
+              // Once the reveal finishes, drop the inline transform GSAP leaves
+              // behind — otherwise it permanently outranks the card's own CSS
+              // hover-lift (.card-elevated:hover), since inline style always
+              // wins over an external stylesheet rule regardless of specificity.
+              clearProps: 'transform',
+            })
           })
         })
 

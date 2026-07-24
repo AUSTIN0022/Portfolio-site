@@ -2,7 +2,6 @@
 
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import ScrollFloat from '@/components/ui/ScrollFloat'
 
 const columns = [
   {
@@ -61,11 +60,12 @@ export function Skills() {
         <h2 id="skills-heading" className="sr-only">
           Skills
         </h2>
-        <div className="bento-skills">
+        <div className="bento-skills" data-gsap-group>
           {columns.map((col, i) => (
             <div
               key={i}
               className={col.tile}
+              data-gsap="card"
               style={{
                 borderRadius: '24px',
                 padding: 'clamp(24px, 3vw, 32px)',
@@ -106,8 +106,7 @@ export function Skills() {
                   />
                 </motion.div>
               </div>
-              <ScrollFloat
-                as="h3"
+              <h3
                 style={{
                   fontFamily: 'var(--font-suisseintlcond)',
                   fontWeight: 700,
@@ -119,7 +118,7 @@ export function Skills() {
                 }}
               >
                 {col.label}
-              </ScrollFloat>
+              </h3>
               <p
                 style={{
                   fontFamily: 'var(--font-suisseintl)',

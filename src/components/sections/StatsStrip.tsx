@@ -1,5 +1,3 @@
-import ScrollFloat from '@/components/ui/ScrollFloat'
-
 const stats = [
   { number: '7.5K', label: 'PEAK CONCURRENT WS' },
   { number: '100%', label: 'SOLO-BUILT END-TO-END' },
@@ -22,8 +20,8 @@ export function StatsStrip() {
       >
         {stats.map((stat, i) => (
           <div key={i} className="stat-cell">
-            <ScrollFloat
-              as="div"
+            <div
+              data-gsap="stat"
               style={{
                 fontFamily: 'var(--font-suisseintlcond)',
                 fontWeight: 700,
@@ -34,7 +32,7 @@ export function StatsStrip() {
               }}
             >
               {stat.number}
-            </ScrollFloat>
+            </div>
             <div
               style={{
                 fontFamily: 'var(--font-suisseintlmono)',

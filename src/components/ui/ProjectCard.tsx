@@ -21,7 +21,7 @@ export function ProjectCard({ project }: { project: Project }) {
       data-gsap="card"
       className="card-elevated"
       style={{
-        background: 'var(--color-pure-white)',
+        background: 'var(--color-bg)',
         borderRadius: '32px',
         padding: '0',
         width: 'min(480px, 84vw)',
@@ -31,7 +31,7 @@ export function ProjectCard({ project }: { project: Project }) {
     >
       <div
         style={{
-          background: 'var(--color-canvas-mist)',
+          background: 'var(--color-bg)',
           height: '280px',
           position: 'relative',
           display: 'flex',
@@ -65,7 +65,7 @@ export function ProjectCard({ project }: { project: Project }) {
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
             fontSize: '12px',
-            color: 'var(--color-graphite)',
+            color: 'var(--color-fg-muted)',
             letterSpacing: '-0.36px',
             marginBottom: '8px',
           }}
@@ -79,7 +79,7 @@ export function ProjectCard({ project }: { project: Project }) {
             fontSize: 'var(--fs-display-md)',
             lineHeight: 0.9,
             letterSpacing: '-0.03em',
-            color: 'var(--color-ink-black)',
+            color: 'var(--color-fg)',
             marginBottom: '12px',
           }}
         >
@@ -91,7 +91,7 @@ export function ProjectCard({ project }: { project: Project }) {
             fontWeight: 400,
             fontSize: '14px',
             lineHeight: 1.3,
-            color: 'var(--color-graphite)',
+            color: 'var(--color-fg-muted)',
             letterSpacing: '-0.28px',
             marginBottom: '16px',
           }}

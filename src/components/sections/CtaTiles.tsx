@@ -1,8 +1,6 @@
-import ScrollFloat from '@/components/ui/ScrollFloat'
-
 export function CtaTiles() {
   return (
-    <section style={{ background: 'var(--color-pure-white)' }}>
+    <section style={{ background: 'var(--color-bg)' }}>
       <div
         style={{
           maxWidth: '1280px',
@@ -16,6 +14,7 @@ export function CtaTiles() {
           target="_blank"
           rel="noopener noreferrer"
           className="cta-tile"
+          data-gsap="card"
           style={{
             display: 'block',
             padding: 'clamp(48px, 8vw, 80px) var(--gutter)',
@@ -32,25 +31,24 @@ export function CtaTiles() {
               alignItems: 'flex-start',
             }}
           >
-            <ScrollFloat
-              as="h2"
+            <h2
               style={{
                 fontFamily: 'var(--font-suisseintlcond)',
                 fontWeight: 700,
                 fontSize: 'var(--fs-display-lg)',
                 lineHeight: 0.9,
                 letterSpacing: '-0.03em',
-                color: 'var(--color-ink-black)',
+                color: 'var(--cta-fg, var(--color-fg))',
               }}
             >
               BOOK A CALL
-            </ScrollFloat>
+            </h2>
             <div
               className="cta-icon"
               style={{
                 width: '48px',
                 height: '48px',
-                border: '1px solid var(--color-ink-black)',
+                border: '1px solid var(--cta-fg, var(--color-fg))',
                 borderRadius: '4px',
                 display: 'flex',
                 alignItems: 'center',
@@ -68,7 +66,7 @@ export function CtaTiles() {
               fontWeight: 400,
               fontSize: '14px',
               lineHeight: 1.3,
-              color: 'var(--color-graphite)',
+              color: 'var(--cta-fg-muted, var(--color-fg-muted))',
               letterSpacing: '-0.28px',
             }}
           >
@@ -81,6 +79,7 @@ export function CtaTiles() {
           target="_blank"
           rel="noopener noreferrer"
           className="cta-tile"
+          data-gsap="card"
           style={{ display: 'block', padding: 'clamp(48px, 8vw, 80px) var(--gutter)', textDecoration: 'none', cursor: 'pointer' }}
         >
           <span className="cta-tile-fill" />
@@ -92,25 +91,24 @@ export function CtaTiles() {
               alignItems: 'flex-start',
             }}
           >
-            <ScrollFloat
-              as="h2"
+            <h2
               style={{
                 fontFamily: 'var(--font-suisseintlcond)',
                 fontWeight: 700,
                 fontSize: 'var(--fs-display-lg)',
                 lineHeight: 0.9,
                 letterSpacing: '-0.03em',
-                color: 'var(--color-ink-black)',
+                color: 'var(--cta-fg, var(--color-fg))',
               }}
             >
               VIEW RESUME
-            </ScrollFloat>
+            </h2>
             <div
               className="cta-icon"
               style={{
                 width: '48px',
                 height: '48px',
-                border: '1px solid var(--color-ink-black)',
+                border: '1px solid var(--cta-fg, var(--color-fg))',
                 borderRadius: '4px',
                 display: 'flex',
                 alignItems: 'center',
@@ -128,7 +126,7 @@ export function CtaTiles() {
               fontWeight: 400,
               fontSize: '14px',
               lineHeight: 1.3,
-              color: 'var(--color-graphite)',
+              color: 'var(--cta-fg-muted, var(--color-fg-muted))',
               letterSpacing: '-0.28px',
             }}
           >

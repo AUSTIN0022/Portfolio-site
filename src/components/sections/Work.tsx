@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { MonoKicker } from '@/components/ui/MonoKicker'
 import { ProjectCard } from '@/components/ui/ProjectCard'
 import { CardScrollbar } from '@/components/ui/CardScrollbar'
-import ScrollFloat from '@/components/ui/ScrollFloat'
 import { projects } from '@/content/projects'
 
 export function Work() {
@@ -18,24 +17,23 @@ export function Work() {
   return (
     <section
       id="work"
-      style={{ background: 'var(--color-canvas-mist)', padding: 'var(--section-y) 0', overflow: 'hidden' }}
+      style={{ background: 'var(--color-bg)', padding: 'var(--section-y) 0', overflow: 'hidden' }}
     >
-      <div style={{ maxWidth: '1280px', margin: '0 auto 48px', padding: '0 var(--gutter)' }}>
+      <div style={{ maxWidth: '1280px', margin: '0 auto 48px', padding: '0 var(--gutter)' }} data-gsap="heading">
         <MonoKicker>// SELECTED WORK</MonoKicker>
-        <ScrollFloat
-          as="h2"
+        <h2
           style={{
             fontFamily: 'var(--font-suisseintlcond)',
             fontWeight: 700,
             fontSize: 'var(--fs-display)',
             lineHeight: 0.9,
             letterSpacing: '-0.03em',
-            color: 'var(--color-ink-black)',
+            color: 'var(--color-fg)',
             marginTop: '16px',
           }}
         >
           WHAT I&apos;VE SHIPPED.
-        </ScrollFloat>
+        </h2>
       </div>
 
       {/* Cards can overflow right — start aligned with the 1280px content left edge */}
@@ -45,6 +43,7 @@ export function Work() {
           id="work-track"
           className="card-track"
           data-shoot-scroll-interactive="1"
+          data-gsap-group
           style={{
             display: 'flex',
             gap: '24px',
@@ -81,7 +80,7 @@ export function Work() {
             flexShrink: 0,
             width: '48px',
             height: '48px',
-            border: '1px solid var(--color-ink-black)',
+            border: '1px solid var(--color-fg)',
             borderRadius: '50%',
             background: 'transparent',
             cursor: 'pointer',
@@ -103,7 +102,7 @@ export function Work() {
             flexShrink: 0,
             width: '48px',
             height: '48px',
-            border: '1px solid var(--color-ink-black)',
+            border: '1px solid var(--color-fg)',
             borderRadius: '50%',
             background: 'transparent',
             cursor: 'pointer',
@@ -120,14 +119,14 @@ export function Work() {
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
             fontSize: '12px',
-            color: 'var(--color-graphite)',
+            color: 'var(--color-fg-muted)',
             letterSpacing: '-0.36px',
             textDecoration: 'none',
             display: 'inline-flex',
             alignItems: 'center',
             gap: '6px',
           }}
-          className="hover:text-black transition-colors duration-200"
+          className="hover:text-[var(--color-fg)] transition-colors duration-200"
         >
           View all projects →
         </Link>

@@ -20,6 +20,11 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
+    // Mermaid's layout pass is a synchronous, main-thread-blocking task (up to
+    // several hundred ms per diagram). Starting it a full viewport ahead of
+    // time means that work lands while the diagram is still off-screen and
+    // the user is reading the previous card, instead of stalling the frame
+    // right as this one scrolls into view.
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -27,7 +32,7 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
           observer.disconnect()
         }
       },
-      { rootMargin: '0px' }
+      { rootMargin: '800px' }
     )
     observer.observe(el)
     return () => observer.disconnect()
@@ -70,9 +75,24 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
         if (!cancelled) setError(true)
       }
     }
-    render()
+
+    // Defer to idle time so the blocking layout pass doesn't compete with an
+    // in-progress scroll/paint frame. Falls back to a macrotask on Safari,
+    // which has no requestIdleCallback.
+    let idleHandle: number | ReturnType<typeof setTimeout> | undefined
+    if (typeof window.requestIdleCallback === 'function') {
+      idleHandle = window.requestIdleCallback(() => void render(), { timeout: 1000 })
+    } else {
+      idleHandle = setTimeout(() => void render(), 0)
+    }
+
     return () => {
       cancelled = true
+      if (typeof window.cancelIdleCallback === 'function' && typeof idleHandle === 'number') {
+        window.cancelIdleCallback(idleHandle)
+      } else if (idleHandle !== undefined) {
+        clearTimeout(idleHandle as ReturnType<typeof setTimeout>)
+      }
     }
   }, [chart, id, isVisible])
 

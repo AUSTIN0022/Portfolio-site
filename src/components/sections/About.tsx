@@ -13,7 +13,11 @@ import {
 import { FaAws } from 'react-icons/fa6'
 import { MdApi, MdBolt, MdAccountTree, MdQueue } from 'react-icons/md'
 
-const iconColor = 'var(--color-graphite)'
+// Neutral color for the four icons that aren't real brand marks (BullMQ has
+// no simple-icons entry, and "REST APIs" / "Event-driven" / "System Design"
+// are architecture concepts, not products) — everything else gets its real
+// brand color instead of the site's usual monochrome icon treatment.
+const neutralColor = 'var(--color-graphite)'
 const iconStyle = { display: 'inline-flex', marginRight: '6px', verticalAlign: '-2px' }
 
 // Every item is a real mark, always shown with its label — no marquee, no
@@ -22,18 +26,18 @@ const iconStyle = { display: 'inline-flex', marginRight: '6px', verticalAlign: '
 // "System Design" are architecture concepts, not products — those three get
 // the closest representative icon instead of a brand logo.
 const techItems: { icon: React.ReactNode; label: string }[] = [
-  { icon: <SiNodedotjs color={iconColor} style={iconStyle} />, label: 'Node.js' },
-  { icon: <SiTypescript color={iconColor} style={iconStyle} />, label: 'TypeScript' },
-  { icon: <SiPostgresql color={iconColor} style={iconStyle} />, label: 'PostgreSQL' },
-  { icon: <SiRedis color={iconColor} style={iconStyle} />, label: 'Redis' },
-  { icon: <MdQueue color={iconColor} style={iconStyle} />, label: 'BullMQ' },
-  { icon: <SiNextdotjs color={iconColor} style={iconStyle} />, label: 'Next.js' },
-  { icon: <SiPrisma color={iconColor} style={iconStyle} />, label: 'Prisma' },
-  { icon: <FaAws color={iconColor} style={iconStyle} />, label: 'AWS' },
-  { icon: <SiDocker color={iconColor} style={iconStyle} />, label: 'Docker' },
-  { icon: <MdApi color={iconColor} style={iconStyle} />, label: 'REST APIs' },
-  { icon: <MdBolt color={iconColor} style={iconStyle} />, label: 'Event-driven' },
-  { icon: <MdAccountTree color={iconColor} style={iconStyle} />, label: 'System Design' },
+  { icon: <SiNodedotjs color="#339933" style={iconStyle} />, label: 'Node.js' },
+  { icon: <SiTypescript color="#3178C6" style={iconStyle} />, label: 'TypeScript' },
+  { icon: <SiPostgresql color="#4169E1" style={iconStyle} />, label: 'PostgreSQL' },
+  { icon: <SiRedis color="#DC382D" style={iconStyle} />, label: 'Redis' },
+  { icon: <MdQueue color={neutralColor} style={iconStyle} />, label: 'BullMQ' },
+  { icon: <SiNextdotjs color="#000000" style={iconStyle} />, label: 'Next.js' },
+  { icon: <SiPrisma color="#2D3748" style={iconStyle} />, label: 'Prisma' },
+  { icon: <FaAws color="#FF9900" style={iconStyle} />, label: 'AWS' },
+  { icon: <SiDocker color="#2496ED" style={iconStyle} />, label: 'Docker' },
+  { icon: <MdApi color={neutralColor} style={iconStyle} />, label: 'REST APIs' },
+  { icon: <MdBolt color={neutralColor} style={iconStyle} />, label: 'Event-driven' },
+  { icon: <MdAccountTree color={neutralColor} style={iconStyle} />, label: 'System Design' },
 ]
 
 export function About() {

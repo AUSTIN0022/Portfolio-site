@@ -331,8 +331,12 @@ export default function FloatingShootToggle(): React.JSX.Element {
     if (!isOn) setHoverShootControls(false)
   }, [isOn])
 
-  React.useEffect(() => {
-    // Warm up the JS chunk so first render appears faster.
+  const gunWarmedRef = React.useRef(false)
+  const warmUpGun = React.useCallback(() => {
+    if (gunWarmedRef.current) return
+    gunWarmedRef.current = true
+    // Warm up the JS chunk (and the GLB it preloads) only once the user shows
+    // intent to use shoot mode, instead of paying this cost on every page view.
     void import('./GunViewer')
   }, [])
 
@@ -363,6 +367,7 @@ export default function FloatingShootToggle(): React.JSX.Element {
   }, [])
 
   const toggle = React.useCallback(() => {
+    warmUpGun()
     setIsOn((prev) => {
       const next = !prev
       writeStateToStorage(next)
@@ -371,7 +376,7 @@ export default function FloatingShootToggle(): React.JSX.Element {
       }
       return next
     })
-  }, [])
+  }, [warmUpGun])
 
   // Fade all splats out when leaving shoot mode, then clear.
   React.useEffect(() => {
@@ -762,12 +767,16 @@ export default function FloatingShootToggle(): React.JSX.Element {
         <div
           className="shoot-hud-item"
           data-shoot-controls="1"
-          onMouseEnter={() => setHoverShootControls(true)}
+          onMouseEnter={() => {
+            setHoverShootControls(true)
+            warmUpGun()
+          }}
           onMouseLeave={() => setHoverShootControls(false)}
         >
           <button
             type="button"
             onClick={toggle}
+            onTouchStart={warmUpGun}
             className="shoot-toggle-pill"
             aria-pressed={isOn}
             aria-label="Toggle shoot mode"

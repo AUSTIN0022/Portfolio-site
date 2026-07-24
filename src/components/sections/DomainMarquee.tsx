@@ -16,31 +16,14 @@ const rowFont = {
   color: 'var(--color-ink-black)',
 } as const
 
-const wordStyle = { ...rowFont, fontSize: 'clamp(3.25rem, 10vw, 10rem)' }
+const wordStyle = { ...rowFont, fontSize: 'clamp(4.5rem, 13vw, 13rem)' }
 const ampStyle = {
   ...rowFont,
   fontWeight: 400,
-  fontSize: 'clamp(2rem, 5vw, 4rem)',
+  fontSize: 'clamp(2.25rem, 6vw, 5rem)',
   color: 'var(--color-muted-on-light)',
-  margin: '0 clamp(16px, 3vw, 40px)',
+  margin: '0 clamp(20px, 4vw, 56px)',
 }
-const listLabelStyle = {
-  fontFamily: 'var(--font-suisseintlmono)',
-  fontSize: '12px',
-  color: 'var(--color-muted-on-light)',
-  letterSpacing: '0.2em',
-  textTransform: 'uppercase' as const,
-}
-const listItemStyle = {
-  fontFamily: 'var(--font-suisseintl)',
-  fontWeight: 600,
-  fontSize: '16px',
-  color: 'var(--color-graphite)',
-  letterSpacing: '-0.02em',
-}
-
-const row1List = ['Node.js APIs', 'RESTful Design', 'Authentication', 'Real-time WebSockets']
-const row2List = ['Distributed Queues', 'Redis-Backed Locking', 'AWS Auto-Scaling', 'Zero-Downtime Deploys']
 
 export function DomainMarquee() {
   const sectionRef = useRef<HTMLDivElement>(null)
@@ -127,7 +110,9 @@ export function DomainMarquee() {
         position: 'relative',
         overflow: 'hidden',
         background: 'var(--color-canvas-mist)',
-        padding: 'clamp(48px, 8vw, 96px) 0',
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
       }}
     >
       <div
@@ -155,7 +140,14 @@ export function DomainMarquee() {
         }}
       />
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(24px, 4vw, 48px)' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'clamp(48px, 9vw, 120px)',
+          width: '100%',
+        }}
+      >
         <div
           ref={trackTopRef}
           style={{
@@ -168,34 +160,6 @@ export function DomainMarquee() {
           <span style={wordStyle}>BACKEND</span>
           <span style={ampStyle}>&amp;</span>
           <span style={wordStyle}>APIs</span>
-
-          {!isMobile && (
-            <div
-              style={{
-                marginLeft: 'clamp(32px, 6vw, 96px)',
-                paddingRight: '80px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '6px',
-              }}
-            >
-              <span style={listLabelStyle}>Services</span>
-              <div
-                style={{
-                  height: '1px',
-                  width: '32px',
-                  background: 'var(--color-muted-on-light)',
-                  opacity: 0.4,
-                  marginBottom: '4px',
-                }}
-              />
-              {row1List.map((item) => (
-                <span key={item} style={listItemStyle}>
-                  {item}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
 
         <div
@@ -210,36 +174,6 @@ export function DomainMarquee() {
           <span style={wordStyle}>SYSTEMS</span>
           <span style={ampStyle}>&amp;</span>
           <span style={wordStyle}>INFRA</span>
-
-          {!isMobile && (
-            <div
-              style={{
-                marginLeft: 'clamp(32px, 6vw, 96px)',
-                paddingRight: '80px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '6px',
-                textAlign: 'right',
-              }}
-            >
-              <span style={listLabelStyle}>Focus</span>
-              <div
-                style={{
-                  height: '1px',
-                  width: '32px',
-                  background: 'var(--color-muted-on-light)',
-                  opacity: 0.4,
-                  marginBottom: '4px',
-                  marginLeft: 'auto',
-                }}
-              />
-              {row2List.map((item) => (
-                <span key={item} style={listItemStyle}>
-                  {item}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </section>

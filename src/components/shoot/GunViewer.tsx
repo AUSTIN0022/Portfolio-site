@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { Canvas, type ThreeElements, useFrame } from '@react-three/fiber'
-import { Html, useGLTF } from '@react-three/drei'
+import { useGLTF, useProgress } from '@react-three/drei'
 import type { Group } from 'three'
 
 type GroupProps = ThreeElements['group']
@@ -21,20 +21,19 @@ type GunViewerProps = {
   aimY: number
 }
 
-function ModelLoadingFallback(): React.JSX.Element {
+/**
+ * Tracks THREE's global loading manager instead of the in-canvas Suspense
+ * fallback: r3f's Suspense boundary can resolve/retry faster than the
+ * fallback paints, so it's not a reliable place to show loading state for a
+ * ~10MB GLB fetch. This overlay sits outside the Canvas as plain DOM.
+ */
+function GunLoadOverlay(): React.JSX.Element | null {
+  const active = useProgress((state) => state.active)
+  if (!active) return null
   return (
-    <Html center>
-      <div
-        style={{
-          height: '20px',
-          width: '20px',
-          borderRadius: '50%',
-          border: '2px solid rgba(0,0,0,0.15)',
-          borderTopColor: 'rgba(0,0,0,0.5)',
-          animation: 'spin 0.8s linear infinite',
-        }}
-      />
-    </Html>
+    <div className="shoot-gun-loading" aria-hidden="true">
+      <div className="shoot-spinner" />
+    </div>
   )
 }
 
@@ -86,18 +85,19 @@ export default function GunViewer({ aimX, aimY }: GunViewerProps): React.JSX.Ele
         justifyContent: 'center',
       }}
     >
-      <div style={{ height: '300px', width: 'min(88vw, 384px)' }}>
+      <div style={{ position: 'relative', height: '300px', width: 'min(88vw, 384px)' }}>
         <Canvas
           dpr={[1, 1.5]}
           camera={{ position: [1.75, 0.85, 2.1], fov: 36 }}
           gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}
         >
-          <React.Suspense fallback={<ModelLoadingFallback />}>
+          <React.Suspense fallback={null}>
             <ambientLight intensity={0.9} />
             <directionalLight position={[2, 2, 2]} intensity={1.2} />
             <GunRig aimX={aimX} aimY={aimY} />
           </React.Suspense>
         </Canvas>
+        <GunLoadOverlay />
       </div>
     </div>
   )

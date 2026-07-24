@@ -187,7 +187,11 @@ export function InfraScaleSimulator() {
     window.scrollTo({ top: top + (i / (BEATS.length - 1)) * dist, behavior: 'smooth' })
   }
 
-  useEffect(() => engine(trackRef, wrapRef, ctrl, setBeatIdx, setNotice), [])
+  // Re-runs whenever isMobile flips: `scene` (above) remounts the whole SVG
+  // at that breakpoint, so engine()'s cached DOM refs need to be re-queried
+  // against the new nodes — otherwise frame() keeps writing to detached
+  // elements from the old (mobile or desktop) SVG.
+  useEffect(() => engine(trackRef, wrapRef, ctrl, setBeatIdx, setNotice), [isMobile])
 
   // Playground control handlers
   const onParticipants = (v: number) => { 
@@ -276,7 +280,7 @@ export function InfraScaleSimulator() {
           {!isMobile ? (
             <>
               {/* Right rail — mission control */}
-              <div className="is-rail-right">
+              <div className="is-rail-right" data-shoot-scroll-interactive="1">
                 <div className="is-mission">
                   <div className="is-mission-top">
                     <span className="is-chip" data-readout="mode" data-mode="idle">🌙 IDLE</span>
@@ -358,7 +362,7 @@ export function InfraScaleSimulator() {
 
               {/* Milestone rail (story only) */}
               {!playground && (
-                <div className="is-rail">
+                <div className="is-rail" data-shoot-scroll-interactive="1">
                   <div className="is-rail-fill" style={{ transform: `scaleX(${(beatIdx / (BEATS.length - 1)).toFixed(4)})` }} />
                   <div className="is-rail-ticks">
                     {BEATS.map((b, i) => (
@@ -520,8 +524,9 @@ export function InfraScaleSimulator() {
               )}
 
               {/* Mobile Floating Pill Controls near thumb area */}
-              <div 
-                className="sim-mobile-pill" 
+              <div
+                className="sim-mobile-pill"
+                data-shoot-scroll-interactive="1"
                 style={{
                   position: 'absolute',
                   bottom: '20px',
@@ -810,6 +815,30 @@ function engine(
   let lastBeat = -1
   let lastNoticeShown: string | null = null
 
+  // Cached scroll progress (0-1) — measured only on actual scroll/resize
+  // events, not every animation frame. frame() previously called
+  // track.getBoundingClientRect() on every one of its ~60 iterations per
+  // second regardless of whether the user was scrolling, forcing a layout
+  // flush of whatever the previous frame just wrote via setAttribute/style.
+  // The live-dashboard parts of frame() (clock, jitter, gauges) still need
+  // to run continuously while visible — only the scroll-position read moves
+  // out to its own listener, mirroring ArchitectureJourney's pattern.
+  let cachedP = 0
+  let measureRaf = 0
+  const measureScroll = () => {
+    measureRaf = 0
+    const rect = track.getBoundingClientRect()
+    const vh = window.innerHeight
+    const total = rect.height - vh
+    cachedP = clamp(total > 0 ? -rect.top / total : 0, 0, 1)
+  }
+  const onScroll = () => {
+    if (!measureRaf) measureRaf = requestAnimationFrame(measureScroll)
+  }
+  measureScroll()
+  window.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('resize', onScroll)
+
   // Haptic feedback tracking variables
   let lastMode: 'idle' | 'live' | null = null
   let lastHealthyCount = 1
@@ -820,13 +849,24 @@ function engine(
     ([entry]) => {
       const prev = isVisible
       isVisible = entry.isIntersecting
-      if (!prev && isVisible) {
+      if (!prev && isVisible && !document.hidden && !raf) {
         raf = requestAnimationFrame(frame)
       }
     },
     { threshold: 0.05 }
   )
   io.observe(track)
+
+  // Tab-hidden gating alongside the IntersectionObserver above — a
+  // backgrounded tab still counts as "visible" to IO if the panel was on
+  // screen when the tab was switched away from, so frame() also checks
+  // document.hidden directly and this re-arms the loop on return.
+  const onVisibilityChange = () => {
+    if (!document.hidden && isVisible && !raf) {
+      raf = requestAnimationFrame(frame)
+    }
+  }
+  document.addEventListener('visibilitychange', onVisibilityChange)
 
   const setSlot = (c: (typeof slotCaches)[0], inst: Inst | undefined, cpu: number, mem: number) => {
     if (c.albWire) {
@@ -918,13 +958,12 @@ function engine(
   }
 
   const frame = (now: number) => {
-    if (!isVisible) return
+    if (!isVisible || document.hidden) {
+      raf = 0
+      return
+    }
 
-    const rect = track.getBoundingClientRect()
-    const vh = window.innerHeight
-    const total = rect.height - vh
-    const p = clamp(total > 0 ? -rect.top / total : 0, 0, 1)
-
+    const p = cachedP
     const fi = p * (BEATS.length - 1)
     const active = Math.round(fi)
     const man = ctrl.current
@@ -1099,7 +1138,11 @@ function engine(
 
   return () => {
     io.disconnect()
+    document.removeEventListener('visibilitychange', onVisibilityChange)
+    window.removeEventListener('scroll', onScroll)
+    window.removeEventListener('resize', onScroll)
     if (raf) cancelAnimationFrame(raf)
+    if (measureRaf) cancelAnimationFrame(measureRaf)
   }
 }
 

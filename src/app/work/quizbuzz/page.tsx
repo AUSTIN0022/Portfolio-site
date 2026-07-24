@@ -2,6 +2,8 @@ import { CaseStudyLayout } from '@/components/sections/CaseStudyLayout'
 import { CaseStudySection } from '@/components/sections/CaseStudySection'
 import { P, Lead, Callout, Metric, MetricGrid, DecisionCard } from '@/components/ui/CaseStudyProse'
 import { ArchDiagram } from '@/components/ui/ArchDiagram'
+import { StackedDiagrams } from '@/components/ui/StackedDiagrams'
+import { DecisionCardTrack } from '@/components/ui/DecisionCardTrack'
 import { LazyArchitectureJourney } from '@/components/ui/LazyArchitectureJourney'
 import { LazyInfraScaleSimulator } from '@/components/ui/LazyInfraScaleSimulator'
 import { SkillTag } from '@/components/ui/SkillTag'
@@ -158,6 +160,7 @@ export default function QuizBuzzPage() {
                         actual source architecture documentation.
                     </Lead>
 
+                    <StackedDiagrams>
                     <ArchDiagram
                         id="diag-infra"
                         title="Dual-Mode AWS Infrastructure"
@@ -356,6 +359,7 @@ export default function QuizBuzzPage() {
     Analytics --> Quiz
     style Messaging fill:#d1ffca,color:#000000`}
                     />
+                    </StackedDiagrams>
                 </CaseStudySection>
 
                 <CaseStudySection id="decisions" kicker="// ENGINEERING DECISIONS" heading="WHAT I BUILT.">
@@ -363,8 +367,10 @@ export default function QuizBuzzPage() {
                         These are the engineering decisions that defined this project — each one with a
                         concrete problem, the approach taken, and the measured outcome.
                     </P>
+                    <DecisionCardTrack>
                     <DecisionCard
                         number={1}
+                        title="630× faster test-data seeding"
                         shipped={true}
                         problem="Seeding 10,000 participant rows for load testing took 42 minutes — sequential Prisma upserts over an SSH tunnel at ~100ms latency per round-trip."
                         approach="Rewrote as bulk INSERT ... VALUES (...), ... ON CONFLICT DO NOTHING via a raw pg.Pool (bypassing Prisma's raw-query layer, which has a parameter-binding bug at large VALUES tables). Batch size 500, 4 concurrent batches, index-deterministic registrationRef keys."
@@ -372,6 +378,7 @@ export default function QuizBuzzPage() {
                     />
                     <DecisionCard
                         number={2}
+                        title="Zero job loss across a dual-Redis switch"
                         shipped={true}
                         problem="BullMQ jobs scheduled before a go-live switch were enqueued into the local Docker Redis. After the switch to ElastiCache, workers listened to a different Redis — jobs were stranded, invisible, and contest start events never fired."
                         approach="Built redis-migrate.js — a DUMP/RESTORE migration tool (preserves types and TTLs) that copies every key between Redis instances in both directions, wired into both go-live.sh and go-idle.sh. Always executes inside the live backend container so it inherits the container's actual REDIS_HOST."
@@ -379,6 +386,7 @@ export default function QuizBuzzPage() {
                     />
                     <DecisionCard
                         number={3}
+                        title="Closing the auto-submit coverage gap"
                         shipped={true}
                         problem="AUTO_SUBMIT produced only 140 submissions from a contest with 1,323 peak IN_QUIZ participants. The force-submit logic only read from the active Redis SET — participants whose connections were dropped by an OOM crash had their socket disconnect handlers skipped, landing them in the disconnected SET that AUTO_SUBMIT never checked."
                         approach="Fixed handleTimeExpiry() to union both active and disconnected participant sets before submitting, batched in groups of 50 with Promise.allSettled so one failure can't abort the batch."
@@ -386,6 +394,7 @@ export default function QuizBuzzPage() {
                     />
                     <DecisionCard
                         number={4}
+                        title="Debugging the Socket.IO protocol layer"
                         shipped={true}
                         problem="Load test k6 client sent plain JSON over raw WebSockets. Socket.IO uses Engine.IO v4 framing on top of the WS transport — the server silently ignored every message. WS success rate: 50%. Admin live monitor showed 0 participants."
                         approach="Manually verified the infrastructure layer with curl (confirmed clean 101 upgrade and EIO4 open packet). Diagnosed the bug as above-transport: reimplemented the k6 client as an explicit state machine speaking the correct EIO4 handshake, namespace CONNECT with auth, framed event packets, and ping/pong keepalive."
@@ -393,6 +402,7 @@ export default function QuizBuzzPage() {
                     />
                     <DecisionCard
                         number={5}
+                        title="Rethinking autoscaling for WebSocket load"
                         shipped={false}
                         problem="The ASG's scale-out policy triggered on CPU at 60%. WebSocket load is memory/IO-bound — CPU stays near 20% while heap climbs to 95%. The scaler sees 'no scaling needed' right up until an OOM crash causes a brief CPU spike. A new instance still needs ~7 minutes to become healthy — far too slow for a quiz with a hard start time."
                         approach="Three options designed: (A) memory-percentage CloudWatch alarm as a more direct signal, (B) custom connection-count metric published from the backend itself, (C) pre-warm capacity from registered-participant count in go-live.sh before the event starts — most accurate since this workload's peak demand is always known in advance."
@@ -400,11 +410,13 @@ export default function QuizBuzzPage() {
                     />
                     <DecisionCard
                         number={6}
+                        title="Auditing every rate limiter, not just the broken one"
                         shipped={true}
                         problem="OTP rate limiter middleware was attached to the participant-login route, which doesn't use OTP. Under load testing, all k6 VUs shared a single source IP — 5 req/window instantly exhausted the limiter. A subsequent audit found a second bug: a separate limiter used windowMs: config.rateLimit.window without ×1000 conversion — giving it a 600ms window instead of 600 seconds."
                         approach="Removed the limiter from the non-OTP route. Audited every rate limiter in the codebase (not just the one that triggered). Fixed the unit mismatch in two locations."
                         outcome="Rate limiting correct across all routes. Principle: finding one instance of a bug class is the right moment to audit for siblings."
                     />
+                    </DecisionCardTrack>
                 </CaseStudySection>
 
                 <CaseStudySection id="loadtest" kicker="// LOAD TESTING" heading="24 BUGS. DOCUMENTED.">

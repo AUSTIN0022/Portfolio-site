@@ -66,11 +66,31 @@ export default function ScrollFloat({
 
   const splitText = useMemo(() => {
     if (!isPlainString) return null
-    return (children as string).split('').map((char, index) => (
-      <span className="char" key={index}>
-        {char === ' ' ? ' ' : char}
-      </span>
-    ))
+    // Group chars by word before splitting into per-char spans: each char
+    // becomes its own inline-block box (required for the yPercent/scaleY
+    // reveal below), and separate inline-block boxes are a line-break
+    // opportunity to the browser even with no whitespace between them — so
+    // without a word-level wrapper, a line can break mid-word (see the
+    // `WaveText` convention this mirrors, and DESIGN.md's note on it).
+    // The space between words must be a sibling of the word spans, not a
+    // child of one — a space as the last child of an inline-block collapses
+    // to zero width (trailing whitespace inside its own box gets trimmed),
+    // so it has to sit outside in the surrounding normal-flow text.
+    const words = (children as string).split(' ')
+    const nodes: ReactNode[] = []
+    words.forEach((word, wordIndex) => {
+      nodes.push(
+        <span className="word" key={`word-${wordIndex}`}>
+          {word.split('').map((char, charIndex) => (
+            <span className="char" key={charIndex}>
+              {char}
+            </span>
+          ))}
+        </span>
+      )
+      if (wordIndex < words.length - 1) nodes.push(' ')
+    })
+    return nodes
   }, [children, isPlainString])
 
   useEffect(() => {

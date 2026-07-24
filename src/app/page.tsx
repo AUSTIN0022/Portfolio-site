@@ -2,9 +2,11 @@
 
 import { Nav } from '@/components/nav/Nav'
 import { Hero } from '@/components/sections/Hero'
+import { DomainMarquee } from '@/components/sections/DomainMarquee'
 import { StatsStrip } from '@/components/sections/StatsStrip'
 import { About } from '@/components/sections/About'
 import { Principles } from '@/components/sections/Principles'
+import { Statement } from '@/components/sections/Statement'
 import { Work } from '@/components/sections/Work'
 import { Skills } from '@/components/sections/Skills'
 import { Now } from '@/components/sections/Now'
@@ -24,11 +26,15 @@ export default function Home() {
       <Nav />
       <main id="main-content">
         <Hero />
+        <DomainMarquee />
         <CurvedRise>
           <StatsStrip />
         </CurvedRise>
         <About />
         <Principles />
+        <CurvedRise>
+          <Statement />
+        </CurvedRise>
         <Work />
         <CurvedRise>
           <Skills />

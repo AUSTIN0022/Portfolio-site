@@ -1,7 +1,6 @@
 import { MonoKicker } from '@/components/ui/MonoKicker'
 import ScrollFloat from '@/components/ui/ScrollFloat'
-import LogoLoop, { type LogoItem } from '@/components/ui/LogoLoop'
-import { LogoTooltip } from '@/components/ui/LogoTooltip'
+import { SkillTag } from '@/components/ui/SkillTag'
 import {
   SiNodedotjs,
   SiTypescript,
@@ -15,119 +14,26 @@ import { FaAws } from 'react-icons/fa6'
 import { MdApi, MdBolt, MdAccountTree, MdQueue } from 'react-icons/md'
 
 const iconColor = 'var(--color-graphite)'
+const iconStyle = { display: 'inline-flex', marginRight: '6px', verticalAlign: '-2px' }
 
-// Every item is a real mark. simple-icons has no BullMQ or AWS entry (AWS
-// was dropped for trademark reasons), and "REST APIs" / "Event-driven" /
-// "System Design" are architecture concepts, not products — those five get
-// the closest representative icon instead of a brand logo. Every icon is
-// wrapped in LogoTooltip so hovering it (rather than reading the marquee
-// mid-scroll) reveals the name it stands for.
-const techLogos: LogoItem[] = [
-  {
-    node: (
-      <LogoTooltip label="Node.js">
-        <SiNodedotjs color={iconColor} />
-      </LogoTooltip>
-    ),
-    title: 'Node.js',
-    href: 'https://nodejs.org',
-  },
-  {
-    node: (
-      <LogoTooltip label="TypeScript">
-        <SiTypescript color={iconColor} />
-      </LogoTooltip>
-    ),
-    title: 'TypeScript',
-    href: 'https://www.typescriptlang.org',
-  },
-  {
-    node: (
-      <LogoTooltip label="PostgreSQL">
-        <SiPostgresql color={iconColor} />
-      </LogoTooltip>
-    ),
-    title: 'PostgreSQL',
-    href: 'https://www.postgresql.org',
-  },
-  {
-    node: (
-      <LogoTooltip label="Redis">
-        <SiRedis color={iconColor} />
-      </LogoTooltip>
-    ),
-    title: 'Redis',
-    href: 'https://redis.io',
-  },
-  {
-    node: (
-      <LogoTooltip label="BullMQ">
-        <MdQueue color={iconColor} />
-      </LogoTooltip>
-    ),
-    title: 'BullMQ',
-    href: 'https://docs.bullmq.io',
-  },
-  {
-    node: (
-      <LogoTooltip label="Next.js">
-        <SiNextdotjs color={iconColor} />
-      </LogoTooltip>
-    ),
-    title: 'Next.js',
-    href: 'https://nextjs.org',
-  },
-  {
-    node: (
-      <LogoTooltip label="Prisma">
-        <SiPrisma color={iconColor} />
-      </LogoTooltip>
-    ),
-    title: 'Prisma',
-    href: 'https://www.prisma.io',
-  },
-  {
-    node: (
-      <LogoTooltip label="AWS">
-        <FaAws color={iconColor} />
-      </LogoTooltip>
-    ),
-    title: 'AWS',
-    href: 'https://aws.amazon.com',
-  },
-  {
-    node: (
-      <LogoTooltip label="Docker">
-        <SiDocker color={iconColor} />
-      </LogoTooltip>
-    ),
-    title: 'Docker',
-    href: 'https://www.docker.com',
-  },
-  {
-    node: (
-      <LogoTooltip label="REST APIs">
-        <MdApi color={iconColor} />
-      </LogoTooltip>
-    ),
-    title: 'REST APIs',
-  },
-  {
-    node: (
-      <LogoTooltip label="Event-driven">
-        <MdBolt color={iconColor} />
-      </LogoTooltip>
-    ),
-    title: 'Event-driven',
-  },
-  {
-    node: (
-      <LogoTooltip label="System Design">
-        <MdAccountTree color={iconColor} />
-      </LogoTooltip>
-    ),
-    title: 'System Design',
-  },
+// Every item is a real mark, always shown with its label — no marquee, no
+// hover-to-reveal tooltip. simple-icons has no BullMQ or AWS entry (AWS was
+// dropped for trademark reasons), and "REST APIs" / "Event-driven" /
+// "System Design" are architecture concepts, not products — those three get
+// the closest representative icon instead of a brand logo.
+const techItems: { icon: React.ReactNode; label: string }[] = [
+  { icon: <SiNodedotjs color={iconColor} style={iconStyle} />, label: 'Node.js' },
+  { icon: <SiTypescript color={iconColor} style={iconStyle} />, label: 'TypeScript' },
+  { icon: <SiPostgresql color={iconColor} style={iconStyle} />, label: 'PostgreSQL' },
+  { icon: <SiRedis color={iconColor} style={iconStyle} />, label: 'Redis' },
+  { icon: <MdQueue color={iconColor} style={iconStyle} />, label: 'BullMQ' },
+  { icon: <SiNextdotjs color={iconColor} style={iconStyle} />, label: 'Next.js' },
+  { icon: <SiPrisma color={iconColor} style={iconStyle} />, label: 'Prisma' },
+  { icon: <FaAws color={iconColor} style={iconStyle} />, label: 'AWS' },
+  { icon: <SiDocker color={iconColor} style={iconStyle} />, label: 'Docker' },
+  { icon: <MdApi color={iconColor} style={iconStyle} />, label: 'REST APIs' },
+  { icon: <MdBolt color={iconColor} style={iconStyle} />, label: 'Event-driven' },
+  { icon: <MdAccountTree color={iconColor} style={iconStyle} />, label: 'System Design' },
 ]
 
 export function About() {
@@ -178,8 +84,8 @@ export function About() {
             }}
           >
             I&apos;m a backend engineer and MSc Computer Science student building production-grade
-            systems, from distributed job queues to APIs load-tested to 7,500 concurrent
-            WebSocket users.
+            systems, from distributed job queues to APIs battle-tested under real concurrent
+            load.
           </p>
           <p
             style={{
@@ -199,19 +105,14 @@ export function About() {
           </p>
           <div
             data-gsap="tags"
-            style={{ height: '56px', position: 'relative', overflow: 'hidden' }}
+            style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}
           >
-            <LogoLoop
-              logos={techLogos}
-              speed={60}
-              direction="left"
-              logoHeight={40}
-              gap={48}
-              fadeOut
-              fadeOutColor="var(--color-canvas-mist)"
-              scaleOnHover
-              ariaLabel="Technologies I work with"
-            />
+            {techItems.map((item) => (
+              <SkillTag key={item.label}>
+                {item.icon}
+                {item.label}
+              </SkillTag>
+            ))}
           </div>
         </div>
       </div>

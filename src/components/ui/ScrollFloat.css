@@ -11,6 +11,11 @@
   display: inline-block;
 }
 
+.scroll-float .word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
 .scroll-float .char {
   display: inline-block;
 }

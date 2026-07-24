@@ -127,12 +127,14 @@ export function MetricGrid({ children }: { children: React.ReactNode }) {
 // A decision card — the "problem → approach → outcome" pattern
 export function DecisionCard({
   number,
+  title,
   problem,
   approach,
   outcome,
   shipped,
 }: {
   number: number
+  title: string
   problem: string
   approach: string
   outcome: string
@@ -178,6 +180,19 @@ export function DecisionCard({
             {shipped ? 'SHIPPED' : 'DESIGNED'}
           </span>
         </div>
+        <h3
+          style={{
+            fontFamily: 'var(--font-suisseintlcond)',
+            fontWeight: 700,
+            fontSize: 'clamp(1.375rem, 2vw, 1.625rem)',
+            lineHeight: 1.05,
+            letterSpacing: '-0.03em',
+            color: 'var(--color-ink-black)',
+            marginBottom: '20px',
+          }}
+        >
+          {title}
+        </h3>
         <div
           style={{
             fontFamily: 'var(--font-suisseintlmono)',

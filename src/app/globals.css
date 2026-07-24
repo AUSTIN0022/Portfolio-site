@@ -533,6 +533,38 @@ a:hover > .wave-text span,
   display: none; /* WebKit/Blink */
 }
 
+/* DecisionCardTrack — same hidden-native-scrollbar track as the project
+   cards above, applied to a run of DecisionCards. Sizing lives here (not on
+   DecisionCard itself) so the component stays unaware of whether it's in a
+   horizontal track or a plain column. */
+.decision-track > * {
+  flex-shrink: 0;
+  width: min(640px, 88vw);
+  scroll-snap-align: start;
+}
+
+/* StackedDiagrams — a pure position:sticky + z-index "deck of cards" effect
+   for a run of ArchDiagrams. Each child sticks a little lower and a layer
+   higher than the one before it, so scrolling past this section slides each
+   new diagram up and over the last, leaving a thin sliver of the previous
+   card's top edge peeking out behind it. No JS: the stacking comes entirely
+   from native sticky positioning, so it costs nothing at scroll time. */
+.diagram-stack > * {
+  position: sticky;
+  box-shadow: var(--shadow-elevation-3);
+}
+.diagram-stack > *:nth-child(1) { top: 96px; z-index: 1; }
+.diagram-stack > *:nth-child(2) { top: 112px; z-index: 2; }
+.diagram-stack > *:nth-child(3) { top: 128px; z-index: 3; }
+.diagram-stack > *:nth-child(4) { top: 144px; z-index: 4; }
+.diagram-stack > *:nth-child(5) { top: 160px; z-index: 5; }
+@media (prefers-reduced-motion: reduce) {
+  .diagram-stack > * {
+    position: static;
+    box-shadow: none;
+  }
+}
+
 /* Custom draggable scroll indicator that sits below the cards and
    reflects (and drives) the track's horizontal scroll position. */
 .card-scrollbar {
@@ -800,4 +832,271 @@ a:hover > .wave-text span,
     grid-column: span 2;
     grid-row: span 1;
   }
+}
+
+/* ============================================================
+   Shoot mode — the paintball-gun easter egg (FloatingShootToggle).
+   Ported from the reference site's identical feature. While active,
+   real clicks on links/buttons/inputs are disabled site-wide (firing
+   happens via window-level pointer listeners instead), except inside
+   [data-shoot-controls] (the toggle itself) and
+   [data-shoot-scroll-interactive] (pinned/draggable regions that must
+   stay usable — card tracks, the simulator's playground controls).
+   ============================================================ */
+html.shoot-mode-active,
+html.shoot-mode-active *,
+body.shoot-mode-active,
+body.shoot-mode-active *,
+html.shoot-mode-active *::before,
+html.shoot-mode-active *::after,
+body.shoot-mode-active *::before,
+body.shoot-mode-active *::after {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+html.shoot-mode-active a[href],
+html.shoot-mode-active button:not(:disabled),
+html.shoot-mode-active [role='button'],
+html.shoot-mode-active [role='link'],
+html.shoot-mode-active [role='tab'],
+html.shoot-mode-active [role='menuitem'],
+html.shoot-mode-active input:not([type='hidden']),
+html.shoot-mode-active textarea,
+html.shoot-mode-active select,
+html.shoot-mode-active summary {
+  pointer-events: none !important;
+}
+
+html.shoot-mode-active [data-shoot-controls] a[href],
+html.shoot-mode-active [data-shoot-controls] button:not(:disabled),
+html.shoot-mode-active [data-shoot-controls] [role='button'],
+html.shoot-mode-active [data-shoot-controls] [role='link'],
+html.shoot-mode-active [data-shoot-controls] [role='tab'],
+html.shoot-mode-active [data-shoot-controls] [role='menuitem'],
+html.shoot-mode-active [data-shoot-controls] input:not([type='hidden']),
+html.shoot-mode-active [data-shoot-controls] textarea,
+html.shoot-mode-active [data-shoot-controls] select,
+html.shoot-mode-active [data-shoot-controls] summary {
+  pointer-events: auto !important;
+}
+
+html.shoot-mode-active [data-shoot-scroll-interactive] a[href],
+html.shoot-mode-active [data-shoot-scroll-interactive] button:not(:disabled),
+html.shoot-mode-active [data-shoot-scroll-interactive] [role='button'],
+html.shoot-mode-active [data-shoot-scroll-interactive] [role='link'],
+html.shoot-mode-active [data-shoot-scroll-interactive] [role='tab'],
+html.shoot-mode-active [data-shoot-scroll-interactive] [role='menuitem'],
+html.shoot-mode-active [data-shoot-scroll-interactive] input:not([type='hidden']),
+html.shoot-mode-active [data-shoot-scroll-interactive] textarea,
+html.shoot-mode-active [data-shoot-scroll-interactive] select,
+html.shoot-mode-active [data-shoot-scroll-interactive] summary {
+  pointer-events: auto !important;
+}
+
+/* Touchscreens: keep pan/pinch working (class from JS via maxTouchPoints). */
+html.shoot-mode-active.shoot-mode-touch-ui,
+html.shoot-mode-active.shoot-mode-touch-ui *,
+body.shoot-mode-active.shoot-mode-touch-ui,
+body.shoot-mode-active.shoot-mode-touch-ui *,
+html.shoot-mode-active.shoot-mode-touch-ui *::before,
+html.shoot-mode-active.shoot-mode-touch-ui *::after,
+body.shoot-mode-active.shoot-mode-touch-ui *::before,
+body.shoot-mode-active.shoot-mode-touch-ui *::after {
+  touch-action: manipulation !important;
+}
+
+html.shoot-cursor-hidden,
+html.shoot-cursor-hidden *,
+body.shoot-cursor-hidden,
+body.shoot-cursor-hidden *,
+html.shoot-cursor-hidden *::before,
+html.shoot-cursor-hidden *::after,
+body.shoot-cursor-hidden *::before,
+body.shoot-cursor-hidden *::after {
+  cursor: none !important;
+}
+
+/* Shoot toggle: show a normal pointer so users can see they can turn mode off. */
+html.shoot-cursor-hidden [data-shoot-controls],
+html.shoot-cursor-hidden [data-shoot-controls] *,
+html.shoot-cursor-hidden [data-shoot-controls]::before,
+html.shoot-cursor-hidden [data-shoot-controls]::after,
+body.shoot-cursor-hidden [data-shoot-controls],
+body.shoot-cursor-hidden [data-shoot-controls] *,
+body.shoot-cursor-hidden [data-shoot-controls]::before,
+body.shoot-cursor-hidden [data-shoot-controls]::after {
+  cursor: pointer !important;
+}
+
+html.shoot-mode-active *::selection,
+body.shoot-mode-active *::selection {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+@keyframes shoot-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.shoot-spinner {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  border-top-color: rgba(0, 0, 0, 0.5);
+  animation: shoot-spin 0.8s linear infinite;
+}
+
+.shoot-splat-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+}
+.shoot-splat {
+  position: absolute;
+  transition-property: opacity;
+  transition-timing-function: ease-out;
+}
+.shoot-splat-blob {
+  position: absolute;
+  inset: 0;
+}
+.shoot-splat-dot {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.shoot-crosshair {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  height: 28px;
+  width: 28px;
+}
+.shoot-crosshair-v {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: 100%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+}
+.shoot-crosshair-h {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.7);
+}
+.shoot-crosshair-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 8px;
+  width: 8px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.8);
+}
+.shoot-crosshair-tick {
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  height: 2px;
+  width: 12px;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.shoot-gun-slot {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.shoot-hud {
+  position: fixed;
+  bottom: 20px;
+  inset-inline: 0;
+  z-index: 9999;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.shoot-hud-item {
+  pointer-events: auto;
+}
+.shoot-hud-clock {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  padding: 8px 16px;
+  pointer-events: none;
+}
+
+.shoot-toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-elevation-2);
+  transition: transform 0.35s var(--ease-spring), box-shadow 0.35s var(--ease-spring);
+}
+.shoot-toggle-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevation-3);
+}
+.shoot-toggle-track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  width: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--color-muted-on-light);
+  background: transparent;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.shoot-toggle-track.is-on {
+  background: var(--color-surface-mist);
+  border-color: var(--color-ink-black);
+}
+.shoot-toggle-thumb {
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--color-ink-black);
+  transition: transform 0.2s ease-out;
+}
+.shoot-toggle-track.is-on .shoot-toggle-thumb {
+  transform: translate(16px, -50%);
+}
+.shoot-toggle-label {
+  font-family: var(--font-suisseintlmono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: var(--color-ink-black);
+  user-select: none;
 }

@@ -1,6 +1,7 @@
 import { CaseStudyLayout } from '@/components/sections/CaseStudyLayout'
 import { CaseStudySection } from '@/components/sections/CaseStudySection'
 import { P, Lead, Callout, Metric, MetricGrid, DecisionCard } from '@/components/ui/CaseStudyProse'
+import { DecisionCardTrack } from '@/components/ui/DecisionCardTrack'
 import { SkillTag } from '@/components/ui/SkillTag'
 import { Nav } from '@/components/nav/Nav'
 import { Footer } from '@/components/sections/Footer'
@@ -129,8 +130,10 @@ export default function SmartFormFlowPage() {
         </CaseStudySection>
 
         <CaseStudySection id="decisions" kicker="// ENGINEERING DECISIONS" heading="WHAT I BUILT.">
+          <DecisionCardTrack>
           <DecisionCard
             number={1}
+            title="Closing three cross-tenant data leaks"
             shipped={true}
             problem="The multi-tenancy migration surfaced three real data-leak bugs: the form service filtered by userId instead of organizationId, Event.findById had no org assertion, and Certificate.issueCertificate had no org assertion — holdovers from the single-client-tool era."
             approach="Full manual audit across every backend system. Added organizationId to every where clause. Established a standing test pattern: org isolation tests assert a 404, not a 403 — the API should behave as if the other org's resource doesn't exist at all."
@@ -138,6 +141,7 @@ export default function SmartFormFlowPage() {
           />
           <DecisionCard
             number={2}
+            title="Normalizing real-world contact field labels"
             shipped={true}
             problem="Contact deduplication only recognized fields literally labeled 'phone' or 'email'. A field labeled 'Mobile Number', 'WhatsApp Number', or 'Contact No.' was silently treated as a new contact — fragmenting the same person into multiple records."
             approach="Built a normalized field-alias registry (fieldAliases.ts) that maps dozens of real-world label variants to canonical phone/email properties, with logging for near-misses to iteratively expand the list."
@@ -145,6 +149,7 @@ export default function SmartFormFlowPage() {
           />
           <DecisionCard
             number={3}
+            title="Fixing a silent Razorpay receipt-limit failure"
             shipped={true}
             problem="Razorpay order creation silently failed for some organizations. No validation error was returned. Root cause: the receipt field has an undocumented 40-character hard limit — raw UUIDs with a prefix exceed it."
             approach="Strip dashes from the UUID, take the first 30 characters, prefix with rcpt_. Applied once at the boundary where orders.create is called. Amounts stored in display units everywhere else in the codebase — conversion to paise (×100) happens only at the Razorpay API boundary."
@@ -152,6 +157,7 @@ export default function SmartFormFlowPage() {
           />
           <DecisionCard
             number={4}
+            title="Three silent production failures, three standing rules"
             shipped={true}
             problem="Three separate production reliability bugs surfaced that were each hard to diagnose: SMTP silently failed in production (Docker Compose corrupted the SMTP password by interpreting $ as shell variable substitution), Nodemailer failed only in prod because createTransport ran before dotenv populated process.env, and BullMQ certificate jobs failed silently because a dynamic import didn't resolve under CommonJS TypeScript."
             approach="Quote every .env value containing $. Lazy-instantiate the Nodemailer transporter behind a getter so it constructs on first use, after env vars are loaded. Convert all worker-file imports to static top-level imports."
@@ -159,11 +165,13 @@ export default function SmartFormFlowPage() {
           />
           <DecisionCard
             number={5}
+            title="A two-phase protocol for live-data migrations"
             shipped={true}
             problem="The database migration was needed in production against a live client's data. prisma migrate dev would re-run all migrations, risking data loss. Hand-editing migration files risks corrupting the _prisma_migrations history table."
             approach="Strict two-phase protocol: Phase 1 applies only additive, nullable columns via psql directly, then registers the migration as applied without re-running it (prisma migrate resolve --applied). Phase 2 (constraints, NOT NULL, unique indexes) only after the corresponding code is deployed and backfill is complete."
             outcome="Zero data loss across all schema migrations on live production data. The protocol is now the standing rule for any future migration touching existing rows."
           />
+          </DecisionCardTrack>
         </CaseStudySection>
 
         <CaseStudySection id="multitenancy" kicker="// MULTI-TENANCY" heading="THE CENTRAL DISCIPLINE.">

@@ -196,8 +196,14 @@ The Skills section is a 4-column × 2-row dense grid (`grid-auto-flow: dense`) r
 - **Mobile:** the link row and CTA collapse behind a 44×44px hamburger toggle (`.nav-toggle`); tapping opens a white dropdown panel below the pill with the same links stacked and a full-width "Hire Me" button. The dropdown is the one place in the system that uses a shadow.
 - **Interaction detail:** each nav label wraps in a per-character hover-wave animation (`WaveText`) with `white-space: nowrap` on the wrapper — required so the per-character spans can't become independent line-break points when the pill is under horizontal pressure.
 
-### Signature Component: The 3D Infrastructure Object
-A React Three Fiber scene appears three times: full-size in the hero, small (~160px) above each Skills column, and inside each project card. It's a stack of stone-textured cubes with smaller bright accent cubes (yellow, mint, and magenta) floating among them, slow-rotating on idle. Every instance is wrapped in `LazyCanvas`, which mounts the WebGL context only within 250px of viewport, pauses the render loop when off-screen or the tab is hidden, caps device-pixel-ratio at 1.5, and drops to a single static frame under `prefers-reduced-motion`.
+### Signature Component: The Isometric Infrastructure Illustration
+The live WebGL 3D scene was removed (it was too heavy — noticeable lag and laptop heat under normal use) and replaced with static pre-rendered isometric illustrations (`next/image`, `/item-images/*.webp`): full-size in the hero (`HeroDiagram.tsx`, with a subtle mouse-tilt and idle float via framer-motion, plus two floating stat badges), and small inside each Skills bento tile (`Skills.tsx`, same idle-float treatment). No WebGL, no `LazyCanvas` — the depth and motion now come entirely from framer-motion transforms on flat image assets, which is why this system stays light even on constrained hardware.
+
+### Signature Moment: The Big-Type Statement
+Beyond section headings, a handful of moments use oversized display type as the entire content of a section — no image, no card, just type and whitespace, closer to a magazine pull-quote than a UI element: the two `CtaTiles` (BOOK A CALL / VIEW RESUME), the `Statement` section between Principles and Work ("PRINCIPLES ARE CHEAP. HERE'S THE PROOF."), and the Footer's giant gradient-masked "AUSTIN" wordmark. These are deliberately rare — the system spends this move sparingly so it keeps its impact.
+
+### Easter Egg: Shoot Mode
+A single, narrow, deliberate exception to the "no WebGL" rule above: `FloatingShootToggleHost` mounts a site-wide toggle (bottom-left pill) that, only once switched on, lazy-loads a small React Three Fiber canvas (`GunViewer.tsx`) rendering a paintball gun that aims with the cursor and fires paint splats + a GSAP screen-shake + a synthesized (no asset) sound at whatever text/image it hits. Unlike the removed hero scene, this costs nothing until the user opts in — `next/dynamic(ssr:false)`, off by default, small corner viewport — so it doesn't reopen the performance problem the hero scene's removal fixed. See `src/components/shoot/`.
 
 ## 6. Do's and Don'ts
 

@@ -12,8 +12,11 @@ const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(mi
  */
 export function CardScrollbar({
   trackRef,
+  trackId = 'work-track',
 }: {
   trackRef: RefObject<HTMLDivElement | null>
+  /** id of the track element this scrollbar controls, for `aria-controls`. */
+  trackId?: string
 }) {
   const barRef = useRef<HTMLDivElement>(null)
   const [thumb, setThumb] = useState({ width: 100, left: 0 })
@@ -78,7 +81,7 @@ export function CardScrollbar({
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       role="scrollbar"
-      aria-controls="work-track"
+      aria-controls={trackId}
       aria-orientation="horizontal"
       aria-label="Scroll projects"
       aria-valuemin={0}

@@ -246,13 +246,24 @@ export function ArchitectureJourney() {
     const edgeEls = new Map<string, { el: SVGGElement; path: SVGPathElement | null; packet: SVGGElement | null }>()
     const edgeLen = new Map<string, number>()
     wrap.querySelectorAll<SVGGElement>('[data-node]').forEach((el) => nodeEls.set(el.dataset.node!, el))
+    // Two passes, not one: reading getTotalLength() and writing
+    // strokeDasharray/Offset on the same path back-to-back per edge forces a
+    // layout flush every iteration (each read has to flush the previous
+    // iteration's pending style write first). Collect every edge, read every
+    // length up front with zero writes in between, then apply every write —
+    // one flush total instead of one per edge.
+    const edgePaths: { key: string; el: SVGGElement; path: SVGPathElement | null; packet: SVGGElement | null }[] = []
     wrap.querySelectorAll<SVGGElement>('[data-edge]').forEach((el) => {
       const key = el.dataset.edge!
       const path = el.querySelector<SVGPathElement>('path')
       const packet = el.querySelector<SVGGElement>('[data-packet]')
+      edgePaths.push({ key, el, path, packet })
+    })
+    const lengths = edgePaths.map(({ path }) => (path ? path.getTotalLength() : 0))
+    edgePaths.forEach(({ key, el, path, packet }, i) => {
       edgeEls.set(key, { el, path, packet })
       if (path) {
-        const len = path.getTotalLength()
+        const len = lengths[i]
         edgeLen.set(key, len)
         path.style.strokeDasharray = `${len}`
         path.style.strokeDashoffset = `${len}`
@@ -270,6 +281,18 @@ export function ArchitectureJourney() {
     let lastP = 0
     let lastSeg = -1
 
+    // The grid twinkle, ambient motes, and edge-packet <animate>/
+    // <animateMotion> elements run on the SVG's own native (SMIL) animation
+    // timeline, entirely outside the isVisible/render() gate above — they
+    // never pause off-screen or when the tab is hidden. pauseAnimations()/
+    // unpauseAnimations() control that native timeline directly.
+    const svgEl = wrap.querySelector<SVGSVGElement>('svg')
+    const syncSvgAnimations = () => {
+      if (!svgEl || typeof svgEl.pauseAnimations !== 'function') return
+      if (isVisible && !document.hidden) svgEl.unpauseAnimations()
+      else svgEl.pauseAnimations()
+    }
+
     const io = new IntersectionObserver(
       ([entry]) => {
         const prev = isVisible
@@ -277,14 +300,22 @@ export function ArchitectureJourney() {
         if (!prev && isVisible) {
           render()
         }
+        syncSvgAnimations()
       },
       { threshold: 0.05 }
     )
     io.observe(track)
 
+    const onVisibilityChange = () => {
+      if (!document.hidden && isVisible && !raf) render()
+      syncSvgAnimations()
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    syncSvgAnimations()
+
     const render = () => {
       raf = 0
-      if (!isVisible) return
+      if (!isVisible || document.hidden) return
 
       const rect = track.getBoundingClientRect()
       const vh = window.innerHeight
@@ -304,7 +335,7 @@ export function ArchitectureJourney() {
       const tx = VB_W / 2 - fx * fs
       const ty = VB_H / 2 - fy * fs
       camera.setAttribute('transform', `translate(${tx.toFixed(2)} ${ty.toFixed(2)}) scale(${fs.toFixed(4)})`)
-      const blur = reduce ? 0 : clamp(vel * 260, 0, 1.6)
+      const blur = reduce ? 0 : clamp(vel * 260, 0, 1.0)
       const targetFilter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : 'none'
       if (camera.style.filter !== targetFilter) camera.style.filter = targetFilter
 
@@ -313,8 +344,14 @@ export function ArchitectureJourney() {
       const isAll = stage.active === 'ALL'
       const activeSet = isAll ? null : new Set(stage.active as string[])
 
-      // Nodes — build state, emphasis, one-shot birth, glow.
+      // Nodes — build state, emphasis, one-shot birth, glow. The birth
+      // replay (remove class → force reflow → re-add class, so the CSS
+      // animation restarts) used to force one synchronous reflow per node
+      // inside this loop — a stage transition that births several nodes at
+      // once did several reflows in a single frame. Collect the newly-born
+      // nodes first, then do exactly one forced reflow for all of them.
       let online = 0
+      const newlyBorn: SVGGElement[] = []
       NODES.forEach((n) => {
         const el = nodeEls.get(n.id)
         if (!el) return
@@ -331,14 +368,17 @@ export function ArchitectureJourney() {
           born.add(n.id)
           if (!reduce) {
             el.classList.remove('aj-birth')
-            void el.getBBox()
-            el.classList.add('aj-birth')
+            newlyBorn.push(el)
           }
         } else if (!built && born.has(n.id)) {
           born.delete(n.id)
           el.classList.remove('aj-birth')
         }
       })
+      if (newlyBorn.length) {
+        void wrap.getBoundingClientRect()
+        newlyBorn.forEach((el) => el.classList.add('aj-birth'))
+      }
 
       // Edges — draw-in, emphasis, packet visibility.
       EDGES.forEach((e) => {
@@ -398,7 +438,7 @@ export function ArchitectureJourney() {
     }
 
     const onScroll = () => {
-      if (!isVisible) return
+      if (!isVisible || document.hidden) return
       if (!raf) raf = requestAnimationFrame(render)
     }
     render()
@@ -406,6 +446,7 @@ export function ArchitectureJourney() {
     window.addEventListener('resize', onScroll)
     return () => {
       io.disconnect()
+      document.removeEventListener('visibilitychange', onVisibilityChange)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
       if (raf) cancelAnimationFrame(raf)

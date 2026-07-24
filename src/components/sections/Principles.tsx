@@ -4,23 +4,23 @@ import ScrollFloat from '@/components/ui/ScrollFloat'
 const principles = [
   {
     title: 'RELIABILITY OVER FEATURES.',
-    desc: 'A feature that fails silently is worse than one that never shipped. I build for correctness first and polish second.',
+    desc: 'A feature that fails silently is worse than one that never shipped.',
   },
   {
     title: 'DESIGN FOR FAILURE.',
-    desc: 'Networks partition, disks fill, processes die. Every system I ship assumes the worst path and degrades without taking the rest down.',
+    desc: 'Networks partition, disks fill, processes die — every system assumes the worst path.',
   },
   {
     title: 'IDEMPOTENCY IS NON-NEGOTIABLE.',
-    desc: 'Retries happen, messages duplicate, clients double-submit. An operation is safe to run twice or it does not ship.',
+    desc: 'An operation is safe to run twice, or it does not ship.',
   },
   {
     title: 'OBSERVABILITY BY DEFAULT.',
-    desc: 'You cannot fix what you cannot see. Logs, metrics, and traces are part of the feature, not an afterthought bolted on later.',
+    desc: 'You cannot fix what you cannot see — logs, metrics, and traces ship with the feature.',
   },
   {
     title: 'SIMPLE SCALES.',
-    desc: 'The most scalable system is the one you can still reason about at 3am. I optimize for clarity before cleverness.',
+    desc: 'The most scalable system is the one you can still reason about at 3am.',
   },
 ]
 

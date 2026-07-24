@@ -127,7 +127,7 @@ export function HeroDiagram() {
               letterSpacing: '-0.2px',
             }}
           >
-            7.5K WS CONCURRENT
+            REAL-TIME · FAULT-TOLERANT
           </span>
         </motion.div>
 

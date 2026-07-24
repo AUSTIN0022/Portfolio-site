@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Barlow_Condensed, JetBrains_Mono, Inter } from 'next/font/google'
 import { Providers } from './providers'
 import { ServiceWorkerCleanup } from '@/components/util/ServiceWorkerCleanup'
+import FloatingShootToggleHost from '@/components/shoot/FloatingShootToggleHost'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { personSchema, websiteSchema } from '@/lib/seo/jsonLd'
 import { SITE_URL, keywords, person } from '@/lib/seo/site'
@@ -101,6 +102,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <Providers>{children}</Providers>
+        <FloatingShootToggleHost />
       </body>
     </html>
   )

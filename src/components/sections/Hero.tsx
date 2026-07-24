@@ -42,6 +42,8 @@ export function Hero() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
                         className="hero-headline"
+                        data-shoot-target="1"
+                        data-shoot-granularity="char"
                         style={{
                             fontFamily: 'var(--font-suisseintlcond)',
                             fontWeight: 700,

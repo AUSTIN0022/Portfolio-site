@@ -44,6 +44,7 @@ export function Work() {
           ref={trackRef}
           id="work-track"
           className="card-track"
+          data-shoot-scroll-interactive="1"
           style={{
             display: 'flex',
             gap: '24px',
@@ -61,6 +62,7 @@ export function Work() {
       </div>
 
       <div
+        data-shoot-scroll-interactive="1"
         style={{
           maxWidth: '1280px',
           margin: '48px auto 0',

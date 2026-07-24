@@ -1,21 +1,32 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { renderMermaidDiagram } from '@/lib/mermaidRender'
+import { useDiagramGallery } from '@/components/ui/DiagramGallery'
 
 interface ArchDiagramProps {
   title: string
   description?: string
   chart: string // Mermaid diagram source string
   id: string // unique id for mermaid to target
+  /** Position within the page's diagram set — lets the gallery modal open
+   * directly on this diagram and page through its siblings in order. */
+  index: number
 }
 
-let mermaidInitialized = false
-
-export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps) {
+export function ArchDiagram({ title, description, chart, id, index }: ArchDiagramProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const renderRef = useRef<HTMLDivElement>(null)
   const [error, setError] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
+  const gallery = useDiagramGallery()
+
+  // Register this diagram with the shared gallery (if one is mounted above)
+  // so its expand button can open the modal positioned here.
+  useEffect(() => {
+    gallery?.registerDiagram(index, { id, title, description, chart })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, id, title, description, chart])
 
   useEffect(() => {
     const el = containerRef.current
@@ -44,32 +55,13 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
 
     async function render() {
       try {
-        const mermaid = (await import('mermaid')).default
-        if (!mermaidInitialized) {
-          mermaid.initialize({
-            startOnLoad: false,
-            theme: 'neutral',
-            themeVariables: {
-              primaryColor: '#f3f3f3',
-              primaryTextColor: '#000000',
-              primaryBorderColor: '#000000',
-              lineColor: '#444444',
-              secondaryColor: '#e5e7eb',
-              tertiaryColor: '#ffffff',
-              background: '#ffffff',
-              mainBkg: '#f3f3f3',
-              nodeBorder: '#000000',
-              clusterBkg: '#f3f3f3',
-              titleColor: '#000000',
-              edgeLabelBackground: '#ffffff',
-              fontFamily: 'var(--font-suisseintl), ui-sans-serif, system-ui, sans-serif',
-            },
-          })
-          mermaidInitialized = true
-        }
-        const { svg } = await mermaid.render(id, chart)
+        const svg = await renderMermaidDiagram(id, chart)
         if (!cancelled && renderRef.current) {
           renderRef.current.innerHTML = svg
+          // Fade the diagram in instead of popping it into the reserved box —
+          // rendering is deferred to idle time so this can land well after the
+          // card has already scrolled into view on a slow connection.
+          renderRef.current.style.opacity = '1'
         }
       } catch {
         if (!cancelled) setError(true)
@@ -105,10 +97,11 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
         padding: 'clamp(24px, 5vw, 40px)',
         marginBottom: '32px',
         overflow: 'hidden',
+        position: 'relative',
       }}
     >
       {/* Card header */}
-      <div style={{ marginBottom: '32px' }}>
+      <div style={{ marginBottom: '32px', paddingRight: gallery ? '48px' : 0 }}>
         <div
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
@@ -149,6 +142,36 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
         )}
       </div>
 
+      {/* Expand into the gallery modal — only rendered when a gallery
+          provider actually wraps this diagram set. */}
+      {gallery && (
+        <button
+          type="button"
+          className="icon-btn diagram-expand-btn"
+          aria-label={`Expand "${title}" diagram`}
+          onClick={() => gallery.openGallery(index)}
+          style={{
+            position: 'absolute',
+            top: 'clamp(24px, 5vw, 40px)',
+            right: 'clamp(24px, 5vw, 40px)',
+            width: '36px',
+            height: '36px',
+            border: 'none',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            color: 'var(--color-graphite)',
+            flexShrink: 0,
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 3H5a2 2 0 0 0-2 2v4M15 3h4a2 2 0 0 1 2 2v4M9 21H5a2 2 0 0 1-2-2v-4M15 21h4a2 2 0 0 0 2-2v-4" />
+          </svg>
+        </button>
+      )}
+
       {/* Diagram render area */}
       <div
         style={{
@@ -176,7 +199,16 @@ export function ArchDiagram({ title, description, chart, id }: ArchDiagramProps)
             {chart}
           </pre>
         ) : (
-          <div ref={renderRef} style={{ width: '100%', maxWidth: '900px' }} aria-label={title} />
+          <div
+            ref={renderRef}
+            style={{
+              width: '100%',
+              maxWidth: '900px',
+              opacity: 0,
+              transition: 'opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            aria-label={title}
+          />
         )}
       </div>
     </div>

@@ -3,6 +3,7 @@ import { CaseStudySection } from '@/components/sections/CaseStudySection'
 import { P, Lead, Callout, Metric, MetricGrid, DecisionCard } from '@/components/ui/CaseStudyProse'
 import { ArchDiagram } from '@/components/ui/ArchDiagram'
 import { StackedDiagrams } from '@/components/ui/StackedDiagrams'
+import { DiagramGalleryProvider } from '@/components/ui/DiagramGallery'
 import { DecisionCardTrack } from '@/components/ui/DecisionCardTrack'
 import { LazyArchitectureJourney } from '@/components/ui/LazyArchitectureJourney'
 import { LazyInfraScaleSimulator } from '@/components/ui/LazyInfraScaleSimulator'
@@ -160,8 +161,10 @@ export default function QuizBuzzPage() {
                         actual source architecture documentation.
                     </Lead>
 
+                    <DiagramGalleryProvider>
                     <StackedDiagrams>
                     <ArchDiagram
+                        index={0}
                         id="diag-infra"
                         title="Dual-Mode AWS Infrastructure"
                         description="Idle mode (~$35/mo): single EC2, local Redis. Live mode (+$14-30/contest): ALB + ASG + ElastiCache. Mode switch via Terraform + redis-migrate.js."
@@ -198,6 +201,7 @@ export default function QuizBuzzPage() {
                     />
 
                     <ArchDiagram
+                        index={1}
                         id="diag-ws"
                         title="Real-Time WebSocket Flow"
                         description="Participant journey: REST auth → EIO4 WebSocket handshake → waiting room → quiz → submission. BullMQ handles all heavy async work."
@@ -238,6 +242,7 @@ export default function QuizBuzzPage() {
                     />
 
                     <ArchDiagram
+                        index={2}
                         id="diag-workers"
                         title="Background Worker System (BullMQ)"
                         description="API/WebSocket container never blocks. A separate worker process consumes 6 queues for evaluation, certificates, messaging, proctoring scoring, analytics, and timer management."
@@ -280,6 +285,7 @@ export default function QuizBuzzPage() {
                     />
 
                     <ArchDiagram
+                        index={3}
                         id="diag-db"
                         title="Database Schema (Key Relationships)"
                         description="~25 Prisma models. Every table scoped by organizationId. Contact is the deduplicated master record. Participant is a Contact × Contest registration."
@@ -319,6 +325,7 @@ export default function QuizBuzzPage() {
                     />
 
                     <ArchDiagram
+                        index={4}
                         id="diag-modules"
                         title="Backend Module Dependencies"
                         description="Messaging is the most-depended-on module (7 incoming). Contest is the primary domain entity. Dependency injection via central container.ts — no ad-hoc instantiation."
@@ -360,6 +367,7 @@ export default function QuizBuzzPage() {
     style Messaging fill:#d1ffca,color:#000000`}
                     />
                     </StackedDiagrams>
+                    </DiagramGalleryProvider>
                 </CaseStudySection>
 
                 <CaseStudySection id="decisions" kicker="// ENGINEERING DECISIONS" heading="WHAT I BUILT.">

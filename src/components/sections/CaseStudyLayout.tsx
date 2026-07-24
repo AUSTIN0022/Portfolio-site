@@ -67,10 +67,10 @@ export function CaseStudyLayout({ children, projectName, category }: CaseStudyLa
         <div style={{ padding: 'clamp(96px, 16vw, 120px) var(--gutter) var(--section-y)', maxWidth: '1280px', margin: '0 auto' }}>
           <Link
             href="/#work"
+            className="case-back-link"
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '12px',
-              color: 'var(--color-steel-gray)',
               textDecoration: 'none',
               letterSpacing: '-0.36px',
               display: 'inline-flex',

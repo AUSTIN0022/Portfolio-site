@@ -63,37 +63,10 @@ export default function NotFound() {
         </p>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-          <Link
-            href="/"
-            style={{
-              background: 'var(--color-pure-white)',
-              color: 'var(--color-ink-black)',
-              fontFamily: 'var(--font-suisseintl)',
-              fontWeight: 500,
-              fontSize: '14px',
-              borderRadius: '4px',
-              padding: '12px 24px',
-              textDecoration: 'none',
-              letterSpacing: '-0.28px',
-            }}
-          >
+          <Link href="/" className="btn-sketch btn-sketch--on-dark btn-sketch--primary">
             Back to home
           </Link>
-          <Link
-            href="/work"
-            style={{
-              background: 'transparent',
-              color: 'var(--color-pure-white)',
-              border: '1px solid var(--color-pure-white)',
-              fontFamily: 'var(--font-suisseintl)',
-              fontWeight: 500,
-              fontSize: '14px',
-              borderRadius: '4px',
-              padding: '12px 24px',
-              textDecoration: 'none',
-              letterSpacing: '-0.28px',
-            }}
-          >
+          <Link href="/work" className="btn-sketch btn-sketch--on-dark">
             View work →
           </Link>
         </div>

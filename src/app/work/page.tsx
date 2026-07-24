@@ -48,10 +48,10 @@ export default function WorkPage() {
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: 'clamp(96px, 16vw, 120px) var(--gutter) var(--section-y)' }}>
           <Link
             href="/"
+            className="case-back-link"
             style={{
               fontFamily: 'var(--font-suisseintlmono)',
               fontSize: '12px',
-              color: 'var(--color-steel-gray)',
               textDecoration: 'none',
               letterSpacing: '-0.36px',
               display: 'inline-flex',

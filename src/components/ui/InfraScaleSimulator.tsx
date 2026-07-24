@@ -133,6 +133,28 @@ export function InfraScaleSimulator() {
   const [islandExpanded, setIslandExpanded] = useState(false)
   const [sheetLevel, setSheetLevel] = useState(1)
 
+  // The island's expanded panel can't transition `height: auto` — CSS never
+  // interpolates to/from `auto`, so it used to snap open instead of growing.
+  // Measuring the content's real height via ResizeObserver and animating
+  // `max-height` to that pixel value instead gives the transition an actual
+  // number to ease toward.
+  const islandContentRef = useRef<HTMLDivElement>(null)
+  const [islandContentH, setIslandContentH] = useState(0)
+
+  useEffect(() => {
+    // `islandContentRef` only exists once the mobile branch of the JSX below
+    // renders it, which happens after `isMobile` flips true on mount (not on
+    // the first render) — depend on it so this effect retries once the node
+    // actually exists instead of observing `null` forever.
+    const el = islandContentRef.current
+    if (!el) return
+    const ro = new ResizeObserver(([entry]) => {
+      setIslandContentH(entry.contentRect.height)
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [isMobile])
+
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)')
     const update = () => setIsMobile(mq.matches)
@@ -394,7 +416,8 @@ export function InfraScaleSimulator() {
                 </div>
 
                 {/* Expanded view */}
-                <div className="sim-island-expanded">
+                <div className="sim-island-expanded" style={{ maxHeight: islandExpanded ? islandContentH : 0 }}>
+                  <div ref={islandContentRef}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span data-readout="island-status-dot" style={{ fontSize: '13px' }}>🟢</span>
@@ -505,6 +528,7 @@ export function InfraScaleSimulator() {
                     </div>
 
                   </div>
+                  </div>
                 </div>
               </div>
 
@@ -578,8 +602,9 @@ export function InfraScaleSimulator() {
                 {/* Buttons Row (5 circular buttons) */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                   {/* 1. Story / Playground Toggle */}
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
+                    className="sim-mobile-btn"
                     onClick={playground ? resumeStory : enterPlayground}
                     style={{
                       width: '42px',
@@ -592,7 +617,7 @@ export function InfraScaleSimulator() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
+                      transition: 'transform 120ms ease-out, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease',
                       boxShadow: playground ? '0 0 10px rgba(255,241,0,0.3)' : 'none'
                     }}
                     aria-label={playground ? "Back to Story Mode" : "Take Control (Playground)"}
@@ -621,8 +646,9 @@ export function InfraScaleSimulator() {
                   </button>
 
                   {/* 2. Idle / Live Toggle */}
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
+                    className="sim-mobile-btn"
                     onClick={handleToggleMode}
                     style={{
                       width: '42px',
@@ -635,7 +661,7 @@ export function InfraScaleSimulator() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
+                      transition: 'transform 120ms ease-out, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease',
                       boxShadow: playground && simMode === 'live' ? '0 0 10px rgba(255,241,0,0.3)' : 'none'
                     }}
                     title="Toggle Idle/Live"
@@ -654,8 +680,9 @@ export function InfraScaleSimulator() {
                   </button>
 
                   {/* 3. Spike Action */}
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
+                    className="sim-mobile-btn"
                     onClick={handleSpike}
                     style={{
                       width: '42px',
@@ -668,7 +695,7 @@ export function InfraScaleSimulator() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease'
+                      transition: 'transform 120ms ease-out, background 0.2s ease, color 0.2s ease, border-color 0.2s ease'
                     }}
                     title="Simulate Spike"
                   >
@@ -679,8 +706,9 @@ export function InfraScaleSimulator() {
                   </button>
 
                   {/* 4. Kill EC2 Action */}
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
+                    className="sim-mobile-btn"
                     onClick={handleKill}
                     style={{
                       width: '42px',
@@ -693,7 +721,7 @@ export function InfraScaleSimulator() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease'
+                      transition: 'transform 120ms ease-out, background 0.2s ease, color 0.2s ease, border-color 0.2s ease'
                     }}
                     title="Kill EC2 Instance"
                   >
@@ -704,8 +732,9 @@ export function InfraScaleSimulator() {
                   </button>
 
                   {/* 5. Drop Redis Action */}
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
+                    className="sim-mobile-btn"
                     onClick={handleRedis}
                     style={{
                       width: '42px',
@@ -718,7 +747,7 @@ export function InfraScaleSimulator() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease'
+                      transition: 'transform 120ms ease-out, background 0.2s ease, color 0.2s ease, border-color 0.2s ease'
                     }}
                     title="Drop Redis Cache"
                   >
@@ -1359,19 +1388,28 @@ function SimStyles() {
         }
         .sim-island-expanded {
           opacity: 0;
-          height: 0;
           overflow: hidden;
           pointer-events: none;
-          transition: opacity 0.25s ease, height 0.35s ease, padding 0.35s ease;
+          /* max-height is JS-measured (see islandContentH) and set inline —
+             CSS can't interpolate a transition to/from height:auto, so it
+             used to snap open instead of growing. */
+          transition: opacity 0.25s ease, max-height 0.35s var(--ease-spring, cubic-bezier(0.16, 1, 0.3, 1)), padding 0.35s ease;
           padding: 0;
         }
         .sim-island[data-expanded='true'] .sim-island-expanded {
           opacity: 1;
-          height: auto;
           pointer-events: auto;
           padding: 18px;
         }
-        
+
+        /* Mobile floating-pill controls (mode toggle, idle/live, spike, kill,
+           drop-redis) are touch-only — there's no hover fallback for them —
+           so a tap needs its own press feedback instead of waiting for the
+           eventual color/background state change to land. */
+        .sim-mobile-btn:active {
+          transform: scale(0.9);
+        }
+
         /* Mobile Story Mode Caption positioning */
         .is-caption {
           position: absolute !important;

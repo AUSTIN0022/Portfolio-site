@@ -21,22 +21,6 @@ type GunViewerProps = {
   aimY: number
 }
 
-/**
- * Tracks THREE's global loading manager instead of the in-canvas Suspense
- * fallback: r3f's Suspense boundary can resolve/retry faster than the
- * fallback paints, so it's not a reliable place to show loading state for a
- * ~10MB GLB fetch. This overlay sits outside the Canvas as plain DOM.
- */
-function GunLoadOverlay(): React.JSX.Element | null {
-  const active = useProgress((state) => state.active)
-  if (!active) return null
-  return (
-    <div className="shoot-gun-loading" aria-hidden="true">
-      <div className="shoot-spinner" />
-    </div>
-  )
-}
-
 function GunRig({ aimX, aimY }: GunViewerProps): React.JSX.Element {
   const yawRef = React.useRef<Group | null>(null)
   const pitchRef = React.useRef<Group | null>(null)
@@ -74,6 +58,34 @@ function GunRig({ aimX, aimY }: GunViewerProps): React.JSX.Element {
 }
 
 export default function GunViewer({ aimX, aimY }: GunViewerProps): React.JSX.Element {
+  // Tracks THREE's global loading manager instead of the in-canvas Suspense
+  // fallback: r3f's Suspense boundary can resolve/retry faster than the
+  // fallback paints, so it's not a reliable place to show loading state for a
+  // ~10MB GLB fetch. Lifted above the Canvas (useProgress reads a global
+  // store, not R3F context, so this works outside it) so the spinner and the
+  // canvas can cross-fade off the same signal instead of the model just
+  // popping in the instant loading finishes.
+  const active = useProgress((state) => state.active)
+  // Initialized from `active` rather than fixed defaults: if the GLB is
+  // already cached/preloaded by the time this mounts, skip the fade dance
+  // entirely instead of flashing a spinner that has nothing to wait for.
+  const [showOverlay, setShowOverlay] = React.useState(active)
+  const [canvasReady, setCanvasReady] = React.useState(!active)
+
+  React.useEffect(() => {
+    if (active) {
+      setShowOverlay(true)
+      setCanvasReady(false)
+      return
+    }
+    setCanvasReady(true)
+    // Keep the spinner mounted just long enough to fade out (matches its own
+    // transition below) instead of unmounting on the same tick the model
+    // appears.
+    const id = window.setTimeout(() => setShowOverlay(false), 150)
+    return () => window.clearTimeout(id)
+  }, [active])
+
   return (
     <div
       style={{
@@ -87,6 +99,7 @@ export default function GunViewer({ aimX, aimY }: GunViewerProps): React.JSX.Ele
     >
       <div style={{ position: 'relative', height: '300px', width: 'min(88vw, 384px)' }}>
         <Canvas
+          style={{ opacity: canvasReady ? 1 : 0, transition: 'opacity 0.2s ease-out' }}
           dpr={[1, 1.5]}
           camera={{ position: [1.75, 0.85, 2.1], fov: 36 }}
           gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}
@@ -97,7 +110,15 @@ export default function GunViewer({ aimX, aimY }: GunViewerProps): React.JSX.Ele
             <GunRig aimX={aimX} aimY={aimY} />
           </React.Suspense>
         </Canvas>
-        <GunLoadOverlay />
+        {showOverlay && (
+          <div
+            className="shoot-gun-loading"
+            style={{ opacity: active ? 1 : 0, transition: 'opacity 150ms ease-out' }}
+            aria-hidden="true"
+          >
+            <div className="shoot-spinner" />
+          </div>
+        )}
       </div>
     </div>
   )

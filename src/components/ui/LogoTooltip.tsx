@@ -31,11 +31,11 @@ export function LogoTooltip({ label, children }: { label: string; children: Reac
         createPortal(
           <span
             role="tooltip"
+            className="logo-tooltip"
             style={{
               position: 'fixed',
               top: pos.top - 10,
               left: pos.left,
-              transform: 'translate(-50%, -100%)',
               background: 'var(--color-ink-black)',
               color: 'var(--color-pure-white)',
               fontFamily: 'var(--font-suisseintlmono)',

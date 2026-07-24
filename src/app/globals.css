@@ -400,6 +400,193 @@ a:hover > .wave-text span,
   }
 }
 
+/* Case study "back to work" link — a real class (not an inline `style`
+   color paired with a Tailwind hover utility) so the hover state actually
+   wins the cascade; Tailwind's `hover:*` utilities compile into
+   `@layer utilities`, which can never outrank an unlayered inline style. */
+.case-back-link {
+  color: var(--color-steel-gray);
+  transition: color 0.2s ease;
+}
+.case-back-link:hover,
+.case-back-link:focus-visible {
+  color: var(--color-pure-white);
+}
+
+/* ============================================================
+   Diagram gallery — the shared lightbox each ArchDiagram's expand
+   button opens into. Coverflow-style: the active diagram is sharp and
+   centered, its neighbors sit dimmed/blurred at the edges as a "there's
+   more" cue. The slide positioning/entrance itself is animated by
+   DiagramGallery.tsx (Framer Motion, transform+opacity+filter only);
+   these rules are the static shell, hover/press states, and layout.
+   ============================================================ */
+.diagram-gallery-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 299;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  border: none;
+  cursor: pointer;
+}
+
+.diagram-gallery {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 300;
+  width: min(92vw, 1100px);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(20px, 4vw, 32px);
+  background: var(--color-pure-white);
+  border-radius: 24px;
+  box-shadow: var(--shadow-elevation-3);
+  overflow: hidden;
+}
+
+.diagram-gallery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+.diagram-gallery-kicker {
+  font-family: var(--font-suisseintlmono);
+  font-size: 11px;
+  letter-spacing: -0.33px;
+  color: var(--color-muted-on-light);
+  margin-bottom: 6px;
+}
+.diagram-gallery-title {
+  font-family: var(--font-suisseintlcond);
+  font-weight: 700;
+  font-size: clamp(20px, 3vw, 28px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--color-ink-black);
+}
+.diagram-gallery-desc {
+  font-family: var(--font-suisseintl);
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--color-muted-on-light);
+  max-width: 640px;
+  margin-top: 6px;
+}
+.diagram-gallery-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-graphite);
+}
+
+.diagram-gallery-track {
+  position: relative;
+  flex: 1;
+  min-height: min(50vh, 420px);
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--color-surface-mist);
+}
+
+.diagram-gallery-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 3vw, 32px);
+  will-change: transform, opacity, filter;
+}
+.diagram-gallery-slide-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
+.diagram-gallery-svg {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.diagram-gallery-svg svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Positioned with margin, not transform: translateY(-50%) — .icon-btn's own
+   hover/active states set `transform` directly, which would otherwise fight
+   this button's vertical centering the moment it's hovered or pressed. */
+.diagram-gallery-nav {
+  position: absolute;
+  top: 50%;
+  margin-top: -22px;
+  z-index: 5;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+}
+.diagram-gallery-nav--prev { left: 12px; }
+.diagram-gallery-nav--next { right: 12px; }
+.diagram-gallery-nav:disabled {
+  opacity: 0.25;
+  cursor: default;
+  pointer-events: none;
+}
+
+.diagram-gallery-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  flex-shrink: 0;
+}
+.diagram-gallery-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.2s var(--ease-spring), background 0.2s ease;
+}
+.diagram-gallery-dot:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+.diagram-gallery-dot[data-active='1'] {
+  background: var(--color-ink-black);
+  transform: scale(1.3);
+}
+
+/* The expand button nested in each ArchDiagram card — a subtle rest-state
+   border so it reads as a button even before hover (matches .cta-icon's
+   "nested chip" treatment). */
+.diagram-expand-btn {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
 /* Hide global navigation bar when scrolled to simulator on mobile */
 .global-nav {
   transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -794,6 +981,21 @@ a:hover > .wave-text span,
   background: var(--color-ink-black);
   color: var(--color-electric-yellow);
   border-color: var(--color-ink-black);
+}
+
+/* LogoLoop hover tooltip — mirrors the Nav island's own tooltip idiom
+   (fade + scale from the trigger) instead of the hard cut it had before.
+   Scale grows from the bottom center, where the tooltip meets its trigger. */
+.logo-tooltip {
+  transform-origin: center bottom;
+  transform: translate(-50%, -100%) scale(1);
+  transition: opacity 150ms var(--ease-spring), transform 150ms var(--ease-spring);
+}
+@starting-style {
+  .logo-tooltip {
+    opacity: 0;
+    transform: translate(-50%, -100%) scale(0.8);
+  }
 }
 
 /* ============================================================

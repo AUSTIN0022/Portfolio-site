@@ -165,6 +165,19 @@ export function DecisionCard({
         {String(number).padStart(2, '0')}
       </div>
       <div>
+        <h3
+          style={{
+            fontFamily: 'var(--font-suisseintlcond)',
+            fontWeight: 700,
+            fontSize: 'clamp(1.375rem, 2vw, 1.625rem)',
+            lineHeight: 1.05,
+            letterSpacing: '-0.03em',
+            color: 'var(--color-ink-black)',
+            marginBottom: '20px',
+          }}
+        >
+          {title}
+        </h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
           <span
             style={{
@@ -180,19 +193,7 @@ export function DecisionCard({
             {shipped ? 'SHIPPED' : 'DESIGNED'}
           </span>
         </div>
-        <h3
-          style={{
-            fontFamily: 'var(--font-suisseintlcond)',
-            fontWeight: 700,
-            fontSize: 'clamp(1.375rem, 2vw, 1.625rem)',
-            lineHeight: 1.05,
-            letterSpacing: '-0.03em',
-            color: 'var(--color-ink-black)',
-            marginBottom: '20px',
-          }}
-        >
-          {title}
-        </h3>
+
         <div
           style={{
             fontFamily: 'var(--font-suisseintlmono)',

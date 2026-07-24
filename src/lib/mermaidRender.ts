@@ -34,10 +34,29 @@ function ensureMermaid() {
   return mermaidInitPromise
 }
 
+function scheduleIdle(): Promise<void> {
+  return new Promise((resolve) => {
+    if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(() => resolve(), { timeout: 1000 })
+    } else {
+      setTimeout(resolve, 0)
+    }
+  })
+}
+
 const svgCache = new Map<string, string>()
 const pending = new Map<string, Promise<string>>()
 
-/** Cached, de-duped Mermaid render — returns instantly if `id` was already rendered anywhere. */
+// Every render (including ones queued in the same tick, e.g. the carousel
+// prefetching its active diagram + both neighbors at once) chains onto this
+// shared tail instead of firing in parallel. Each link waits for its own
+// idle window AND for the previous diagram to finish first — so three
+// diagrams needing a render spread across three separate idle periods, each
+// yielding back to scroll/paint/input between them, instead of blocking the
+// main thread for the sum of all three back-to-back.
+let renderQueueTail: Promise<void> = Promise.resolve()
+
+/** Cached, de-duped, idle-scheduled Mermaid render — returns instantly if `id` was already rendered anywhere. */
 export function renderMermaidDiagram(id: string, chart: string): Promise<string> {
   const cached = svgCache.get(id)
   if (cached) return Promise.resolve(cached)
@@ -45,17 +64,21 @@ export function renderMermaidDiagram(id: string, chart: string): Promise<string>
   const inFlight = pending.get(id)
   if (inFlight) return inFlight
 
-  const promise = ensureMermaid()
-    .then((mermaid) => mermaid.render(id, chart))
-    .then(({ svg }) => {
-      svgCache.set(id, svg)
-      pending.delete(id)
-      return svg
+  const promise = new Promise<string>((resolve, reject) => {
+    renderQueueTail = renderQueueTail.then(async () => {
+      await scheduleIdle()
+      try {
+        const mermaid = await ensureMermaid()
+        const { svg } = await mermaid.render(id, chart)
+        svgCache.set(id, svg)
+        pending.delete(id)
+        resolve(svg)
+      } catch (err) {
+        pending.delete(id)
+        reject(err)
+      }
     })
-    .catch((err) => {
-      pending.delete(id)
-      throw err
-    })
+  })
 
   pending.set(id, promise)
   return promise

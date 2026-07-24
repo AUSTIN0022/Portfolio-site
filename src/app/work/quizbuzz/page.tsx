@@ -2,7 +2,6 @@ import { CaseStudyLayout } from '@/components/sections/CaseStudyLayout'
 import { CaseStudySection } from '@/components/sections/CaseStudySection'
 import { P, Lead, Callout, Metric, MetricGrid, DecisionCard } from '@/components/ui/CaseStudyProse'
 import { ArchDiagram } from '@/components/ui/ArchDiagram'
-import { StackedDiagrams } from '@/components/ui/StackedDiagrams'
 import { DiagramGalleryProvider } from '@/components/ui/DiagramGallery'
 import { DecisionCardTrack } from '@/components/ui/DecisionCardTrack'
 import { LazyArchitectureJourney } from '@/components/ui/LazyArchitectureJourney'
@@ -162,7 +161,6 @@ export default function QuizBuzzPage() {
                     </Lead>
 
                     <DiagramGalleryProvider>
-                    <StackedDiagrams>
                     <ArchDiagram
                         index={0}
                         id="diag-infra"
@@ -366,7 +364,6 @@ export default function QuizBuzzPage() {
     Analytics --> Quiz
     style Messaging fill:#d1ffca,color:#000000`}
                     />
-                    </StackedDiagrams>
                     </DiagramGalleryProvider>
                 </CaseStudySection>
 

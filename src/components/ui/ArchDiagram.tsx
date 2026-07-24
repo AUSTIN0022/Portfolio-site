@@ -9,11 +9,17 @@ interface ArchDiagramProps {
   description?: string
   chart: string // Mermaid diagram source string
   id: string // unique id for mermaid to target
-  /** Position within the page's diagram set — lets the gallery modal open
+  /** Position within the page's diagram set — lets the carousel open
    * directly on this diagram and page through its siblings in order. */
   index: number
 }
 
+/**
+ * Renders a standalone diagram card when used on its own. When wrapped in a
+ * `DiagramGalleryProvider`, it instead just registers its data (title,
+ * description, chart) and renders nothing — the provider's `DiagramCarousel`
+ * owns all the visible rendering for the whole diagram set.
+ */
 export function ArchDiagram({ title, description, chart, id, index }: ArchDiagramProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const renderRef = useRef<HTMLDivElement>(null)
@@ -21,14 +27,13 @@ export function ArchDiagram({ title, description, chart, id, index }: ArchDiagra
   const [isVisible, setIsVisible] = useState(false)
   const gallery = useDiagramGallery()
 
-  // Register this diagram with the shared gallery (if one is mounted above)
-  // so its expand button can open the modal positioned here.
   useEffect(() => {
     gallery?.registerDiagram(index, { id, title, description, chart })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, id, title, description, chart])
 
   useEffect(() => {
+    if (gallery) return // the carousel renders the visible card instead
     const el = containerRef.current
     if (!el) return
     // Mermaid's layout pass is a synchronous, main-thread-blocking task (up to
@@ -47,10 +52,10 @@ export function ArchDiagram({ title, description, chart, id, index }: ArchDiagra
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [])
+  }, [gallery])
 
   useEffect(() => {
-    if (!isVisible) return
+    if (gallery || !isVisible) return
     let cancelled = false
 
     async function render() {
@@ -86,7 +91,9 @@ export function ArchDiagram({ title, description, chart, id, index }: ArchDiagra
         clearTimeout(idleHandle as ReturnType<typeof setTimeout>)
       }
     }
-  }, [chart, id, isVisible])
+  }, [chart, id, isVisible, gallery])
+
+  if (gallery) return null
 
   return (
     <div
@@ -101,7 +108,7 @@ export function ArchDiagram({ title, description, chart, id, index }: ArchDiagra
       }}
     >
       {/* Card header */}
-      <div style={{ marginBottom: '32px', paddingRight: gallery ? '48px' : 0 }}>
+      <div style={{ marginBottom: '32px' }}>
         <div
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
@@ -141,36 +148,6 @@ export function ArchDiagram({ title, description, chart, id, index }: ArchDiagra
           </p>
         )}
       </div>
-
-      {/* Expand into the gallery modal — only rendered when a gallery
-          provider actually wraps this diagram set. */}
-      {gallery && (
-        <button
-          type="button"
-          className="icon-btn diagram-expand-btn"
-          aria-label={`Expand "${title}" diagram`}
-          onClick={() => gallery.openGallery(index)}
-          style={{
-            position: 'absolute',
-            top: 'clamp(24px, 5vw, 40px)',
-            right: 'clamp(24px, 5vw, 40px)',
-            width: '36px',
-            height: '36px',
-            border: 'none',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: 'var(--color-graphite)',
-            flexShrink: 0,
-          }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 3H5a2 2 0 0 0-2 2v4M15 3h4a2 2 0 0 1 2 2v4M9 21H5a2 2 0 0 1-2-2v-4M15 21h4a2 2 0 0 0 2-2v-4" />
-          </svg>
-        </button>
-      )}
 
       {/* Diagram render area */}
       <div

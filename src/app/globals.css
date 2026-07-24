@@ -414,53 +414,113 @@ a:hover > .wave-text span,
 }
 
 /* ============================================================
-   Diagram gallery — the shared lightbox each ArchDiagram's expand
-   button opens into. Coverflow-style: the active diagram is sharp and
-   centered, its neighbors sit dimmed/blurred at the edges as a "there's
-   more" cue. The slide positioning/entrance itself is animated by
-   DiagramGallery.tsx (Framer Motion, transform+opacity+filter only);
-   these rules are the static shell, hover/press states, and layout.
+   Diagram carousel — the coverflow ArchDiagram's data renders into. One
+   component, two sizes: `.diagram-carousel-card` sits inline in the page
+   (the default, always-visible view — no modal needed to just look at a
+   diagram); `.diagram-gallery-card` is the same card, larger, in the
+   fullscreen view the expand button opens. Both share `.diagram-card-shell`
+   for the actual card look. In both, the whole card — kicker, title,
+   description, and diagram together — is the sliding/peeking unit: the
+   active card sits centered and sharp, its neighbors peek in from the
+   edges, dimmed and blurred, as a "there's more" cue. Position, scale,
+   opacity and blur are all driven by DiagramGallery.tsx (Framer Motion,
+   transform+opacity+filter only); these rules are the static shell, the
+   floating chrome, and hover/press states.
    ============================================================ */
+.diagram-carousel {
+  margin-bottom: 8px;
+}
+.diagram-carousel-stage {
+  position: relative;
+  height: min(64vh, 580px);
+}
+.diagram-carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 24px;
+}
+/* Dots reuse .diagram-gallery-dot's dark-backdrop defaults (see below); this
+   scopes them back to readable contrast against the page's light surface. */
+.diagram-carousel-controls .diagram-gallery-dot {
+  background: rgba(0, 0, 0, 0.15);
+}
+.diagram-carousel-controls .diagram-gallery-dot:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+.diagram-carousel-controls .diagram-gallery-dot[data-active='1'] {
+  background: var(--color-ink-black);
+}
+
 .diagram-gallery-backdrop {
   position: fixed;
   inset: 0;
   z-index: 299;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.82);
   backdrop-filter: blur(6px);
   border: none;
   cursor: pointer;
 }
 
-.diagram-gallery {
+.diagram-gallery-close {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  z-index: 300;
-  width: min(92vw, 1100px);
-  max-height: 88vh;
+  top: 20px;
+  right: 20px;
+  z-index: 303;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(10px);
+  color: var(--color-pure-white);
   display: flex;
-  flex-direction: column;
-  padding: clamp(20px, 4vw, 32px);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s var(--ease-spring);
+}
+.diagram-gallery-close:hover {
+  background: rgba(40, 40, 40, 0.75);
+}
+.diagram-gallery-close:active {
+  transform: scale(0.92);
+}
+
+/* Shared card look. Position/size differ per variant below; centering
+   (translate(-50%,-50%)) plus the coverflow offset/scale/dim are baked into
+   one continuous `transform` string by DiagramGallery.tsx. */
+.diagram-card-shell {
+  padding: clamp(20px, 4vw, 40px);
   background: var(--color-pure-white);
   border-radius: 24px;
   box-shadow: var(--shadow-elevation-3);
-  overflow: hidden;
+  will-change: transform, opacity, filter;
+}
+.diagram-carousel-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(100%, 820px);
+  max-height: 100%;
+  overflow-y: auto;
+}
+.diagram-gallery-card {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: min(76vw, 860px);
+  max-height: 86vh;
+  overflow-y: auto;
 }
 
-.diagram-gallery-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 20px;
-  flex-shrink: 0;
-}
 .diagram-gallery-kicker {
   font-family: var(--font-suisseintlmono);
   font-size: 11px;
   letter-spacing: -0.33px;
   color: var(--color-muted-on-light);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 .diagram-gallery-title {
   font-family: var(--font-suisseintlcond);
@@ -475,47 +535,19 @@ a:hover > .wave-text span,
   font-size: 13px;
   line-height: 1.4;
   color: var(--color-muted-on-light);
-  max-width: 640px;
   margin-top: 6px;
 }
-.diagram-gallery-close {
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--color-graphite);
-}
 
-.diagram-gallery-track {
-  position: relative;
-  flex: 1;
-  min-height: min(50vh, 420px);
-  overflow: hidden;
-  border-radius: 16px;
+.diagram-gallery-surface {
+  margin-top: 24px;
   background: var(--color-surface-mist);
-}
-
-.diagram-gallery-slide {
-  position: absolute;
-  inset: 0;
+  border-radius: 16px;
+  padding: clamp(16px, 3vw, 28px);
+  min-height: min(46vh, 380px);
+  overflow-x: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(16px, 3vw, 32px);
-  will-change: transform, opacity, filter;
-}
-.diagram-gallery-slide-inner {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: auto;
 }
 .diagram-gallery-svg {
   width: 100%;
@@ -527,40 +559,54 @@ a:hover > .wave-text span,
   height: auto;
 }
 
-/* Positioned with margin, not transform: translateY(-50%) — .icon-btn's own
-   hover/active states set `transform` directly, which would otherwise fight
-   this button's vertical centering the moment it's hovered or pressed. */
+/* Floating bottom bar — prev arrow, page dots, next arrow — sits over the
+   dark backdrop rather than inside any one card, so it stays put while
+   cards slide underneath it. */
+.diagram-gallery-controls {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 302;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+}
+
 .diagram-gallery-nav {
-  position: absolute;
-  top: 50%;
-  margin-top: -22px;
-  z-index: 5;
-  width: 44px;
-  height: 44px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  width: 36px;
+  height: 36px;
+  border: none;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
+  background: transparent;
+  color: var(--color-pure-white);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease-out;
 }
-.diagram-gallery-nav--prev { left: 12px; }
-.diagram-gallery-nav--next { right: 12px; }
+.diagram-gallery-nav:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+}
+.diagram-gallery-nav:active:not(:disabled) {
+  transform: scale(0.9);
+}
 .diagram-gallery-nav:disabled {
   opacity: 0.25;
   cursor: default;
-  pointer-events: none;
 }
 
 .diagram-gallery-dots {
   display: flex;
-  justify-content: center;
   align-items: center;
   gap: 8px;
-  margin-top: 16px;
-  flex-shrink: 0;
 }
 .diagram-gallery-dot {
   width: 7px;
@@ -568,15 +614,15 @@ a:hover > .wave-text span,
   padding: 0;
   border: none;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.3);
   cursor: pointer;
   transition: transform 0.2s var(--ease-spring), background 0.2s ease;
 }
 .diagram-gallery-dot:hover {
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.55);
 }
 .diagram-gallery-dot[data-active='1'] {
-  background: var(--color-ink-black);
+  background: var(--color-pure-white);
   transform: scale(1.3);
 }
 
@@ -585,6 +631,12 @@ a:hover > .wave-text span,
    "nested chip" treatment). */
 .diagram-expand-btn {
   border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 640px) {
+  .diagram-gallery-card {
+    width: min(88vw, 860px);
+  }
 }
 
 /* Hide global navigation bar when scrolled to simulator on mobile */

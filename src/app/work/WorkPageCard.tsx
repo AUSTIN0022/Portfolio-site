@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { SkillTag } from '@/components/ui/SkillTag'
 import ScrollFloat from '@/components/ui/ScrollFloat'
+import { getTechIcon } from '@/lib/techIcons'
 import type { Project } from '@/content/projects'
 
 const projectImageMap: Record<string, string> = {
@@ -116,7 +117,10 @@ export function WorkPageCard({ project }: { project: Project }) {
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
             {project.stack.map((t) => (
-              <SkillTag key={t}>{t}</SkillTag>
+              <SkillTag key={t}>
+                {getTechIcon(t)}
+                {t}
+              </SkillTag>
             ))}
           </div>
         </div>

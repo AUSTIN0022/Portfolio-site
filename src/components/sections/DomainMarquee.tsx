@@ -9,7 +9,7 @@ if (typeof window !== 'undefined') {
 }
 
 const rowFont = {
-  fontFamily: 'var(--font-suisseintlcond)',
+  fontFamily: 'var(--font-hero-display)',
   fontWeight: 700,
   letterSpacing: '-0.03em',
   lineHeight: 0.9,
@@ -113,11 +113,6 @@ export function DomainMarquee() {
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
-        // Extra bottom-only padding: the CurvedRise wrap on the section below
-        // pulls it up by 64px (marginTop: -overlap), which was eating into
-        // this section's naturally-centered bottom gap and making it read
-        // tighter than the top gap. This keeps both keyword rows fully clear
-        // of the black band until the user scrolls further.
         paddingBottom: 'clamp(96px, 12vw, 160px)',
       }}
     >

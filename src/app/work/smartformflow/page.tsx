@@ -3,6 +3,7 @@ import { CaseStudySection } from '@/components/sections/CaseStudySection'
 import { P, Lead, Callout, Metric, MetricGrid, DecisionCard } from '@/components/ui/CaseStudyProse'
 import { DecisionCardTrack } from '@/components/ui/DecisionCardTrack'
 import { SkillTag } from '@/components/ui/SkillTag'
+import { getTechIcon } from '@/lib/techIcons'
 import { Nav } from '@/components/nav/Nav'
 import { Footer } from '@/components/sections/Footer'
 import type { Metadata } from 'next'
@@ -75,7 +76,10 @@ export default function SmartFormFlowPage() {
           </P>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '32px' }}>
             {overviewStack.map((tag) => (
-              <SkillTag key={tag}>{tag}</SkillTag>
+              <SkillTag key={tag}>
+                {getTechIcon(tag)}
+                {tag}
+              </SkillTag>
             ))}
           </div>
         </CaseStudySection>

@@ -113,8 +113,11 @@
   --section-y: 56px;       /* vertical section padding */
 
   --hero-cols: minmax(0, 1fr);
-  --hero-min-h: auto;
-  --hero-canvas-h: 340px;
+  --hero-row-gap: 32px;
+  --hero-col-gap: 32px;
+  --hero-image-w: 100%;
+  --hero-name-align: left;
+  --hero-meta-align: flex-start;
 
   --stats-cols: minmax(0, 1fr);
   --about-cols: minmax(0, 1fr);
@@ -169,9 +172,12 @@
   :root {
     --gutter: 64px;
     --section-y: 96px;
-    --hero-cols: minmax(0, 48fr) minmax(0, 52fr);
-    --hero-min-h: 100vh;
-    --hero-canvas-h: min(100vh, 780px);
+    --hero-cols: minmax(0, 58fr) minmax(0, 42fr);
+    --hero-row-gap: 54px;
+    --hero-col-gap: 48px;
+    --hero-image-w: 640px;
+    --hero-name-align: right;
+    --hero-meta-align: flex-end;
     --about-cols: minmax(0, 55fr) minmax(0, 45fr);
     --about-gap: 80px;
     --skills-gap: 64px;
@@ -927,16 +933,75 @@ a:hover > .wave-text span,
   outline-offset: 2px;
 }
 
-/* Hero inner grid: top padding clears the fixed nav while stacked;
-   at desktop it becomes a full-height centered two-column split. */
+/* Hero inner grid: top padding clears the fixed nav while stacked. Bottom
+   padding is padded a bit further than a normal section — the magazine
+   layout's last piece of content lands close to where the fixed
+   shoot-toggle pill sits, so it needs a little more clearance than
+   --section-y gives every other section. Deliberately NOT forcing a
+   min-height:100vh here — that was stretching the flex columns below to
+   fill the full viewport, which (combined with the diagram wanting to
+   grow into that leftover space) pushed the role headline below the fold
+   on real laptop screens. Content is sized to be compact by design now,
+   so it should sit comfortably within one screen without being forced. */
 .hero-inner {
-  padding: 104px var(--gutter) var(--section-y);
-  min-height: var(--hero-min-h);
+  padding: 104px var(--gutter) calc(var(--section-y) + 32px);
 }
 @media (min-width: 1024px) {
   .hero-inner {
-    padding: 0 var(--gutter);
+    padding: 72px var(--gutter) calc(var(--section-y) + 8px);
   }
+}
+
+/* Magazine hero grid: two independent rows, each split 58/42 into a primary
+   and secondary column. Because every row is its own grid on the same
+   column tracks, the headline lines up with the "01 /" meta above it, and
+   the illustration lines up with the pitch/role block beside it — the
+   intersection the single stacked-column layout couldn't guarantee. */
+.hero-row {
+  display: grid;
+  grid-template-columns: var(--hero-cols);
+  align-items: start;
+  gap: var(--hero-col-gap);
+}
+
+/* The role headline ("FULL STACK / ENGINEER") is set at the same huge display
+   size as the name headline above, but "FULL STACK" needs ~625px at its max
+   (108px) size to stay on one line. hero-inner caps out at 1280px wide, but
+   the headline's clamp() doesn't hit its own 108px ceiling until the
+   viewport reaches ~1459px — so between 1280 and 1459px the available
+   column width is already frozen by the max-width while the text is still
+   growing into it, and a split that only barely fit at a smaller test
+   width (e.g. 45/55) comes up short once both are maxed out. 60% keeps
+   ~600px+626px+40px of margin at every width above 1024px, on any monitor
+   or zoom level, not just the ones this was manually checked against. */
+@media (min-width: 1024px) {
+  .hero-row--role {
+    grid-template-columns: minmax(0, 40fr) minmax(0, 60fr);
+  }
+}
+
+.hero-col-secondary {
+  text-align: var(--hero-name-align);
+}
+
+.hero-meta-col {
+  display: flex;
+  flex-direction: column;
+  align-items: var(--hero-meta-align);
+}
+
+/* Small viewfinder-style corner mark on the diagram box — a quiet editorial
+   detail, not a full border, so it reads as "framed" without boxing it in. */
+.hero-diagram-corner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  border-top: 2px solid color-mix(in srgb, var(--color-fg) 25%, transparent);
+  border-left: 2px solid color-mix(in srgb, var(--color-fg) 25%, transparent);
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* Navigation: the link row lives inside the collapsible island on every

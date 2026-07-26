@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
-import { Barlow_Condensed, JetBrains_Mono, Inter } from 'next/font/google'
+import { Barlow_Condensed, JetBrains_Mono, Inter, Geist } from 'next/font/google'
 import { Providers } from './providers'
 import { ServiceWorkerCleanup } from '@/components/util/ServiceWorkerCleanup'
 import FloatingShootToggleHost from '@/components/shoot/FloatingShootToggleHost'
@@ -27,6 +27,16 @@ const suisseFallback = Inter({
   weight: ['400', '500'],
   subsets: ['latin'],
   variable: '--font-suisseintl-fallback',
+  display: 'swap',
+})
+
+// Matches the reference portfolio's hero display face (Geist, at font-black
+// weight) — used only for the hero's two big headline lines, not the rest
+// of the site's Suisse Int'l type system.
+const heroDisplay = Geist({
+  weight: ['700', '800', '900'],
+  subsets: ['latin'],
+  variable: '--font-hero-display',
   display: 'swap',
 })
 
@@ -91,7 +101,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${suisseCondFallback.variable} ${suisseMonoFallback.variable} ${suisseFallback.variable}`}
+      className={`${suisseCondFallback.variable} ${suisseMonoFallback.variable} ${suisseFallback.variable} ${heroDisplay.variable}`}
       suppressHydrationWarning
     >
       {/* suppressHydrationWarning: browser extensions (Grammarly etc.) mutate

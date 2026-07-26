@@ -64,13 +64,13 @@ export function CtaTiles() {
             style={{
               fontFamily: 'var(--font-suisseintl)',
               fontWeight: 400,
-              fontSize: '14px',
+              fontSize: '15px',
               lineHeight: 1.3,
               color: 'var(--cta-fg-muted, var(--color-fg-muted))',
               letterSpacing: '-0.28px',
             }}
           >
-            Book a 30-minute intro. I&apos;m looking for backend and infra roles where reliability matters.
+            Let&apos;s connect and create something thoughtful.
           </p>
         </a>
 
@@ -124,7 +124,7 @@ export function CtaTiles() {
             style={{
               fontFamily: 'var(--font-suisseintl)',
               fontWeight: 400,
-              fontSize: '14px',
+              fontSize: '15px',
               lineHeight: 1.3,
               color: 'var(--cta-fg-muted, var(--color-fg-muted))',
               letterSpacing: '-0.28px',

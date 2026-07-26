@@ -1,42 +1,24 @@
 import { MonoKicker } from '@/components/ui/MonoKicker'
 import { SkillTag } from '@/components/ui/SkillTag'
-import {
-  SiNodedotjs,
-  SiTypescript,
-  SiPostgresql,
-  SiRedis,
-  SiNextdotjs,
-  SiPrisma,
-  SiDocker,
-} from 'react-icons/si'
-import { FaAws } from 'react-icons/fa6'
-import { MdApi, MdBolt, MdAccountTree, MdQueue } from 'react-icons/md'
-
-// Neutral color for the four icons that aren't real brand marks (BullMQ has
-// no simple-icons entry, and "REST APIs" / "Event-driven" / "System Design"
-// are architecture concepts, not products) — everything else gets its real
-// brand color instead of the site's usual monochrome icon treatment.
-const neutralColor = 'var(--color-fg-muted)'
-const iconStyle = { display: 'inline-flex', marginRight: '6px', verticalAlign: '-2px' }
+import { getTechIcon } from '@/lib/techIcons'
 
 // Every item is a real mark, always shown with its label — no marquee, no
-// hover-to-reveal tooltip. simple-icons has no BullMQ or AWS entry (AWS was
-// dropped for trademark reasons), and "REST APIs" / "Event-driven" /
-// "System Design" are architecture concepts, not products — those three get
-// the closest representative icon instead of a brand logo.
-const techItems: { icon: React.ReactNode; label: string }[] = [
-  { icon: <SiNodedotjs color="#339933" style={iconStyle} />, label: 'Node.js' },
-  { icon: <SiTypescript color="#3178C6" style={iconStyle} />, label: 'TypeScript' },
-  { icon: <SiPostgresql color="#4169E1" style={iconStyle} />, label: 'PostgreSQL' },
-  { icon: <SiRedis color="#DC382D" style={iconStyle} />, label: 'Redis' },
-  { icon: <MdQueue color={neutralColor} style={iconStyle} />, label: 'BullMQ' },
-  { icon: <SiNextdotjs color="#000000" style={iconStyle} />, label: 'Next.js' },
-  { icon: <SiPrisma color="#2D3748" style={iconStyle} />, label: 'Prisma' },
-  { icon: <FaAws color="#FF9900" style={iconStyle} />, label: 'AWS' },
-  { icon: <SiDocker color="#2496ED" style={iconStyle} />, label: 'Docker' },
-  { icon: <MdApi color={neutralColor} style={iconStyle} />, label: 'REST APIs' },
-  { icon: <MdBolt color={neutralColor} style={iconStyle} />, label: 'Event-driven' },
-  { icon: <MdAccountTree color={neutralColor} style={iconStyle} />, label: 'System Design' },
+// hover-to-reveal tooltip. Icons resolve through the shared techIcons map
+// (@/lib/techIcons) so this list stays in sync with the marks used on the
+// Hero tags and the /work case studies.
+const techLabels = [
+  'Node.js',
+  'TypeScript',
+  'PostgreSQL',
+  'Redis',
+  'BullMQ',
+  'Next.js',
+  'Prisma',
+  'AWS',
+  'Docker',
+  'REST APIs',
+  'Event-driven',
+  'System Design',
 ]
 
 export function About() {
@@ -109,10 +91,10 @@ export function About() {
             data-gsap="tags"
             style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}
           >
-            {techItems.map((item) => (
-              <SkillTag key={item.label}>
-                {item.icon}
-                {item.label}
+            {techLabels.map((label) => (
+              <SkillTag key={label}>
+                {getTechIcon(label)}
+                {label}
               </SkillTag>
             ))}
           </div>

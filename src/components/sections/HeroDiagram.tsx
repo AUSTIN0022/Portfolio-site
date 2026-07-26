@@ -44,8 +44,8 @@ export function HeroDiagram() {
         style={{
           position: 'relative',
           width: '100%',
-          maxWidth: '560px',
-          aspectRatio: '1/1',
+          maxWidth: '100%',
+          aspectRatio: '2 / 1',
           rotateX,
           rotateY,
           transformStyle: 'preserve-3d',
@@ -71,26 +71,35 @@ export function HeroDiagram() {
           }}
         />
 
-        {/* Main Pre-rendered Isometric Diagram Layer */}
-        <motion.div
-          animate={{ y: [0, -6, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-          style={{
-            position: 'relative',
-            width: '100%',
-            height: '100%',
-            filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.08))',
-          }}
-        >
-          <Image
-            src="/hero-illustration-1x1-removebg-preview.png"
-            alt="Backend Infrastructure Architecture Diagram"
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 560px"
-            style={{ objectFit: 'contain' }}
-          />
-        </motion.div>
+        {/* Main Pre-rendered Isometric Diagram Layer. The source PNG is 3:2
+            and has empty gray canvas above/below the diagram itself, so
+            'contain' inside this box would letterbox that empty margin back
+            in. 'cover' scales it to the box's full width and crops the
+            excess top/bottom instead. The diagram's content sits above the
+            image's vertical center, so a plain centered crop leaves a much
+            bigger empty gap at the bottom than the top — objectPosition
+            biases the crop to take most of it from the bottom. */}
+        <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+          <motion.div
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: '100%',
+              filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.08))',
+            }}
+          >
+            <Image
+              src="/hero-illustration-16x9-no-background.png"
+              alt="Backend Infrastructure Architecture Diagram"
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 640px"
+              style={{ objectFit: 'cover', objectPosition: 'center 33%' }}
+            />
+          </motion.div>
+        </div>
 
         {/* Dynamic Overlay Badges */}
         <motion.div
@@ -142,8 +151,8 @@ export function HeroDiagram() {
           transition={{ delay: 0.7, duration: 0.6 }}
           style={{
             position: 'absolute',
-            bottom: '12%',
-            left: '2%',
+            bottom: '3%',
+            left: '3%',
             background: 'color-mix(in srgb, var(--color-bg) 92%, transparent)',
             backdropFilter: 'blur(12px)',
             border: '1px solid color-mix(in srgb, var(--color-fg) 8%, transparent)',

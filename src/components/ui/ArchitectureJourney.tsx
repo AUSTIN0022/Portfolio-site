@@ -16,6 +16,16 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import {
+  type Domain,
+  type NodeDef,
+  NODES,
+  EDGES,
+  type Stage,
+  STAGES,
+  REQUEST_PATH,
+  REQUEST_LABELS,
+} from '@/content/quizbuzzArchitecture'
 
 /* ── Virtual canvas ─────────────────────────────────────────────── */
 const VB_W = 1800
@@ -29,8 +39,7 @@ const DOMAIN = {
   worker: '#44f87a', // Workers · background jobs
   payment: '#ff6924', // Payments · critical events
   analytics: '#ff7df1', // Analytics · certificates
-} as const
-type Domain = keyof typeof DOMAIN
+} as const satisfies Record<Domain, string>
 
 const LEGEND: { domain: Domain; label: string }[] = [
   { domain: 'core', label: 'Core domain' },
@@ -39,151 +48,6 @@ const LEGEND: { domain: Domain; label: string }[] = [
   { domain: 'worker', label: 'Workers' },
   { domain: 'infra', label: 'Infrastructure' },
   { domain: 'analytics', label: 'Analytics' },
-]
-
-/* ── Nodes ──────────────────────────────────────────────────────── */
-type NodeDef = {
-  id: string
-  label: string
-  sub?: string
-  x: number
-  y: number
-  w: number
-  h: number
-  domain: Domain
-  appear: number
-}
-
-const NODES: NodeDef[] = [
-  { id: 'org', label: 'Organization', sub: 'Tenant · host', x: 800, y: 140, w: 230, h: 92, domain: 'core', appear: 0 },
-  { id: 'contest', label: 'Contest', sub: 'The core entity', x: 800, y: 360, w: 280, h: 120, domain: 'core', appear: 0 },
-  { id: 'questionBank', label: 'Question Bank', sub: 'Randomized pool', x: 400, y: 360, w: 240, h: 96, domain: 'core', appear: 1 },
-  { id: 'participant', label: 'Participant', sub: 'Paid registration', x: 1200, y: 470, w: 240, h: 96, domain: 'core', appear: 1 },
-  { id: 'payment', label: 'Payment', sub: 'Razorpay webhook', x: 1200, y: 270, w: 240, h: 96, domain: 'payment', appear: 1 },
-  { id: 'gateway', label: 'Socket.IO Gateway', sub: 'EIO4 · 10k sockets', x: 800, y: 600, w: 300, h: 108, domain: 'realtime', appear: 2 },
-  { id: 'liveq', label: 'Live Questions', sub: 'Synchronized delivery', x: 430, y: 610, w: 240, h: 96, domain: 'realtime', appear: 2 },
-  { id: 'redis', label: 'Redis', sub: 'Live state · pub/sub', x: 800, y: 790, w: 220, h: 92, domain: 'infra', appear: 2 },
-  { id: 'postgres', label: 'PostgreSQL', sub: 'Durable store', x: 430, y: 860, w: 240, h: 96, domain: 'infra', appear: 4 },
-  { id: 'submission', label: 'Submission', sub: 'Locked · idempotent', x: 1200, y: 660, w: 240, h: 96, domain: 'worker', appear: 3 },
-  { id: 'bullmq', label: 'BullMQ', sub: '6 queues', x: 1200, y: 830, w: 220, h: 92, domain: 'worker', appear: 3 },
-  { id: 'worker', label: 'Worker', sub: 'Evaluation · certs', x: 830, y: 920, w: 240, h: 96, domain: 'worker', appear: 3 },
-  { id: 'messaging', label: 'Messaging', sub: 'SMS · Email', x: 1560, y: 300, w: 210, h: 92, domain: 'analytics', appear: 5 },
-  { id: 'analytics', label: 'Analytics', sub: 'Daily rollups', x: 1580, y: 480, w: 210, h: 92, domain: 'analytics', appear: 5 },
-  { id: 'leaderboard', label: 'Leaderboard', sub: 'Live ranking', x: 1580, y: 660, w: 210, h: 92, domain: 'analytics', appear: 5 },
-  { id: 'certificate', label: 'Certificate', sub: 'PDF → S3', x: 1560, y: 840, w: 210, h: 92, domain: 'analytics', appear: 5 },
-]
-
-/* ── Edges ──────────────────────────────────────────────────────── */
-type EdgeDef = {
-  from: string
-  to: string
-  appear: number
-  animated?: boolean
-  alive?: boolean // dense, continuous traffic
-  color?: Domain
-}
-
-const EDGES: EdgeDef[] = [
-  { from: 'org', to: 'contest', appear: 0 },
-  { from: 'questionBank', to: 'contest', appear: 1 },
-  { from: 'payment', to: 'participant', appear: 1, animated: true, color: 'payment' },
-  { from: 'participant', to: 'contest', appear: 1 },
-  { from: 'participant', to: 'gateway', appear: 2, animated: true, alive: true, color: 'realtime' },
-  { from: 'gateway', to: 'liveq', appear: 2, animated: true, alive: true, color: 'realtime' },
-  { from: 'gateway', to: 'redis', appear: 2, animated: true, alive: true, color: 'realtime' },
-  { from: 'gateway', to: 'submission', appear: 3 },
-  { from: 'submission', to: 'bullmq', appear: 3, animated: true, alive: true, color: 'worker' },
-  { from: 'bullmq', to: 'worker', appear: 3, animated: true, alive: true, color: 'worker' },
-  { from: 'redis', to: 'bullmq', appear: 4, animated: true, alive: true, color: 'infra' },
-  { from: 'worker', to: 'postgres', appear: 4 },
-  { from: 'worker', to: 'leaderboard', appear: 5, animated: true, color: 'analytics' },
-  { from: 'worker', to: 'certificate', appear: 5, animated: true, color: 'analytics' },
-  { from: 'worker', to: 'analytics', appear: 5, animated: true, color: 'analytics' },
-  { from: 'worker', to: 'messaging', appear: 5, animated: true, color: 'analytics' },
-]
-
-/* ── Stages (story beats) ───────────────────────────────────────── */
-type Stage = {
-  key: string
-  index: string
-  title: string
-  subtitle: string
-  why?: string
-  focus: { x: number; y: number; scale: number }
-  active: string[] | 'ALL'
-}
-
-const STAGES: Stage[] = [
-  {
-    key: 'intro',
-    index: '01',
-    title: 'You are looking at QuizBuzz',
-    subtitle: 'Every contest begins as a single entity. Everything else grows out of it.',
-    focus: { x: 800, y: 350, scale: 2.6 },
-    active: ['org', 'contest'],
-  },
-  {
-    key: 'register',
-    index: '02',
-    title: 'A participant joins',
-    subtitle: 'Registration is paid and verified before a single question is served.',
-    why: 'Money clears via the Razorpay webhook before any compute is spent — no free load on the system.',
-    focus: { x: 1030, y: 380, scale: 1.5 },
-    active: ['contest', 'questionBank', 'payment', 'participant'],
-  },
-  {
-    key: 'live',
-    index: '03',
-    title: 'The doors open',
-    subtitle: '10,000 WebSocket connections open at once, on one synchronized clock.',
-    why: 'Redis holds the shared live state, so a socket survives across any server instance.',
-    focus: { x: 700, y: 650, scale: 1.7 },
-    active: ['participant', 'gateway', 'liveq', 'redis'],
-  },
-  {
-    key: 'submit',
-    index: '04',
-    title: 'An answer is submitted',
-    subtitle: 'It locks idempotently, then hands off to a background queue.',
-    why: 'Heavy work runs async on BullMQ so the API stays under 100 ms during the peak.',
-    focus: { x: 1050, y: 800, scale: 1.7 },
-    active: ['gateway', 'submission', 'bullmq', 'worker', 'redis'],
-  },
-  {
-    key: 'infra',
-    index: '05',
-    title: 'The system holds',
-    subtitle: 'Redis keeps the live state and every job; Postgres makes the result durable.',
-    focus: { x: 620, y: 820, scale: 1.6 },
-    active: ['redis', 'bullmq', 'worker', 'postgres'],
-  },
-  {
-    key: 'results',
-    index: '06',
-    title: 'Results, automatically',
-    subtitle: 'One worker fans out: score, leaderboard, certificate, and messaging — per participant.',
-    focus: { x: 1350, y: 560, scale: 1.4 },
-    active: ['worker', 'leaderboard', 'certificate', 'analytics', 'messaging'],
-  },
-  {
-    key: 'whole',
-    index: '07',
-    title: 'That’s the whole system.',
-    subtitle: 'Payments, real-time, queues, workers, infrastructure — assembled in front of you.',
-    focus: { x: 940, y: 540, scale: 0.8 },
-    active: 'ALL',
-  },
-]
-
-/* ── The travelling request — one token's path through the system ── */
-const REQUEST_PATH = ['payment', 'participant', 'gateway', 'submission', 'bullmq', 'worker', 'certificate']
-const REQUEST_LABELS = [
-  'registration paid ✓',
-  'websocket opened',
-  'answer submitted',
-  'queued for evaluation',
-  'worker scoring…',
-  'certificate issued ✓',
 ]
 
 /* ── Helpers ────────────────────────────────────────────────────── */

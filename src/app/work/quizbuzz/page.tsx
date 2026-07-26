@@ -6,6 +6,7 @@ import { DiagramGalleryProvider } from '@/components/ui/DiagramGallery'
 import { DecisionCardTrack } from '@/components/ui/DecisionCardTrack'
 import { LazyArchitectureJourney } from '@/components/ui/LazyArchitectureJourney'
 import { LazyInfraScaleSimulator } from '@/components/ui/LazyInfraScaleSimulator'
+import { QuizBuzzCrawlableSummary } from '@/components/work/QuizBuzzCrawlableSummary'
 import { SkillTag } from '@/components/ui/SkillTag'
 import { getTechIcon } from '@/lib/techIcons'
 import { Nav } from '@/components/nav/Nav'
@@ -59,6 +60,7 @@ export default function QuizBuzzPage() {
                 ]}
             />
             <Nav />
+            <QuizBuzzCrawlableSummary />
             <CaseStudyLayout
                 projectName="QUIZBUZZ"
                 category="BACKEND · REAL-TIME · INFRA · 2024–2026"

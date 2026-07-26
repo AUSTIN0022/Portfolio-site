@@ -49,12 +49,12 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Austin Makasare — Backend Engineer',
+    default: 'Austin Makasare — Full-Stack Software Engineer',
     // Child pages set only their page name; this appends the brand.
     template: '%s · Austin Makasare',
   },
   description:
-    'Backend Engineer building production systems — queues, locks, and distributed infrastructure. 1.5 years of production experience. Open to SDE-2 and senior backend roles.',
+    'Full-Stack Software Engineer building production systems — queues, locks, and distributed infrastructure. 1.5 years of production experience. Open to SDE-2 and senior backend roles.',
   applicationName: 'Austin Makasare — Portfolio',
   authors: [{ name: person.name, url: SITE_URL }],
   creator: person.name,
@@ -88,8 +88,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Austin Makasare — Backend Engineer',
-    description: 'Backend Engineer building systems that scale.',
+    title: 'Austin Makasare — Full-Stack Software Engineer',
+    description: 'Full-Stack Software Engineer building systems that scale.',
   },
   verification: {
     // Add the token from Google Search Console when the domain is verified:
@@ -104,16 +104,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${suisseCondFallback.variable} ${suisseMonoFallback.variable} ${suisseFallback.variable} ${heroDisplay.variable}`}
       suppressHydrationWarning
     >
-      {/* suppressHydrationWarning: browser extensions (Grammarly etc.) mutate
-          <body> with data-gr-* attributes before React hydrates, which is
-          otherwise reported as a hydration mismatch we can't control. The
-          <html> tag also gets a hydration-warning suppression below, since
-          the inline script sets data-theme on it before React ever runs. */}
+
       <body suppressHydrationWarning>
-        {/* Sets [data-theme] on <html> before first paint (Next's
-            beforeInteractive strategy runs it before hydration, so there's no
-            flash of the wrong theme). Mirrors ThemeToggle/themeStore's own
-            storage key and fallback-to-system-preference logic. */}
+
         <Script id="theme-init" strategy="beforeInteractive">
           {`(function(){try{var t=localStorage.getItem('theme-preference');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.setAttribute('data-theme',t)}catch(e){}})();`}
         </Script>

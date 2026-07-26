@@ -18,6 +18,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { type Beat, BEATS } from '@/content/quizbuzzArchitecture'
 
 /* ── Canvas ─────────────────────────────────────────────────────── */
 const VB_W = 1220
@@ -51,27 +52,7 @@ const POOL_REDIS = { x: 250, y: 560 }
 const POOL_RDS = { x: 560, y: 560 }
 
 
-/* ── Beats (story mode) ─────────────────────────────────────────── */
-type Beat = {
-  key: string
-  index: string
-  title: string
-  subtitle: string
-  why?: string
-  mode: 'idle' | 'live'
-  participants: number
-  target: number
-}
-
-const BEATS: Beat[] = [
-  { key: 'idle', index: '01', title: 'Idle mode', subtitle: 'Between contests, one small instance runs everything. Near-zero cost.', why: 'A single t3.medium hosts backend, worker and a local Docker Redis — about $35/month.', mode: 'idle', participants: 0, target: 1 },
-  { key: 'open', index: '02', title: 'Registration opens', subtitle: 'The first few hundred participants arrive. The load balancer comes online.', mode: 'live', participants: 800, target: 2 },
-  { key: 'ramp', index: '03', title: '2,500 participants', subtitle: 'Numbers climb toward the live contest. Utilisation rises but holds.', mode: 'live', participants: 2500, target: 4 },
-  { key: 'spike', index: '04', title: 'The contest goes live', subtitle: '7,000 connect at once. CPU pins past its threshold, latency balloons — under stress.', why: 'WebSocket load is memory- and IO-bound, so the crunch shows up as heap + latency, not only CPU.', mode: 'live', participants: 7000, target: 4 },
-  { key: 'scale', index: '05', title: 'Auto Scaling responds', subtitle: 'CPU crosses 80%, the policy trips, and fresh t3.medium instances boot. The ALB spreads the load.', why: 'Peak demand is known in advance from registrations, so capacity is pre-warmed — not reactively chased.', mode: 'live', participants: 7000, target: 8 },
-  { key: 'steady', index: '06', title: 'Steady at scale', subtitle: 'Eight instances, load balanced near 55%, latency flat — 7,500 live participants.', mode: 'live', participants: 7500, target: 8 },
-  { key: 'control', index: '07', title: 'Now you drive it', subtitle: 'Take control: set the participant count, simulate a spike, kill an instance, or drop Redis — and watch it survive.', mode: 'live', participants: 5000, target: 5 },
-]
+/* ── Beats (story mode) — imported from shared content module ──── */
 
 /* ── Helpers ────────────────────────────────────────────────────── */
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))

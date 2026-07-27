@@ -10,8 +10,9 @@ const navLinks: { label: string; href: string; tip: string }[] = [
   { label: 'About', href: '/#about', tip: 'Who I am & how I work' },
   { label: 'Skills', href: '/#skills', tip: 'The stack I build with' },
   { label: 'Now', href: '/now', tip: "What I'm focused on right now" },
-  { label: 'Contact', href: '/#contact', tip: "Let's build something" },
 ]
+
+const ctaTip = "Let's build something"
 
 // Spring tuned to feel like the iOS Dynamic Island — quick, slightly springy,
 // no overshoot wobble.
@@ -241,8 +242,16 @@ export function Nav() {
         </motion.div>
 
         <span className="nav-cta" style={{ flexShrink: 0 }}>
-          <a href="#contact" className="btn-sketch btn-sketch--primary btn-sketch--pill" style={{ padding: '10px 20px' }}>
-            <WaveText>Hire Me</WaveText>
+          <a
+            href="#contact"
+            className="btn-sketch btn-sketch--primary btn-sketch--pill"
+            style={{ padding: '10px 20px' }}
+            onMouseEnter={(e) => showTip(e, 'CTA', ctaTip)}
+            onMouseLeave={() => hideTip('CTA')}
+            onFocus={(e) => showTip(e, 'CTA', ctaTip)}
+            onBlur={() => hideTip('CTA')}
+          >
+            <WaveText>Let&apos;s Connect</WaveText>
           </a>
         </span>
 
@@ -558,7 +567,7 @@ export function Nav() {
                   className="btn-sketch btn-sketch--primary btn-sketch--pill"
                   style={{ fontSize: '15px', padding: '14px 16px', textAlign: 'center', display: 'block', width: '100%' }}
                 >
-                  Hire Me
+                  Let&apos;s Connect
                 </a>
               </motion.div>
               </motion.div>

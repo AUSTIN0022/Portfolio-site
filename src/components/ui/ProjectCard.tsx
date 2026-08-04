@@ -89,7 +89,7 @@ export function ProjectCard({ project }: { project: Project }) {
           style={{
             fontFamily: 'var(--font-suisseintl)',
             fontWeight: 400,
-            fontSize: '14px',
+            fontSize: 'var(--fs-golden-desc)',
             lineHeight: 1.3,
             color: 'var(--color-fg-muted)',
             letterSpacing: '-0.28px',

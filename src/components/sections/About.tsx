@@ -60,7 +60,7 @@ export function About() {
             style={{
               fontFamily: 'var(--font-suisseintl)',
               fontWeight: 400,
-              fontSize: '20px',
+              fontSize: 'var(--fs-golden-body)',
               lineHeight: 1.25,
               color: 'var(--color-fg)',
               letterSpacing: '-0.22px',

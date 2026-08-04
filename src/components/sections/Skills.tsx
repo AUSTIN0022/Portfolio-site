@@ -123,7 +123,7 @@ export function Skills() {
                 style={{
                   fontFamily: 'var(--font-suisseintl)',
                   fontWeight: 400,
-                  fontSize: '16px',
+                  fontSize: 'var(--fs-golden-body)',
                   lineHeight: 1.33,
                   color: 'var(--color-steel-gray)',
                   letterSpacing: '-0.32px',

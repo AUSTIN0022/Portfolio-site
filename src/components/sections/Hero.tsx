@@ -183,7 +183,7 @@ export function Hero() {
                             style={{
                                 fontFamily: 'var(--font-suisseintlcond)',
                                 fontWeight: 500,
-                                fontSize: 'clamp(16px, 1.6vw, 19px)',
+                                fontSize: 'clamp(15px, 1.5vw, 16px)',
                                 lineHeight: 1.3,
                                 letterSpacing: '-0.02em',
                                 color: 'var(--color-fg)',

@@ -49,7 +49,7 @@ export function Principles() {
             style={{
               fontFamily: 'var(--font-suisseintl)',
               fontWeight: 400,
-              fontSize: '16px',
+              fontSize: 'var(--fs-golden-body)',
               lineHeight: 1.33,
               color: 'var(--color-fg-muted)',
               letterSpacing: '-0.32px',
@@ -82,7 +82,7 @@ export function Principles() {
                 style={{
                   fontFamily: 'var(--font-suisseintl)',
                   fontWeight: 400,
-                  fontSize: '15px',
+                  fontSize: 'var(--fs-golden-desc)',
                   lineHeight: 1.4,
                   color: 'var(--color-fg-muted)',
                   letterSpacing: '-0.3px',

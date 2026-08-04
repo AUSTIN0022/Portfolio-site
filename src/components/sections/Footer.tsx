@@ -1,5 +1,8 @@
 'use client'
 
+import { useState } from 'react'
+import { MdContentCopy, MdCheck } from 'react-icons/md'
+
 const linkColumns = [
   {
     heading: 'Work',
@@ -90,27 +93,43 @@ export function Footer() {
             </div>
             <div
               style={{
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '8px',
                 fontFamily: 'var(--font-suisseintl)',
                 fontWeight: 400,
                 fontSize: '14px',
                 color: 'var(--color-steel-gray)',
               }}
             >
-              Drop a line →{' '}
-              <a
-                href="mailto:austinmakasare00@gmail.com"
-                style={{
-                  color: 'var(--color-ink-black)',
-                  background: 'var(--color-mint-pulse)',
-                  padding: '1px 4px',
-                  borderRadius: '2px',
-                  textDecoration: 'none',
-                  fontWeight: 500,
-                }}
-              >
-                austinmakasare00@gmail.com
-              </a>
+              <span>
+                Drop a line →{' '}
+                <a
+                  href="mailto:austinmakasare00@gmail.com"
+                  style={{
+                    color: 'var(--color-ink-black)',
+                    background: 'var(--color-mint-pulse)',
+                    padding: '1px 4px',
+                    borderRadius: '2px',
+                    textDecoration: 'none',
+                    fontWeight: 500,
+                  }}
+                >
+                  austinmakasare00@gmail.com
+                </a>
+              </span>
+              <CopyEmailButton email="austinmakasare00@gmail.com" />
             </div>
+            <a
+              href="https://cal.com/austinmakasare"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-sketch btn-sketch--on-dark"
+              style={{ marginTop: '20px', padding: '9px 18px', fontSize: '13px' }}
+            >
+              Let&apos;s Chat →
+            </a>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'var(--footer-links-cols)', gap: '32px' }}>
@@ -231,6 +250,48 @@ export function Footer() {
         AUSTIN
       </div>
     </footer>
+  )
+}
+
+function CopyEmailButton({ email }: { email: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(email)
+    } catch {
+      const input = document.createElement('input')
+      input.value = email
+      document.body.appendChild(input)
+      input.select()
+      document.execCommand('copy')
+      document.body.removeChild(input)
+    }
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      aria-label={copied ? 'Email copied' : 'Copy email address'}
+      className="icon-btn"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '22px',
+        height: '22px',
+        flexShrink: 0,
+        color: copied ? 'var(--color-mint-pulse)' : 'var(--color-muted-on-dark)',
+        background: 'transparent',
+        border: '1px solid var(--color-border-on-dark)',
+        borderRadius: '4px',
+        cursor: 'pointer',
+      }}
+    >
+      {copied ? <MdCheck size={13} /> : <MdContentCopy size={11} />}
+    </button>
   )
 }
 

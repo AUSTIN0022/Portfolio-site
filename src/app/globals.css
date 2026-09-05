@@ -1531,41 +1531,120 @@ body.shoot-mode-active *::selection {
   user-select: none;
 }
 
-/* Selected Work — pinned full-viewport horizontal reveal. Desktop +
-   motion-safe only: the media query below decides which of .work-fallback
-   (today's horizontal scroll-snap card track) / .work-pin-wrap actually
-   paints, and Work.tsx's gsap.matchMedia() query is kept identical on
-   purpose so the ScrollTrigger pin only ever runs against visible markup.
-   xPercent-only translation on .work-pin-track — see
-   docs/interaction-upgrades-plan.md §1. */
-.work-fallback {
+/* Idle image float — a plain CSS loop (not a Framer Motion rAF animation)
+   so it costs nothing on the main thread while a scroll-driven pin/scrub
+   is also running. Still used by the kept-but-unmounted ProjectPanel.tsx;
+   PinnedHorizontalScroll's own project panel (Work.tsx) reuses the same
+   class since the float itself is generic, not project-specific. Disabled
+   for reduced-motion users by the blanket rule above. */
+@keyframes work-panel-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+.work-panel-float {
+  animation: work-panel-float 4s ease-in-out infinite;
+}
+
+/* ============================================================
+   PinnedHorizontalScroll — generic pinned vertical→horizontal scroll
+   engine (src/components/ui/PinnedHorizontalScroll.tsx). Content-agnostic:
+   what's inside .phs-panel is entirely up to the consumer's renderPanel.
+   Desktop + motion-safe only, same convention as the rest of the site's
+   scroll effects — the media query below decides which of .phs-fallback /
+   .phs-wrap actually paints, kept identical to the component's own
+   gsap.matchMedia() query (default min-width 900px) so the ScrollTrigger
+   pin only ever runs against visible markup. See the component's own
+   `minWidth` option doc-comment if that default ever needs to change.
+   ============================================================ */
+.phs-fallback {
   display: block;
 }
-.work-pin-wrap {
+.phs-wrap {
   display: none;
 }
 
 @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
-  .work-fallback {
+  .phs-fallback {
     display: none;
   }
-  .work-pin-wrap {
+  .phs-wrap {
     display: block;
   }
 }
 
-.work-pin-wrap {
+.phs-wrap {
   position: relative;
   height: 100dvh;
   overflow: hidden;
 }
-.work-pin-track {
+.phs-track {
   display: flex;
   height: 100%;
 }
-.work-panel {
+.phs-panel {
   flex: 0 0 100vw;
   height: 100%;
   display: flex;
   align-items: center;
+}
+
+.phs-hud {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.phs-hud > * {
+  pointer-events: auto;
+}
+.phs-progress-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: color-mix(in srgb, var(--color-fg) 15%, transparent);
+}
+.phs-progress-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--color-fg);
+  transform-origin: 0% 50%;
+}
+.phs-counter {
+  position: absolute;
+  bottom: 24px;
+  right: var(--gutter);
+  font-family: var(--font-suisseintlmono);
+  font-size: 12px;
+  color: var(--color-fg-subtle);
+  letter-spacing: -0.36px;
+}
+
+/* prefers-reduced-motion / narrow-viewport fallbacks */
+.phs-fallback-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+.phs-fade {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.phs-fade.phs-visible {
+  opacity: 1;
+}
+.phs-fallback-disable {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+.phs-fallback-disable-panel {
+  flex: 0 0 100vw;
+  scroll-snap-align: start;
 }

@@ -16,12 +16,26 @@ function GunModel({ url, ...props }: GunModelProps) {
   return <primitive object={gltf.scene} {...props} />
 }
 
+// `aim` is a mutable ref, not React state: the caller (FloatingShootToggle)
+// writes to it on every `pointermove` — dozens of times a second while shoot
+// mode is on. Before this fix those coordinates lived in `useState`, so every
+// mouse pixel re-rendered this whole Canvas tree (this component sits at the
+// app root, mounted on every page). `useFrame` below already runs once per
+// rendered frame regardless of React's render cycle, so reading the latest
+// aim straight out of the ref each frame gets the same visual result — the
+// gun still tracks the cursor smoothly — with zero React re-renders in the
+// hot path. This is what was producing the reported "hovering anywhere causes
+// repeated re-renders" behavior; a plain CSS :hover (e.g. `.btn-sketch`) was
+// never the cause, but any mouse movement anywhere on the page while shoot
+// mode was on (it persists across visits via localStorage) re-rendered this
+// tree, which read as jitter well beyond just this gun HUD.
+type AimRef = React.RefObject<{ x: number; y: number }>
+
 type GunViewerProps = {
-  aimX: number
-  aimY: number
+  aimRef: AimRef
 }
 
-function GunRig({ aimX, aimY }: GunViewerProps): React.JSX.Element {
+function GunRig({ aimRef }: { aimRef: AimRef }): React.JSX.Element {
   const yawRef = React.useRef<Group | null>(null)
   const pitchRef = React.useRef<Group | null>(null)
   // Neutral facing direction when cursor is centered.
@@ -32,6 +46,8 @@ function GunRig({ aimX, aimY }: GunViewerProps): React.JSX.Element {
     const yawGroup = yawRef.current
     const pitchGroup = pitchRef.current
     if (!yawGroup || !pitchGroup) return
+
+    const { x: aimX, y: aimY } = aimRef.current
 
     // Keep both sides closer in feel, but retain slight right bias.
     const yawLeftStrength = 1.2
@@ -57,7 +73,7 @@ function GunRig({ aimX, aimY }: GunViewerProps): React.JSX.Element {
   )
 }
 
-export default function GunViewer({ aimX, aimY }: GunViewerProps): React.JSX.Element {
+export default function GunViewer({ aimRef }: GunViewerProps): React.JSX.Element {
   // Tracks THREE's global loading manager instead of the in-canvas Suspense
   // fallback: r3f's Suspense boundary can resolve/retry faster than the
   // fallback paints, so it's not a reliable place to show loading state for a
@@ -107,7 +123,7 @@ export default function GunViewer({ aimX, aimY }: GunViewerProps): React.JSX.Ele
           <React.Suspense fallback={null}>
             <ambientLight intensity={0.9} />
             <directionalLight position={[2, 2, 2]} intensity={1.2} />
-            <GunRig aimX={aimX} aimY={aimY} />
+            <GunRig aimRef={aimRef} />
           </React.Suspense>
         </Canvas>
         {showOverlay && (

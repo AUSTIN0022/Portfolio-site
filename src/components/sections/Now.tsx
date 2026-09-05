@@ -16,36 +16,41 @@ const ROTATE_MS = 4200
 
 function Row({ row }: { row: (typeof rows)[number] }) {
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: '120px minmax(0, 1fr)',
-        gap: '24px',
-        alignItems: 'start',
-      }}
-    >
+    <div>
       <div
         style={{
           fontFamily: 'var(--font-suisseintlmono)',
           fontSize: '12px',
-          color: 'var(--color-fg-muted)',
+          color: 'var(--color-fg-subtle)',
           letterSpacing: '-0.36px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
+          marginBottom: '12px',
         }}
       >
-        <span>{row.icon}</span>
-        <span>{row.label}</span>
+        // {row.label}
+      </div>
+      <div
+        style={{
+          fontFamily: 'var(--font-suisseintlcond)',
+          fontWeight: 700,
+          fontSize: 'var(--fs-display-md)',
+          lineHeight: 0.9,
+          letterSpacing: '-0.03em',
+          color: 'var(--color-fg)',
+          marginBottom: '16px',
+          textWrap: 'balance',
+        }}
+      >
+        {row.label}.
       </div>
       <div
         style={{
           fontFamily: 'var(--font-suisseintl)',
           fontWeight: 400,
-          fontSize: '16px',
-          lineHeight: 1.33,
-          color: 'var(--color-fg)',
-          letterSpacing: '-0.32px',
+          fontSize: 'var(--fs-golden-desc)',
+          lineHeight: 1.4,
+          color: 'var(--color-fg-muted)',
+          letterSpacing: '-0.28px',
+          maxWidth: '560px',
           textWrap: 'pretty',
         }}
       >
@@ -105,7 +110,14 @@ export function Now() {
   const active = rows[index]
 
   return (
-    <section id="now" style={{ background: 'var(--color-bg)', padding: 'var(--section-y) var(--gutter)' }}>
+    <section
+      id="now"
+      style={{
+        background: 'var(--color-bg)',
+        padding: 'var(--section-y) var(--gutter)',
+        scrollMarginTop: '96px',
+      }}
+    >
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         <div data-gsap="heading">
           <MonoKicker>// NOW</MonoKicker>
@@ -127,30 +139,26 @@ export function Now() {
             pausedRef.current = false
           }}
           style={{
-            marginTop: '48px',
-            maxWidth: '640px',
-            border: '1px solid var(--color-fg)',
-            borderRadius: '24px',
-            padding: '32px',
+            marginTop: '56px',
+            maxWidth: '680px',
             position: 'relative',
-            overflow: 'hidden',
-            minHeight: '148px',
+            minHeight: '216px',
           }}
         >
           {rotating ? (
             <AnimatePresence mode="wait">
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               >
                 <Row row={active} />
               </motion.div>
             </AnimatePresence>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
               {rows.map((row) => (
                 <Row key={row.label} row={row} />
               ))}
@@ -158,7 +166,7 @@ export function Now() {
           )}
 
           {rotating && (
-            <div style={{ display: 'flex', gap: '6px', marginTop: '24px' }}>
+            <div style={{ display: 'flex', gap: '6px', marginTop: '32px' }}>
               {rows.map((row, i) => (
                 <button
                   key={row.label}
@@ -167,9 +175,9 @@ export function Now() {
                   aria-current={i === index}
                   onClick={() => setIndex(i)}
                   style={{
-                    width: i === index ? '20px' : '6px',
-                    height: '6px',
-                    borderRadius: '3px',
+                    width: i === index ? '28px' : '8px',
+                    height: '8px',
+                    borderRadius: '4px',
                     border: 'none',
                     padding: 0,
                     cursor: 'pointer',
@@ -185,7 +193,7 @@ export function Now() {
           )}
         </div>
 
-        <div style={{ marginTop: '32px' }}>
+        <div style={{ marginTop: '40px' }}>
           <Link
             href="/now"
             style={{

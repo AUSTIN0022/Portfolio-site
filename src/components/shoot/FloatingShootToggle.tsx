@@ -313,19 +313,33 @@ export default function FloatingShootToggle(): React.JSX.Element {
   const [isOn, setIsOn] = React.useState<boolean>(false)
   const [showGunCursor, setShowGunCursor] = React.useState<boolean>(false)
   const [dateTimeText, setDateTimeText] = React.useState<string>('')
-  const [aimX, setAimX] = React.useState<number>(0)
-  const [aimY, setAimY] = React.useState<number>(0)
-  const [cursorX, setCursorX] = React.useState<number>(0)
-  const [cursorY, setCursorY] = React.useState<number>(0)
   const [splats, setSplats] = React.useState<PaintSplat[]>([])
   const [hoverShootControls, setHoverShootControls] = React.useState<boolean>(false)
   const pointerRef = React.useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+  // aimRef/crosshairRef: these used to be `useState` (aimX/aimY/cursorX/
+  // cursorY), updated on every single `pointermove` event while shoot mode is
+  // on. That re-rendered this component — mounted once at the app root, on
+  // every page — on every pixel the mouse moved, which cascaded into
+  // GunViewer's react-three-fiber Canvas re-rendering too. That's the "hover
+  // over View Case Study causes repeated re-renders" behavior reported live:
+  // a plain CSS :hover never causes a React re-render, so it had to be
+  // something global tracking the mouse, and this was it — active whenever
+  // shoot mode is on, which persists across visits via localStorage. Aim now
+  // lives in a ref that GunViewer's useFrame loop reads directly (see the
+  // comment there), and the crosshair's position is written straight to the
+  // DOM node instead of through state, so moving the mouse anywhere no longer
+  // touches React's render cycle at all.
+  const aimRef = React.useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+  const crosshairRef = React.useRef<HTMLDivElement | null>(null)
   const updateAimFromPoint = React.useCallback((x: number, y: number) => {
-    setCursorX(x)
-    setCursorY(y)
     pointerRef.current = { x, y }
-    setAimX(Math.max(-1, Math.min(1, (x / window.innerWidth) * 2 - 1)))
-    setAimY(Math.max(-1, Math.min(1, (y / window.innerHeight) * 2 - 1)))
+    const crosshairEl = crosshairRef.current
+    if (crosshairEl) {
+      crosshairEl.style.left = `${x}px`
+      crosshairEl.style.top = `${y}px`
+    }
+    aimRef.current.x = Math.max(-1, Math.min(1, (x / window.innerWidth) * 2 - 1))
+    aimRef.current.y = Math.max(-1, Math.min(1, (y / window.innerHeight) * 2 - 1))
   }, [])
 
   React.useEffect(() => {
@@ -405,8 +419,7 @@ export default function FloatingShootToggle(): React.JSX.Element {
   React.useEffect(() => {
     if (!isOn) return
 
-    setCursorX(window.innerWidth / 2)
-    setCursorY(window.innerHeight / 2)
+    updateAimFromPoint(window.innerWidth / 2, window.innerHeight / 2)
 
     const onPointerMove = (event: PointerEvent) => {
       // Touch drags (e.g. scrolling) must not steer the gun; only mouse/trackpad
@@ -748,8 +761,8 @@ export default function FloatingShootToggle(): React.JSX.Element {
       {/* Custom gun cursor (hidden over the toggle so the system pointer reads clearly). */}
       {isOn && showGunCursor && !hoverShootControls && (
         <div
+          ref={crosshairRef}
           className="shoot-crosshair"
-          style={{ left: cursorX, top: cursorY }}
           aria-hidden="true"
           data-shoot-ui="1"
         >
@@ -763,7 +776,7 @@ export default function FloatingShootToggle(): React.JSX.Element {
       {/* Gun (above the bottom HUD) */}
       {isOn && (
         <div className="shoot-gun-slot" data-shoot-ui="1">
-          <GunViewer aimX={aimX} aimY={aimY} />
+          <GunViewer aimRef={aimRef} />
         </div>
       )}
 

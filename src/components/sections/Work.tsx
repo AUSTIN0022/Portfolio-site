@@ -55,29 +55,41 @@ export function Work() {
       mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
         let lastIndex = 0
 
-        const st = ScrollTrigger.create({
-          trigger: wrap,
-          start: 'top top',
-          end: () => `+=${(panels.length - 1) * window.innerHeight * 1.1}`,
-          pin: true,
-          scrub: 1,
-          snap: 1 / (panels.length - 1),
-          invalidateOnRefresh: true,
-          onEnter: () => gsap.set(track, { willChange: 'transform' }),
-          onLeave: () => gsap.set(track, { willChange: 'auto' }),
-          onLeaveBack: () => gsap.set(track, { willChange: 'auto' }),
-          onUpdate: (self) => {
-            gsap.set(track, { xPercent: -100 * (panels.length - 1) * self.progress })
-            const idx = Math.round(self.progress * (panels.length - 1))
-            if (idx !== lastIndex) {
-              lastIndex = idx
-              setActive(idx)
-            }
+        // A plain ScrollTrigger driven by hand in onUpdate (gsap.set on every
+        // tick) has no tween for `scrub` to actually smooth — self.progress
+        // there is raw, unsmoothed scroll position, so a fast wheel/trackpad
+        // delta can jump it most of the way to 1 in a couple of frames: it
+        // reads as "blank, then the next project just appears," not a slide.
+        // Attaching a real gsap.timeline() as the ScrollTrigger's animation
+        // (same pattern DomainMarquee.tsx already uses) is what makes `scrub`
+        // actually interpolate the xPercent tween against scroll position.
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: wrap,
+            start: 'top top',
+            end: () => `+=${(panels.length - 1) * window.innerHeight * 1.1}`,
+            pin: true,
+            scrub: 1,
+            snap: 1 / (panels.length - 1),
+            invalidateOnRefresh: true,
+            onEnter: () => gsap.set(track, { willChange: 'transform' }),
+            onLeave: () => gsap.set(track, { willChange: 'auto' }),
+            onLeaveBack: () => gsap.set(track, { willChange: 'auto' }),
+            onUpdate: (self) => {
+              const idx = Math.round(self.progress * (panels.length - 1))
+              if (idx !== lastIndex) {
+                lastIndex = idx
+                setActive(idx)
+              }
+            },
           },
         })
 
+        tl.to(track, { xPercent: -100 * (panels.length - 1), ease: 'none' })
+
         return () => {
-          st.kill()
+          tl.scrollTrigger?.kill()
+          tl.kill()
           setActive(0)
         }
       })

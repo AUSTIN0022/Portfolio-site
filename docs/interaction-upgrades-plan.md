@@ -440,3 +440,59 @@ for 1500+ lines of simulator logic sight-unseen.
   architecture section scroll.
 - Tab through the new HoverTip reuse sites with a keyboard only — tips
   must appear on focus, not just hover.
+
+---
+
+## Appendix: design review findings folded into the spec above
+
+A design canvas (3 Work states, 3 /now states, a HoverTip spec sheet) was
+reviewed via `/design:design-critique`, `/design:accessibility-review`, and
+`/baseline-ui` before any of this lands as code. Findings already reflected
+in the sections above; listed here so they aren't re-discovered mid-build:
+
+- **Full-viewport panels use `100dvh`, not `100vh`.** `100vh` includes the
+  mobile browser chrome and will clip pinned panels on iOS Safari — the one
+  place this pattern needs to be pixel-exact.
+- **`will-change: transform` is toggled by `ScrollTrigger`, not static
+  CSS.** Set it in `onEnter`, clear it in `onLeave`/`onLeaveBack` on the
+  same `ScrollTrigger.create()` call — a permanent `will-change` keeps a
+  compositor layer alive for the page's whole lifetime for no reason once
+  the section has scrolled past.
+- **`HoverTip` should sit on top of an accessible tooltip primitive**
+  (Radix `Tooltip` or React Aria's `useTooltipTrigger`) rather than
+  hand-rolled `useState`/`onMouseEnter`/`onFocus` — a hand-rolled version
+  routinely misses `role="tooltip"`, correct `aria-describedby` wiring, and
+  Escape-to-dismiss. `WaveText` stays the purely-visual child inside
+  whatever trigger the primitive gives.
+- **Don't make non-interactive chips (skill tags, stack tags) keyboard
+  tab stops just to surface a tooltip on focus.** A tab stop with no
+  action on Enter/Space is a keyboard-nav nuisance. Nav links and CTA
+  buttons get tooltip-on-focus "for free" since they're already real,
+  focusable elements; for decorative chips, expose the tip text to
+  assistive tech another way (visually-hidden text / `aria-describedby`)
+  instead of adding empty tab stops.
+- **Gate focusability to the active panel** in both pinned sequences — set
+  `tabindex="-1"` (or `inert`) on every panel except the current one,
+  toggled in the same `onUpdate` that already tracks `activeIndex`/
+  progress, so keyboard and screen-reader users never land on an
+  off-canvas control.
+- **Standardize panel headlines on the existing 80px `5xl-3` token**
+  (`tokens.json` → `typography.5xl-3`) instead of ad-hoc sizes per panel —
+  keeps the new full-screen panels on the same type scale as every other
+  section opener.
+- **`--color-steel-gray` fails contrast on white/mist backgrounds
+  (~2.9:1, ~2.4:1)** — below its own token description's 3:1 floor. Use
+  it for large decorative fills only; any actual text (rail labels,
+  captions, counters) uses `--color-graphite` instead.
+- **Add `tabular-nums`** to the "01/02" progress counter and any numeric
+  rail labels, and **`text-balance`/`text-pretty`** to panel headlines/
+  body copy — prevents digit-width jitter during scrub and gives sane
+  default wrapping on the new condensed headlines.
+- **Define a small `z-index` scale** (chrome / rail / scrim) in the
+  Tailwind `@theme` block rather than arbitrary values once these
+  sections' overlays are implemented.
+- **Native scroll stays native** — because §0 rules out a virtual-scroll
+  layer, Page Down / arrow keys / Space continue to drive the pin's scrub
+  exactly like a mouse wheel would, with no extra work. Worth stating in
+  the build ticket so a future contributor doesn't "fix" this by adding
+  Lenis/ScrollSmoother, which would need explicit rewiring to keep working.

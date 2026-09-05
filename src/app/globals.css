@@ -1530,3 +1530,16 @@ body.shoot-mode-active *::selection {
   color: var(--color-ink-black);
   user-select: none;
 }
+
+/* Now section rows — idle state is the existing border-only look; hover
+   nudges the row right on transform only (no color/border animation, since
+   this row's border is set via inline style and would always outrank a
+   stylesheet rule regardless of specificity or source order). Mirrors the
+   .icon-btn / .card-elevated hover language already used elsewhere instead
+   of inventing a new one. */
+.now-row {
+  transition: transform 0.3s var(--ease-spring);
+}
+.now-row:hover {
+  transform: translateX(6px);
+}

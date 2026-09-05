@@ -13,6 +13,7 @@ import { Now } from '@/components/sections/Now'
 import { CtaTiles } from '@/components/sections/CtaTiles'
 import { Footer } from '@/components/sections/Footer'
 import { CurvedRise } from '@/components/ui/CurvedRise'
+import { ScrollProgress } from '@/components/ui/ScrollProgress'
 import { useScrollAnimation } from '@/hooks/useScrollAnimation'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { profilePageSchema } from '@/lib/seo/jsonLd'
@@ -23,6 +24,7 @@ export default function Home() {
   return (
     <>
       <JsonLd data={profilePageSchema()} />
+      <ScrollProgress />
       <Nav />
       <main id="main-content">
         <Hero />

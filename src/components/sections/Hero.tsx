@@ -28,6 +28,7 @@ export function Hero() {
                             className="hero-headline"
                             data-shoot-target="1"
                             data-shoot-granularity="char"
+                            data-gsap="hero-display"
                             style={{
                                 fontFamily: 'var(--font-hero-display)',
                                 fontWeight: 900,
@@ -194,6 +195,7 @@ export function Hero() {
                         </p>
 
                         <h2
+                            data-gsap="hero-display"
                             style={{
                                 fontFamily: 'var(--font-hero-display)',
                                 fontWeight: 900,

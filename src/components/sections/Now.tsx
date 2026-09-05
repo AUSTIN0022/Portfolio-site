@@ -29,6 +29,7 @@ export function Now() {
             <div
               key={i}
               data-gsap="card"
+              className="now-row"
               style={{
                 display: 'grid',
                 gridTemplateColumns: '120px minmax(0, 1fr)',

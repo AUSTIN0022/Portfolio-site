@@ -132,9 +132,9 @@ export function Footer() {
             </a>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'var(--footer-links-cols)', gap: '32px' }}>
+          <div data-gsap-group style={{ display: 'grid', gridTemplateColumns: 'var(--footer-links-cols)', gap: '32px' }}>
             {linkColumns.map((col) => (
-              <div key={col.heading}>
+              <div key={col.heading} data-gsap="card">
                 <div
                   style={{
                     fontFamily: 'var(--font-suisseintlmono)',

@@ -1,6 +1,7 @@
 import { MonoKicker } from '@/components/ui/MonoKicker'
 import { SkillTag } from '@/components/ui/SkillTag'
 import { getTechIcon } from '@/lib/techIcons'
+import ScrollFloat from '@/components/ui/ScrollFloat'
 
 // Every item is a real mark, always shown with its label — no marquee, no
 // hover-to-reveal tooltip. Icons resolve through the shared techIcons map
@@ -37,9 +38,10 @@ export function About() {
           alignItems: 'start',
         }}
       >
-        <div data-gsap="heading">
+        <div>
           <MonoKicker>// ABOUT ME</MonoKicker>
-          <h2
+          <ScrollFloat
+            as="h2"
             style={{
               fontFamily: 'var(--font-suisseintlcond)',
               fontWeight: 700,
@@ -52,7 +54,7 @@ export function About() {
             }}
           >
             BUILDING THINGS THAT DON&apos;T BREAK.
-          </h2>
+          </ScrollFloat>
         </div>
 
         <div>

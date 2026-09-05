@@ -30,6 +30,22 @@ export function useScrollAnimation() {
           })
         })
 
+        // Hero's two display headlines only — a load-time (not scroll-
+        // triggered) entrance layered on top of the hero row's own
+        // [data-gsap="heading"] fade-up, so the headline comes into focus
+        // while the row it sits in rises. No scrollTrigger: hero is above
+        // the fold, so this plays once on mount.
+        document.querySelectorAll('[data-gsap="hero-display"]').forEach((el) => {
+          gsap.from(el, {
+            opacity: 0,
+            y: 24,
+            scale: 0.97,
+            duration: 0.9,
+            ease: 'power3.out',
+            clearProps: 'transform',
+          })
+        })
+
         // Stagger is scoped per [data-gsap-group] container, not per
         // page-wide index — a flat querySelectorAll index would give a card
         // near the bottom of the page (e.g. Skills' 3rd tile) a large fixed

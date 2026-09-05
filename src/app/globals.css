@@ -1531,15 +1531,41 @@ body.shoot-mode-active *::selection {
   user-select: none;
 }
 
-/* Now section rows — idle state is the existing border-only look; hover
-   nudges the row right on transform only (no color/border animation, since
-   this row's border is set via inline style and would always outrank a
-   stylesheet rule regardless of specificity or source order). Mirrors the
-   .icon-btn / .card-elevated hover language already used elsewhere instead
-   of inventing a new one. */
-.now-row {
-  transition: transform 0.3s var(--ease-spring);
+/* Selected Work — pinned full-viewport horizontal reveal. Desktop +
+   motion-safe only: the media query below decides which of .work-fallback
+   (today's horizontal scroll-snap card track) / .work-pin-wrap actually
+   paints, and Work.tsx's gsap.matchMedia() query is kept identical on
+   purpose so the ScrollTrigger pin only ever runs against visible markup.
+   xPercent-only translation on .work-pin-track — see
+   docs/interaction-upgrades-plan.md §1. */
+.work-fallback {
+  display: block;
 }
-.now-row:hover {
-  transform: translateX(6px);
+.work-pin-wrap {
+  display: none;
+}
+
+@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+  .work-fallback {
+    display: none;
+  }
+  .work-pin-wrap {
+    display: block;
+  }
+}
+
+.work-pin-wrap {
+  position: relative;
+  height: 100dvh;
+  overflow: hidden;
+}
+.work-pin-track {
+  display: flex;
+  height: 100%;
+}
+.work-panel {
+  flex: 0 0 100vw;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }

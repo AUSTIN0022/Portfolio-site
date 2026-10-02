@@ -623,6 +623,11 @@ a:hover > .wave-text span,
   max-width: 100%;
   height: auto;
 }
+/* Pre-rendered labels were measured in Inter; glyphs Inter lacks (→) fall
+   back per-platform and can run a few px wide — spill rather than clip. */
+.diagram-gallery-svg foreignObject {
+  overflow: visible;
+}
 
 /* Floating bottom bar — prev arrow, page dots, next arrow — sits over the
    dark backdrop rather than inside any one card, so it stays put while

@@ -854,6 +854,15 @@ function engine(
   let lastHealthyCount = 1
   let lastTripped = false
 
+  // The packet <animateMotion>s run on the SVG's own SMIL timeline, outside
+  // the rAF gate — pause that timeline too whenever the loop is frozen.
+  const svgEl = wrap.querySelector<SVGSVGElement>('svg.is-svg')
+  const syncSvgAnimations = () => {
+    if (!svgEl || typeof svgEl.pauseAnimations !== 'function') return
+    if (isVisible && !document.hidden) svgEl.unpauseAnimations()
+    else svgEl.pauseAnimations()
+  }
+
   // Viewport observer to freeze rAF loop when offscreen
   const io = new IntersectionObserver(
     ([entry]) => {
@@ -862,6 +871,7 @@ function engine(
       if (!prev && isVisible && !document.hidden && !raf) {
         raf = requestAnimationFrame(frame)
       }
+      syncSvgAnimations()
     },
     { threshold: 0.05 }
   )
@@ -875,8 +885,10 @@ function engine(
     if (!document.hidden && isVisible && !raf) {
       raf = requestAnimationFrame(frame)
     }
+    syncSvgAnimations()
   }
   document.addEventListener('visibilitychange', onVisibilityChange)
+  syncSvgAnimations()
 
   const setSlot = (c: (typeof slotCaches)[0], inst: Inst | undefined, cpu: number, mem: number) => {
     if (c.albWire) {
@@ -967,6 +979,11 @@ function engine(
     if (rg.label && rg.label.textContent !== textVal) rg.label.textContent = textVal
   }
 
+  // Full rate only while the scroll position is moving (participants and the
+  // beat track it); otherwise the dashboard ticks at 10Hz — gauges ease via
+  // CSS transitions and the counters/clock don't need 60 writes a second.
+  let lastTickP = -1
+  let lastTick = 0
   const frame = (now: number) => {
     if (!isVisible || document.hidden) {
       raf = 0
@@ -974,6 +991,12 @@ function engine(
     }
 
     const p = cachedP
+    if (p === lastTickP && now - lastTick < 100) {
+      raf = requestAnimationFrame(frame)
+      return
+    }
+    lastTickP = p
+    lastTick = now
     const fi = p * (BEATS.length - 1)
     const active = Math.round(fi)
     const man = ctrl.current

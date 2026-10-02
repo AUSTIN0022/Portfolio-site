@@ -38,37 +38,20 @@ const ClickSpark = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const sparksRef = useRef<Spark[]>([])
 
+  // The canvas is viewport-sized and fixed, not document-sized: a canvas the
+  // height of a long page (QuizBuzz is ~15 viewports) is a huge bitmap the
+  // browser had to repaint on every clear.
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const parent = canvas.parentElement
-    if (!parent) return
-
-    let resizeTimeout: ReturnType<typeof setTimeout>
-
     const resizeCanvas = () => {
-      const { width, height } = parent.getBoundingClientRect()
-      if (canvas.width !== width || canvas.height !== height) {
-        canvas.width = width
-        canvas.height = height
-      }
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
     }
-
-    const handleResize = () => {
-      clearTimeout(resizeTimeout)
-      resizeTimeout = setTimeout(resizeCanvas, 100)
-    }
-
-    const ro = new ResizeObserver(handleResize)
-    ro.observe(parent)
-
     resizeCanvas()
-
-    return () => {
-      ro.disconnect()
-      clearTimeout(resizeTimeout)
-    }
+    window.addEventListener('resize', resizeCanvas)
+    return () => window.removeEventListener('resize', resizeCanvas)
   }, [])
 
   const easeFunc = useCallback(
@@ -87,15 +70,15 @@ const ClickSpark = ({
     [easing]
   )
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+  // The loop only runs while sparks are alive — it used to clear the canvas
+  // every frame forever, forcing a repaint even with nothing to draw.
+  const animationIdRef = useRef(0)
 
-    let animationId: number
-
-    const draw = (timestamp: number) => {
+  const draw = useCallback(
+    (timestamp: number) => {
+      const canvas = canvasRef.current
+      const ctx = canvas?.getContext('2d')
+      if (!canvas || !ctx) return
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       sparksRef.current = sparksRef.current.filter((spark) => {
@@ -125,26 +108,20 @@ const ClickSpark = ({
         return true
       })
 
-      animationId = requestAnimationFrame(draw)
-    }
+      animationIdRef.current = sparksRef.current.length ? requestAnimationFrame(draw) : 0
+    },
+    [sparkColor, sparkSize, sparkRadius, duration, easeFunc, extraScale]
+  )
 
-    animationId = requestAnimationFrame(draw)
-
-    return () => {
-      cancelAnimationFrame(animationId)
-    }
-  }, [sparkColor, sparkSize, sparkRadius, sparkCount, duration, easeFunc, extraScale])
+  useEffect(() => () => cancelAnimationFrame(animationIdRef.current), [])
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // Decorative motion — skip spawning sparks under reduced-motion, same
     // policy the rest of the site's JS-driven animation follows.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const rect = canvas.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
+    const x = e.clientX
+    const y = e.clientY
 
     const now = performance.now()
     const newSparks: Spark[] = Array.from({ length: sparkCount }, (_, i) => ({
@@ -155,6 +132,7 @@ const ClickSpark = ({
     }))
 
     sparksRef.current.push(...newSparks)
+    if (!animationIdRef.current) animationIdRef.current = requestAnimationFrame(draw)
   }
 
   const wrapperStyle: CSSProperties = {
@@ -164,13 +142,13 @@ const ClickSpark = ({
   }
 
   const canvasStyle: CSSProperties = {
-    width: '100%',
-    height: '100%',
     display: 'block',
     userSelect: 'none',
-    position: 'absolute',
+    position: 'fixed',
     top: 0,
     left: 0,
+    width: '100vw',
+    height: '100vh',
     pointerEvents: 'none',
   }
 

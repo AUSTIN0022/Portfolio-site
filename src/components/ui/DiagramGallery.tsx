@@ -11,13 +11,12 @@ import {
   type ReactNode,
 } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { getCachedMermaidSvg, renderMermaidDiagram } from '@/lib/mermaidRender'
+import { getCachedDiagramSvg, loadDiagramSvg } from '@/lib/diagramSvg'
 
 type DiagramData = {
   id: string
   title: string
   description?: string
-  chart: string
 }
 
 interface DiagramGalleryContextValue {
@@ -48,7 +47,7 @@ export function DiagramGalleryProvider({ children }: { children: ReactNode }) {
   const registerDiagram = useCallback((index: number, data: DiagramData) => {
     setDiagrams((prev) => {
       const existing = prev.get(index)
-      if (existing && existing.id === data.id && existing.chart === data.chart) return prev
+      if (existing && existing.id === data.id) return prev
       const next = new Map(prev)
       next.set(index, data)
       return next
@@ -118,10 +117,9 @@ function DiagramCarousel({ diagrams }: { diagrams: DiagramData[] }) {
     setActiveIndex((i) => (total ? (i + 1) % total : i))
   }, [total])
 
-  // Lazy: don't pay Mermaid's render cost until this section is actually
-  // approaching the viewport, same rationale ArchDiagram used to apply per
-  // card — this section can sit well below the fold behind two other heavy
-  // scroll-driven visualizations on this page.
+  // Lazy: don't fetch the diagram SVGs until this section is actually
+  // approaching the viewport — it sits well below the fold behind two other
+  // heavy scroll-driven visualizations on this page.
   //
   // Depends on `diagrams.length`, not `[]`: before any diagrams have
   // registered this component returns null (see below), so `stageRef` is
@@ -144,18 +142,14 @@ function DiagramCarousel({ diagrams }: { diagrams: DiagramData[] }) {
     return () => observer.disconnect()
   }, [diagrams.length])
 
-  // Prefetch the active diagram first, then its neighbors, whenever the
-  // active index changes, in either the inline strip or the fullscreen view.
-  // renderMermaidDiagram queues each call through a shared idle-scheduled
-  // tail (see mermaidRender.ts), so calling it for all three here doesn't
-  // block the main thread for the sum of all three — each gets its own idle
-  // window, in this priority order.
+  // Prefetch the active diagram and its neighbors whenever the active index
+  // changes, in either the inline strip or the fullscreen view.
   useEffect(() => {
     if (!hasBeenNear || total === 0) return
     const order = total === 1 ? [activeIndex] : [activeIndex, (activeIndex + 1) % total, (activeIndex - 1 + total) % total]
     for (const i of order) {
       const diagram = diagrams[i]
-      if (diagram) void renderMermaidDiagram(diagram.id, diagram.chart)
+      if (diagram) void loadDiagramSvg(diagram.id).catch(() => {})
     }
   }, [hasBeenNear, activeIndex, diagrams, total])
 
@@ -327,18 +321,21 @@ function DiagramCard({
   onSelect: () => void
   onExpand?: () => void
 }) {
-  const [svg, setSvg] = useState<string | undefined>(() => getCachedMermaidSvg(diagram.id))
+  const [svg, setSvg] = useState<string | undefined>(() => getCachedDiagramSvg(diagram.id))
 
   useEffect(() => {
     if (svg) return
     let cancelled = false
-    renderMermaidDiagram(diagram.id, diagram.chart).then((result) => {
-      if (!cancelled) setSvg(result)
-    })
+    loadDiagramSvg(diagram.id).then(
+      (result) => {
+        if (!cancelled) setSvg(result)
+      },
+      () => {}
+    )
     return () => {
       cancelled = true
     }
-  }, [diagram.id, diagram.chart, svg])
+  }, [diagram.id, svg])
 
   const role = roleFor(offset, reducedMotion)
   const isActive = offset === 0

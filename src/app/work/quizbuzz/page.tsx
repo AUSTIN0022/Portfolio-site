@@ -172,36 +172,6 @@ export default function QuizBuzzPage() {
                         id="diag-infra"
                         title="Dual-Mode AWS Infrastructure"
                         description="Idle mode (~$35/mo): single EC2, local Redis. Live mode (+$14-30/contest): ALB + ASG + ElastiCache. Mode switch via Terraform + redis-migrate.js."
-                        chart={`graph LR
-    subgraph IDLE["IDLE MODE — ~$35/month"]
-        direction TB
-        EC2["Admin EC2 t3.medium"]
-        Docker_BE["Backend Container"]
-        Docker_W["Worker Container"]
-        Docker_R["Redis:6379 Docker"]
-        EC2 --> Docker_BE
-        EC2 --> Docker_W
-        EC2 --> Docker_R
-    end
-    subgraph LIVE["LIVE MODE — +$14–30/contest day"]
-        direction TB
-        ALB["Application Load Balancer"]
-        AdminTG["Admin Target Group"]
-        QuizTG["Quiz ASG 2-10 × t3.medium"]
-        Cache["ElastiCache Redis r6g.large × 2"]
-        ALB -->|socket.io/* api/quiz/*| QuizTG
-        ALB -->|everything else| AdminTG
-        QuizTG --> Cache
-        AdminTG --> Cache
-    end
-    DNS["Route53 ysmquizbuzz.com"]
-    RDS[("RDS PostgreSQL")]
-    DNS -->|A record → Elastic IP - idle| EC2
-    DNS -->|ALIAS → ALB - live| ALB
-    EC2 --> RDS
-    QuizTG --> RDS
-    style IDLE fill:#f3f3f3
-    style LIVE fill:#e5e7eb`}
                     />
 
                     <ArchDiagram
@@ -209,40 +179,6 @@ export default function QuizBuzzPage() {
                         id="diag-ws"
                         title="Real-Time WebSocket Flow"
                         description="Participant journey: REST auth → EIO4 WebSocket handshake → waiting room → quiz → submission. BullMQ handles all heavy async work."
-                        chart={`sequenceDiagram
-    participant C as Client
-    participant API as REST API
-    participant GW as Socket.IO Gateway
-    participant R as Redis
-    participant Q as BullMQ
-    participant W as Worker
-    participant DB as PostgreSQL
-    C->>API: POST quiz-join (registrationRef + joinCode)
-    API->>DB: Verify participant + contest
-    API->>R: Invalidate old session
-    API-->>C: socketToken JWT
-    C->>GW: WS + EIO4 handshake + namespace connect
-    GW->>R: Validate JWT, check session
-    GW-->>C: Namespace ACK
-    C->>GW: join-waiting-room
-    GW->>R: SADD waiting_room
-    GW-->>C: joined-waiting-room
-    W->>GW: CONTEST_START job fires
-    GW-->>C: quiz-started (broadcast)
-    C->>GW: get-questions
-    GW->>R: Seeded shuffle + cache
-    GW-->>C: questions-loaded (NO isCorrect)
-    loop Each answer
-        C->>GW: save-progress
-        GW->>R: HSET answers hash
-        GW-->>C: progress-saved
-    end
-    C->>GW: submit-quiz
-    GW->>R: NX lock + idempotency check
-    GW->>DB: Transaction: Submission + Answers
-    GW->>Q: evaluate-submission job
-    GW-->>C: submission-ack
-    W->>DB: Score answers → update Submission`}
                     />
 
                     <ArchDiagram
@@ -250,42 +186,6 @@ export default function QuizBuzzPage() {
                         id="diag-workers"
                         title="Background Worker System (BullMQ)"
                         description="API/WebSocket container never blocks. A separate worker process consumes 6 queues for evaluation, certificates, messaging, proctoring scoring, analytics, and timer management."
-                        chart={`graph TD
-    subgraph Producers["Producers (API Container)"]
-        P1["Quiz Gateway"]
-        P2["Contest Service"]
-        P3["Certificate Service"]
-        P4["Messaging Service"]
-    end
-    subgraph Queues["Redis / BullMQ Queues"]
-        Q1["quiz-auto-submit (delayed)"]
-        Q2["quiz-evaluation (concurrency: 50)"]
-        Q3["certificate-generation (concurrency: 10)"]
-        Q4["messaging (concurrency: 20)"]
-        Q5["proctoring-score (concurrency: 30)"]
-        Q6["analytics (concurrency: 5)"]
-    end
-    subgraph Workers["Consumers (Worker Container)"]
-        W1["Quiz Timer Worker\nstart + force-submit + warnings"]
-        W2["Evaluation Worker\nscore answers → update Submission"]
-        W3["Certificate Worker\nPDF via pdfkit → S3"]
-        W4["Message Worker\nWhatsApp + Email delivery"]
-        W5["Proctoring Score Worker\nflag at 50 · disqualify at 100"]
-        W6["Analytics Worker\ndaily rollup snapshots"]
-    end
-    P1 --> Q1
-    P1 --> Q2
-    P1 --> Q5
-    P2 --> Q1
-    P3 --> Q3
-    P4 --> Q4
-    Q1 --> W1
-    Q2 --> W2
-    Q3 --> W3
-    Q4 --> W4
-    Q5 --> W5
-    Q6 --> W6
-    W2 -->|all evaluated| Q6`}
                     />
 
                     <ArchDiagram
@@ -293,39 +193,6 @@ export default function QuizBuzzPage() {
                         id="diag-db"
                         title="Database Schema (Key Relationships)"
                         description="~25 Prisma models. Every table scoped by organizationId. Contact is the deduplicated master record. Participant is a Contact × Contest registration."
-                        chart={`erDiagram
-    ORGANIZATION ||--o{ CONTEST : "hosts"
-    ORGANIZATION ||--o{ CONTACT : "manages"
-    CONTEST ||--o{ CONTEST_QUESTION : "contains"
-    QUESTION ||--o{ CONTEST_QUESTION : "used in"
-    QUESTION ||--o{ QUESTION_OPTION : "has"
-    CONTACT ||--o{ PARTICIPANT : "registers as"
-    CONTEST ||--o{ PARTICIPANT : "has"
-    PARTICIPANT ||--o| PAYMENT : "pays"
-    PARTICIPANT ||--o{ QUIZ_SESSION : "connects via"
-    PARTICIPANT ||--o| SUBMISSION : "completes"
-    SUBMISSION ||--o{ ANSWER : "contains"
-    PARTICIPANT ||--o| LEADERBOARD_ENTRY : "ranked as"
-    PARTICIPANT ||--o{ PROCTORING_EVENT : "triggers"
-    PARTICIPANT ||--o| CERTIFICATE : "receives"
-    CONTEST {
-        string id PK
-        enum status "DRAFT|LIVE|COMPLETED"
-        datetime startTime
-        datetime endTime
-        string joinCode
-    }
-    PARTICIPANT {
-        string id PK
-        enum status "REGISTERED|IN_QUIZ|SUBMITTED"
-        string registrationRef
-    }
-    SUBMISSION {
-        int correct
-        int wrong
-        float score
-        float percentage
-    }`}
                     />
 
                     <ArchDiagram
@@ -333,42 +200,6 @@ export default function QuizBuzzPage() {
                         id="diag-modules"
                         title="Backend Module Dependencies"
                         description="Messaging is the most-depended-on module (7 incoming). Contest is the primary domain entity. Dependency injection via central container.ts — no ad-hoc instantiation."
-                        chart={`graph TD
-    subgraph Admin["Administrative"]
-        AdminAuth["Admin Auth"]
-        Org["Organization"]
-    end
-    subgraph ContestGroup["Contest Lifecycle"]
-        Contest["Contest"]
-        Question["Question"]
-        Participant["Participant"]
-        Payment["Payment"]
-    end
-    subgraph RealTime["Real-time"]
-        Quiz["Quiz Engine"]
-        Proctoring["Proctoring"]
-    end
-    subgraph PostContest["Post-Contest"]
-        Submission["Submission"]
-        Analytics["Analytics"]
-        Certificate["Certificate"]
-    end
-    Messaging["Messaging\nSMS + Email"]
-    AdminAuth --> Org
-    AdminAuth --> Messaging
-    Org --> Messaging
-    Contest --> Participant
-    Contest --> Messaging
-    Question --> Contest
-    Participant --> Contest
-    Payment --> Contest
-    Payment --> Messaging
-    Quiz --> Proctoring
-    Quiz --> Submission
-    Submission --> Participant
-    Certificate --> Participant
-    Analytics --> Quiz
-    style Messaging fill:#d1ffca,color:#000000`}
                     />
                     </DiagramGalleryProvider>
                 </CaseStudySection>

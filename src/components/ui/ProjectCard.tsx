@@ -24,14 +24,14 @@ export function ProjectCard({ project }: { project: Project }) {
         background: 'var(--color-bg)',
         borderRadius: '32px',
         padding: '0',
-        width: 'min(480px, 84vw)',
-        flexShrink: 0,
         overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       <div
         style={{
-          background: 'var(--color-bg)',
+          background: 'var(--color-chip-bg)',
           height: '280px',
           position: 'relative',
           display: 'flex',
@@ -60,7 +60,7 @@ export function ProjectCard({ project }: { project: Project }) {
         </motion.div>
       </div>
 
-      <div style={{ padding: '24px' }}>
+      <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
         <div
           style={{
             fontFamily: 'var(--font-suisseintlmono)',
@@ -103,7 +103,7 @@ export function ProjectCard({ project }: { project: Project }) {
             <SkillTag key={t}>{t}</SkillTag>
           ))}
         </div>
-        <a href={project.caseStudyUrl} className="btn-sketch" style={{ padding: '10px 20px' }}>
+        <a href={project.caseStudyUrl} className="btn-sketch" style={{ padding: '10px 20px', marginTop: 'auto' }}>
           View Case Study →
         </a>
       </div>

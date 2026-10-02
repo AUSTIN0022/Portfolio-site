@@ -72,27 +72,26 @@ export function DiagramGalleryProvider({ children }: { children: ReactNode }) {
   )
 }
 
+// One card at a time: the incoming card slides in from the side you're
+// paging toward while the outgoing one slides out the other way. No peeking
+// neighbours — they sat outside the column and widened the page. Reduced
+// motion keeps a short fade with a small nudge instead of the full slide.
+const cardVariants = {
+  enter: ({ dir, reduced }: { dir: number; reduced: boolean }) => ({
+    transform: `translate(-50%, -50%) translateX(${dir * (reduced ? 4 : 40)}%)`,
+    opacity: 0,
+  }),
+  center: { transform: 'translate(-50%, -50%) translateX(0%)', opacity: 1 },
+  exit: ({ dir, reduced }: { dir: number; reduced: boolean }) => ({
+    transform: `translate(-50%, -50%) translateX(${-dir * (reduced ? 4 : 40)}%)`,
+    opacity: 0,
+  }),
+}
+
 function cardTransition(reducedMotion: boolean) {
   return {
     transform: { duration: reducedMotion ? 0.15 : 0.42, ease: [0.77, 0, 0.175, 1] as const },
     opacity: { duration: 0.28 },
-    filter: { duration: 0.28 },
-  }
-}
-
-// The whole card — kicker, title, description, and diagram together — is
-// what scales/dims/blurs as a unit. Reduced motion keeps that dim/blur cue
-// (not a vestibular trigger, and it's how the user tells which card is
-// active) but drops the sliding distance: "fewer and gentler," not zero.
-function roleFor(offset: number, reducedMotion: boolean): { transform: string; opacity: number; filter: string } {
-  if (offset === 0) return { transform: 'translate(-50%, -50%) translateX(0%) scale(1)', opacity: 1, filter: 'blur(0px)' }
-  const dir = offset > 0 ? 1 : -1
-  const distance = reducedMotion ? 6 : 78
-  const scale = reducedMotion ? 0.97 : 0.86
-  return {
-    transform: `translate(-50%, -50%) translateX(${dir * distance}%) scale(${scale})`,
-    opacity: 0.45,
-    filter: 'blur(3px)',
   }
 }
 
@@ -105,17 +104,24 @@ function roleFor(offset: number, reducedMotion: boolean): { transform: string; o
 function DiagramCarousel({ diagrams }: { diagrams: DiagramData[] }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [direction, setDirection] = useState(1)
   const [hasBeenNear, setHasBeenNear] = useState(false)
   const stageRef = useRef<HTMLDivElement>(null)
   const shouldReduceMotion = !!useReducedMotion()
 
   const total = diagrams.length
   const goPrev = useCallback(() => {
+    setDirection(-1)
     setActiveIndex((i) => (total ? (i - 1 + total) % total : i))
   }, [total])
   const goNext = useCallback(() => {
+    setDirection(1)
     setActiveIndex((i) => (total ? (i + 1) % total : i))
   }, [total])
+  const goTo = (i: number) => {
+    setDirection(i > activeIndex ? 1 : -1)
+    setActiveIndex(i)
+  }
 
   // Lazy: don't fetch the diagram SVGs until this section is actually
   // approaching the viewport — it sits well below the fold behind two other
@@ -168,21 +174,6 @@ function DiagramCarousel({ diagrams }: { diagrams: DiagramData[] }) {
     }
   }, [isExpanded, goPrev, goNext])
 
-  // Prev/Next loop around at the ends, so slots are computed by role
-  // (prev/active/next) rather than a raw index range — a plain `[i-1,i,i+1]`
-  // range would drop off the edge instead of wrapping to the far diagram.
-  const slots = useMemo(() => {
-    const n = total
-    if (n === 0) return []
-    if (n === 1) return [{ index: activeIndex, offset: 0 }]
-    const prevIdx = (activeIndex - 1 + n) % n
-    const nextIdx = (activeIndex + 1) % n
-    const result = [{ index: activeIndex, offset: 0 }]
-    if (prevIdx !== activeIndex) result.push({ index: prevIdx, offset: -1 })
-    if (nextIdx !== activeIndex && nextIdx !== prevIdx) result.push({ index: nextIdx, offset: 1 })
-    return result
-  }, [activeIndex, total])
-
   if (diagrams.length === 0) return null
 
   const dots = (
@@ -195,7 +186,7 @@ function DiagramCarousel({ diagrams }: { diagrams: DiagramData[] }) {
           data-active={i === activeIndex ? '1' : '0'}
           aria-label={`Go to diagram ${i + 1}: ${d.title}`}
           aria-current={i === activeIndex}
-          onClick={() => setActiveIndex(i)}
+          onClick={() => goTo(i)}
         />
       ))}
     </div>
@@ -205,21 +196,19 @@ function DiagramCarousel({ diagrams }: { diagrams: DiagramData[] }) {
     <>
       <div className="diagram-carousel">
         <div className="diagram-carousel-stage" ref={stageRef}>
-          <AnimatePresence initial={false}>
-            {hasBeenNear &&
-              slots.map((slot) => (
-                <DiagramCard
-                  key={diagrams[slot.index].id}
-                  variant="inline"
-                  diagram={diagrams[slot.index]}
-                  displayIndex={slot.index}
-                  total={diagrams.length}
-                  offset={slot.offset}
-                  reducedMotion={shouldReduceMotion}
-                  onSelect={() => setActiveIndex(slot.index)}
-                  onExpand={slot.offset === 0 ? () => setIsExpanded(true) : undefined}
-                />
-              ))}
+          <AnimatePresence initial={false} custom={{ dir: direction, reduced: shouldReduceMotion }}>
+            {hasBeenNear && (
+              <DiagramCard
+                key={diagrams[activeIndex].id}
+                variant="inline"
+                diagram={diagrams[activeIndex]}
+                displayIndex={activeIndex}
+                total={diagrams.length}
+                direction={direction}
+                reducedMotion={shouldReduceMotion}
+                onExpand={() => setIsExpanded(true)}
+              />
+            )}
           </AnimatePresence>
         </div>
 
@@ -271,19 +260,16 @@ function DiagramCarousel({ diagrams }: { diagrams: DiagramData[] }) {
               </svg>
             </button>
 
-            <AnimatePresence initial={false}>
-              {slots.map((slot) => (
-                <DiagramCard
-                  key={diagrams[slot.index].id}
-                  variant="expanded"
-                  diagram={diagrams[slot.index]}
-                  displayIndex={slot.index}
-                  total={diagrams.length}
-                  offset={slot.offset}
-                  reducedMotion={shouldReduceMotion}
-                  onSelect={() => setActiveIndex(slot.index)}
-                />
-              ))}
+            <AnimatePresence initial={false} custom={{ dir: direction, reduced: shouldReduceMotion }}>
+              <DiagramCard
+                key={diagrams[activeIndex].id}
+                variant="expanded"
+                diagram={diagrams[activeIndex]}
+                displayIndex={activeIndex}
+                total={diagrams.length}
+                direction={direction}
+                reducedMotion={shouldReduceMotion}
+              />
             </AnimatePresence>
 
             <div className="diagram-gallery-controls">
@@ -306,19 +292,17 @@ function DiagramCard({
   diagram,
   displayIndex,
   total,
-  offset,
+  direction,
   reducedMotion,
   variant,
-  onSelect,
   onExpand,
 }: {
   diagram: DiagramData
   displayIndex: number
   total: number
-  offset: number
+  direction: number
   reducedMotion: boolean
   variant: 'inline' | 'expanded'
-  onSelect: () => void
   onExpand?: () => void
 }) {
   const [svg, setSvg] = useState<string | undefined>(() => getCachedDiagramSvg(diagram.id))
@@ -337,30 +321,16 @@ function DiagramCard({
     }
   }, [diagram.id, svg])
 
-  const role = roleFor(offset, reducedMotion)
-  const isActive = offset === 0
-  const enterDistance = reducedMotion ? 20 : 130
-  const zIndex = variant === 'expanded' ? (isActive ? 301 : 300) : isActive ? 2 : 1
-
   return (
     <motion.div
       className={`diagram-card-shell ${variant === 'expanded' ? 'diagram-gallery-card' : 'diagram-carousel-card'}`}
-      style={{ pointerEvents: isActive ? 'auto' : 'none', zIndex, cursor: isActive ? 'default' : 'pointer' }}
-      initial={{
-        transform: `translate(-50%, -50%) translateX(${offset > 0 ? enterDistance : -enterDistance}%) scale(0.8)`,
-        opacity: 0,
-        filter: 'blur(3px)',
-      }}
-      animate={role}
-      exit={{
-        transform: `translate(-50%, -50%) translateX(${offset >= 0 ? enterDistance : -enterDistance}%) scale(0.8)`,
-        opacity: 0,
-        filter: 'blur(3px)',
-      }}
+      style={{ zIndex: variant === 'expanded' ? 301 : 1 }}
+      custom={{ dir: direction, reduced: reducedMotion }}
+      variants={cardVariants}
+      initial="enter"
+      animate="center"
+      exit="exit"
       transition={cardTransition(reducedMotion)}
-      // Peek cards are a glimpse, not something to read — clicking one
-      // brings the whole card to center instead of scrolling its content.
-      onClick={!isActive ? onSelect : undefined}
     >
       {onExpand && (
         <button

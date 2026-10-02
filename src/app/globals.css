@@ -498,6 +498,9 @@ a:hover > .wave-text span,
 .diagram-carousel-stage {
   position: relative;
   height: min(64vh, 580px);
+  /* Clips the sliding cards sideways so a mid-transition card can never
+     widen the page; clip (not hidden) leaves vertical overflow visible. */
+  overflow-x: clip;
 }
 .diagram-carousel-controls {
   display: flex;
@@ -507,15 +510,15 @@ a:hover > .wave-text span,
   margin-top: 24px;
 }
 /* Dots reuse .diagram-gallery-dot's dark-backdrop defaults (see below); this
-   scopes them back to readable contrast against the page's light surface. */
+   scopes them to the page's own foreground so they read in both themes. */
 .diagram-carousel-controls .diagram-gallery-dot {
-  background: rgba(0, 0, 0, 0.15);
+  background: color-mix(in srgb, var(--color-fg) 15%, transparent);
 }
 .diagram-carousel-controls .diagram-gallery-dot:hover {
-  background: rgba(0, 0, 0, 0.35);
+  background: color-mix(in srgb, var(--color-fg) 35%, transparent);
 }
 .diagram-carousel-controls .diagram-gallery-dot[data-active='1'] {
-  background: var(--color-ink-black);
+  background: var(--color-fg);
 }
 
 .diagram-gallery-backdrop {
@@ -561,7 +564,7 @@ a:hover > .wave-text span,
   background: var(--color-pure-white);
   border-radius: 24px;
   box-shadow: var(--shadow-elevation-3);
-  will-change: transform, opacity, filter;
+  will-change: transform, opacity;
 }
 .diagram-carousel-card {
   position: absolute;
@@ -842,14 +845,16 @@ a:hover > .wave-text span,
   display: none; /* WebKit/Blink */
 }
 
-/* DecisionCardTrack — same hidden-native-scrollbar track as the project
-   cards above, applied to a run of DecisionCards. Sizing lives here (not on
+/* DecisionCardTrack — a one-card-at-a-time gallery: each DecisionCard takes
+   the full track width so the next one is never shown cut off mid-text;
+   swipe/scroll or the arrows page between them. Sizing lives here (not on
    DecisionCard itself) so the component stays unaware of whether it's in a
    horizontal track or a plain column. */
 .decision-track > * {
   flex-shrink: 0;
-  width: min(640px, 88vw);
+  width: 100%;
   scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 /* StackedDiagrams — a pure position:sticky + z-index "deck of cards" effect
@@ -1534,122 +1539,4 @@ body.shoot-mode-active *::selection {
   letter-spacing: 0.28em;
   color: var(--color-ink-black);
   user-select: none;
-}
-
-/* Idle image float — a plain CSS loop (not a Framer Motion rAF animation)
-   so it costs nothing on the main thread while a scroll-driven pin/scrub
-   is also running. Still used by the kept-but-unmounted ProjectPanel.tsx;
-   PinnedHorizontalScroll's own project panel (Work.tsx) reuses the same
-   class since the float itself is generic, not project-specific. Disabled
-   for reduced-motion users by the blanket rule above. */
-@keyframes work-panel-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-.work-panel-float {
-  animation: work-panel-float 4s ease-in-out infinite;
-}
-
-/* ============================================================
-   PinnedHorizontalScroll — generic pinned vertical→horizontal scroll
-   engine (src/components/ui/PinnedHorizontalScroll.tsx). Content-agnostic:
-   what's inside .phs-panel is entirely up to the consumer's renderPanel.
-   Desktop + motion-safe only, same convention as the rest of the site's
-   scroll effects — the media query below decides which of .phs-fallback /
-   .phs-wrap actually paints, kept identical to the component's own
-   gsap.matchMedia() query (default min-width 900px) so the ScrollTrigger
-   pin only ever runs against visible markup. See the component's own
-   `minWidth` option doc-comment if that default ever needs to change.
-   ============================================================ */
-.phs-fallback {
-  display: block;
-}
-.phs-wrap {
-  display: none;
-}
-
-@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
-  .phs-fallback {
-    display: none;
-  }
-  .phs-wrap {
-    display: block;
-  }
-}
-
-.phs-wrap {
-  position: relative;
-  height: 100dvh;
-  overflow: hidden;
-}
-.phs-track {
-  display: flex;
-  height: 100%;
-}
-.phs-panel {
-  flex: 0 0 100vw;
-  height: 100%;
-  display: flex;
-  align-items: center;
-}
-
-.phs-hud {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-}
-.phs-hud > * {
-  pointer-events: auto;
-}
-.phs-progress-track {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  background: color-mix(in srgb, var(--color-fg) 15%, transparent);
-}
-.phs-progress-fill {
-  position: absolute;
-  inset: 0;
-  background: var(--color-fg);
-  transform-origin: 0% 50%;
-}
-.phs-counter {
-  position: absolute;
-  bottom: 24px;
-  right: var(--gutter);
-  font-family: var(--font-suisseintlmono);
-  font-size: 12px;
-  color: var(--color-fg-subtle);
-  letter-spacing: -0.36px;
-}
-
-/* prefers-reduced-motion / narrow-viewport fallbacks */
-.phs-fallback-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 64px;
-}
-.phs-fade {
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-.phs-fade.phs-visible {
-  opacity: 1;
-}
-.phs-fallback-disable {
-  display: flex;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-}
-.phs-fallback-disable-panel {
-  flex: 0 0 100vw;
-  scroll-snap-align: start;
 }

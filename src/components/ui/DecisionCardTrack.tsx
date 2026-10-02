@@ -4,9 +4,9 @@ import { useRef } from 'react'
 import { CardScrollbar } from '@/components/ui/CardScrollbar'
 
 /**
- * Horizontal scroll-snap carousel for a run of `DecisionCard`s — the same
- * track/prev-next-button/scrollbar pattern already used for project cards in
- * `Work.tsx`, reused here instead of inventing a second interaction. Renders
+ * One-card-at-a-time gallery for a run of `DecisionCard`s: a horizontal
+ * scroll-snap track where every card is full width, paged by swipe or the
+ * prev/next buttons. Renders
  * `children` (existing `DecisionCard` elements, untouched) as flex items;
  * their width/flex-shrink come from the `.decision-track > *` rule in
  * globals.css, so `DecisionCard` itself needs no prop changes.
@@ -15,7 +15,9 @@ export function DecisionCardTrack({ children }: { children: React.ReactNode }) {
   const trackRef = useRef<HTMLDivElement>(null)
 
   const scrollBy = (dir: 1 | -1) => {
-    trackRef.current?.scrollBy({ left: dir * 664, behavior: 'smooth' })
+    const track = trackRef.current
+    // One full card (100% width) plus the 24px gap per press.
+    if (track) track.scrollBy({ left: dir * (track.clientWidth + 24), behavior: 'smooth' })
   }
 
   return (

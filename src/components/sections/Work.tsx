@@ -2,8 +2,7 @@
 
 import Link from 'next/link'
 import { MonoKicker } from '@/components/ui/MonoKicker'
-import { PinnedHorizontalScroll } from '@/components/ui/PinnedHorizontalScroll'
-import { ProjectPanel } from '@/components/ui/ProjectPanel'
+import { ProjectCard } from '@/components/ui/ProjectCard'
 import { projects } from '@/content/projects'
 
 export function Work() {
@@ -29,29 +28,24 @@ export function Work() {
         </h2>
       </div>
 
-      <PinnedHorizontalScroll
-        items={projects}
-        renderPanel={(project, i, meta) => <ProjectPanel key={project.id} project={project} meta={meta} />}
-        renderHud={(_progress, activeIndex, total) => (
-          <>
-            {/* data-phs-progress-fill: PinnedHorizontalScroll scrubs this
-                bar's scaleX directly on the DOM every frame — it does not
-                pass a fresh `progress` prop on every tick (that was the
-                cause of the reported jitter: a React re-render per scroll
-                frame). Any custom renderHud that wants the smooth fill
-                needs this same attribute; without it the bar just sits
-                static. */}
-            <div className="phs-progress-track" aria-hidden>
-              <div className="phs-progress-fill" data-phs-progress-fill aria-hidden />
-            </div>
-            <div className="phs-counter tabular-nums" aria-hidden>
-              {String(activeIndex + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
-            </div>
-          </>
-        )}
-      />
+      <div
+        style={{
+          maxWidth: '1280px',
+          margin: '0 auto',
+          padding: '0 var(--gutter)',
+          display: 'grid',
+          // Two columns on desktop (one on phones); a third project still
+          // wraps cleanly onto the next row.
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))',
+          gap: '32px',
+        }}
+      >
+        {projects.map((project) => (
+          <ProjectCard key={project.id} project={project} />
+        ))}
+      </div>
 
-      <div style={{ textAlign: 'center', marginTop: '24px' }}>
+      <div style={{ textAlign: 'center', marginTop: '48px' }}>
         <Link
           href="/work"
           style={{

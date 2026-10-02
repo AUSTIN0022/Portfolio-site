@@ -160,7 +160,7 @@ export function Hero() {
                                     textTransform: 'uppercase',
                                 }}
                             >
-                                Full products, shipped solo —
+                                Full products, shipped end to end —
                                 <br />
                                 design, build &amp; deploy.
                             </p>
@@ -191,7 +191,7 @@ export function Hero() {
                                 marginBottom: '24px',
                             }}
                         >
-                            I ship complete products, solo — architecture to deployment.
+                            I ship complete products — architecture to deployment.
                         </p>
 
                         <h2

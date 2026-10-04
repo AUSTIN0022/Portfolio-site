@@ -29,7 +29,13 @@ export function ProjectCard({ project }: { project: Project }) {
         flexDirection: 'column',
       }}
     >
-      <div
+      {/* The image doubles as a link (the button below stays the accessible
+          one, so this is out of the tab order) and shows the cursor label. */}
+      <a
+        href={project.caseStudyUrl}
+        tabIndex={-1}
+        aria-hidden
+        data-cursor-label="View case study →"
         style={{
           background: 'var(--color-chip-bg)',
           height: '280px',
@@ -58,7 +64,7 @@ export function ProjectCard({ project }: { project: Project }) {
             style={{ objectFit: 'contain' }}
           />
         </motion.div>
-      </div>
+      </a>
 
       <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
         <div

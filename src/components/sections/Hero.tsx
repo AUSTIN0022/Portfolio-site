@@ -26,6 +26,7 @@ export function Hero() {
                     <div className="hero-col-primary">
                         <h1
                             className="hero-headline"
+                            data-ripple-text
                             data-shoot-target="1"
                             data-shoot-granularity="char"
                             data-gsap="hero-display"
@@ -195,6 +196,7 @@ export function Hero() {
                         </p>
 
                         <h2
+                            data-ripple-text
                             data-gsap="hero-display"
                             style={{
                                 fontFamily: 'var(--font-hero-display)',

@@ -1,8 +1,9 @@
 'use client'
 
 import { MotionConfig } from 'framer-motion'
-import ClickSpark from '@/components/ui/ClickSpark'
 import { HelloLoader } from '@/components/ui/HelloLoader'
+import { WaterRipple } from '@/components/ui/WaterRipple'
+import { MotionLayer } from '@/components/ui/MotionLayer'
 
 /**
  * App-wide motion configuration. `reducedMotion="user"` makes every
@@ -11,20 +12,21 @@ import { HelloLoader } from '@/components/ui/HelloLoader'
  * their end state instantly, while opacity fades — which are safe — still
  * play. Sits above Nav and every page's motion tree.
  *
- * Also mounts two global effects: `HelloLoader`, the multi-language
+ * Also mounts the global effects: `HelloLoader`, the multi-language
  * greeting screen shown once while the app boots (this component itself
  * only mounts on a hard page load — client-side route changes keep this
- * layout mounted, so it never reappears mid-session), and `ClickSpark`,
- * which wraps every page's content so a click anywhere spawns a small
- * spark burst at the cursor.
+ * layout mounted, so it never reappears mid-session), and `WaterRipple`,
+ * which treats the whole page as still water — the cursor leaves a faint
+ * wake and a click drops a stone; and `MotionLayer` — smooth scroll,
+ * magnetic buttons and the cursor label.
  */
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <MotionConfig reducedMotion="user">
       <HelloLoader />
-      <ClickSpark sparkColor="#000000" sparkSize={10} sparkRadius={18} sparkCount={8} duration={500}>
-        {children}
-      </ClickSpark>
+      <WaterRipple />
+      <MotionLayer />
+      {children}
     </MotionConfig>
   )
 }

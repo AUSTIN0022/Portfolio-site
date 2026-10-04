@@ -214,6 +214,10 @@ button:focus-visible,
 html {
   scroll-behavior: smooth;
 }
+/* Lenis drives scrolling itself; native smooth-scroll would double-ease it. */
+html.lenis {
+  scroll-behavior: auto;
+}
 
 body {
   font-family: var(--font-suisseintl);
@@ -1539,4 +1543,26 @@ body.shoot-mode-active *::selection {
   letter-spacing: 0.28em;
   color: var(--color-ink-black);
   user-select: none;
+}
+
+/* Cursor label (MotionLayer) — a small inverted mono pill that trails the
+   cursor over anything with data-cursor-label. Starts collapsed; GSAP owns
+   transform/opacity from there. */
+.cursor-label {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  pointer-events: none;
+  transform-origin: 0 0;
+  transform: scale(0);
+  opacity: 0;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: var(--color-fg);
+  color: var(--color-bg);
+  font-family: var(--font-suisseintlmono);
+  font-size: 11px;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
 }

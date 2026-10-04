@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { MdContentCopy, MdCheck } from 'react-icons/md'
+import { UnderwaterWordmark } from '@/components/ui/UnderwaterWordmark'
 
 const linkColumns = [
   {
@@ -47,7 +48,7 @@ export function Footer() {
         overflow: 'hidden',
       }}
     >
-      <div style={{ maxWidth: '1280px', margin: '0 auto', paddingBottom: '40px' }}>
+      <div style={{ maxWidth: '1280px', margin: '0 auto', paddingBottom: '40px', position: 'relative', zIndex: 1 }}>
         <div
           style={{
             display: 'grid',
@@ -224,18 +225,18 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Giant background wordmark — decorative only (aria-hidden, no
-          pointer events). The gradient fades the letterforms down into the
-          footer's own ink-black, so the type reads as sinking into the
-          background rather than sitting flush on top of it. */}
-      <div
-        aria-hidden
+      {/* Giant background wordmark — decorative only. UnderwaterWordmark
+          sinks it as the footer scrolls in (waterline, caustics, sun rays);
+          the CSS gradient below is its no-WebGL / reduced-motion look,
+          fading the letterforms down into the footer's own ink-black. */}
+      <UnderwaterWordmark
+        text="AUSTIN"
         style={{
           marginTop: 'clamp(16px, 4vw, 32px)',
           lineHeight: 0.82,
           fontFamily: 'var(--font-suisseintlcond)',
           fontWeight: 700,
-          fontSize: 'clamp(6rem, 27vw, 22rem)',
+          fontSize: 'clamp(6.5rem, 29vw, 26rem)',
           letterSpacing: '-0.02em',
           textAlign: 'center',
           whiteSpace: 'nowrap',
@@ -246,9 +247,7 @@ export function Footer() {
           backgroundClip: 'text',
           color: 'transparent',
         }}
-      >
-        AUSTIN
-      </div>
+      />
     </footer>
   )
 }

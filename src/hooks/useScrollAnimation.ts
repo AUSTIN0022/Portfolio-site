@@ -3,9 +3,10 @@
 import { useEffect } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { SplitText } from 'gsap/SplitText'
 
 if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger)
+  gsap.registerPlugin(ScrollTrigger, SplitText)
 }
 
 export function useScrollAnimation() {
@@ -27,6 +28,25 @@ export function useScrollAnimation() {
             opacity: 0,
             duration: 0.8,
             ease: 'power3.out',
+          })
+        })
+
+        // Editorial line reveal: each line rises out of its own clipping
+        // mask. autoSplit re-splits (and re-runs the tween) once web fonts
+        // land or the width changes, so line breaks are never stale.
+        document.querySelectorAll<HTMLElement>('[data-gsap="lines"]').forEach((el) => {
+          SplitText.create(el, {
+            type: 'lines',
+            mask: 'lines',
+            autoSplit: true,
+            onSplit: (self) =>
+              gsap.from(self.lines, {
+                scrollTrigger: { trigger: el, start: 'top 85%' },
+                yPercent: 110,
+                duration: 1.1,
+                stagger: 0.09,
+                ease: 'expo.out',
+              }),
           })
         })
 

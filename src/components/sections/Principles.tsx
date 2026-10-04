@@ -33,6 +33,7 @@ export function Principles() {
         <div style={{ marginBottom: '48px' }} data-gsap="heading">
           <MonoKicker>// HOW I BUILD</MonoKicker>
           <h2
+            data-gsap="lines"
             style={{
               fontFamily: 'var(--font-suisseintlcond)',
               fontWeight: 700,
@@ -46,6 +47,7 @@ export function Principles() {
             FIRST PRINCIPLES.
           </h2>
           <p
+            data-gsap="lines"
             style={{
               fontFamily: 'var(--font-suisseintl)',
               fontWeight: 400,

@@ -14,6 +14,7 @@ export function Work() {
       <div style={{ maxWidth: '1280px', margin: '0 auto 48px', padding: '0 var(--gutter)' }} data-gsap="heading">
         <MonoKicker>// SELECTED WORK</MonoKicker>
         <h2
+          data-gsap="lines"
           style={{
             fontFamily: 'var(--font-suisseintlcond)',
             fontWeight: 700,

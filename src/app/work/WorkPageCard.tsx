@@ -1,23 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
-import { motion } from 'framer-motion'
 import { SkillTag } from '@/components/ui/SkillTag'
 import ScrollFloat from '@/components/ui/ScrollFloat'
 import { getTechIcon } from '@/lib/techIcons'
+import { ProjectFigure } from '@/components/ui/ProjectFigure'
 import type { Project } from '@/content/projects'
 
-const projectImageMap: Record<string, string> = {
-  monitor: '/item-images/monitor.webp',
-  forms: '/item-images/laptop.webp',
-  systems: '/item-images/queue.webp',
-  backend: '/item-images/app-server.webp',
-  infra: '/item-images/instance.webp',
-}
-
 export function WorkPageCard({ project }: { project: Project }) {
-  const imgSrc = projectImageMap[project.objectType] || '/item-images/monitor.webp'
 
   return (
     <article
@@ -30,11 +20,14 @@ export function WorkPageCard({ project }: { project: Project }) {
         height: 'var(--workcard-h)',
       }}
     >
-      {/* LEFT — Media area with optimized PNG visual */}
+      {/* LEFT — the project's line figure */}
       <div
         className="workcard-media"
+        data-accent={project.id}
         style={{
           background: 'var(--color-bg)',
+          ['--pfig-bg' as string]: 'var(--color-bg)',
+          overflow: 'hidden',
           position: 'relative',
           display: 'flex',
           alignItems: 'center',
@@ -42,24 +35,7 @@ export function WorkPageCard({ project }: { project: Project }) {
           padding: '24px',
         }}
       >
-        <motion.div
-          style={{
-            position: 'relative',
-            width: '80%',
-            height: '80%',
-          }}
-          animate={{ y: [0, -6, 0] }}
-          transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-          whileHover={{ scale: 1.05 }}
-        >
-          <Image
-            src={imgSrc}
-            alt={project.name}
-            fill
-            sizes="500px"
-            style={{ objectFit: 'contain' }}
-          />
-        </motion.div>
+        <ProjectFigure id={project.id} width="min(100%, 540px)" />
       </div>
 
       {/* RIGHT — content */}

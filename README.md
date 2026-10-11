@@ -6,7 +6,7 @@
 
 Software engineer with 1.5 years of full-time production experience building
 async job pipelines, distributed systems, and cloud infrastructure. Ships real systems solo,
-end-to-end — from architecture to deployment. Open to **SDE-2 / Software Engineer** roles.
+end-to-end — from architecture to deployment. Open to **SDE-1 full-stack & backend** roles.
 
 **[austinmakasare.site](https://austinmakasare.site)** ·
 [GitHub](https://github.com/AUSTIN0022/) ·

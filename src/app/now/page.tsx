@@ -23,7 +23,7 @@ const nowRows = [
   { icon: '🏗', label: 'BUILDING', value: nowData.building },
   { icon: '📖', label: 'LEARNING', value: nowData.learning },
   { icon: '📍', label: 'STATUS', value: nowData.status },
-  { icon: '🎓', label: 'STUDYING', value: 'MSc Computer Science — graduating June–July 2026' },
+  { icon: '🎓', label: 'EDUCATION', value: 'MSc Computer Science (2026) · BSc Computer Science (2024)' },
 ]
 
 const stackGroups = [
@@ -237,7 +237,7 @@ export default function NowPage() {
                   marginTop: '12px',
                 }}
               >
-                Open to SDE-2 / senior backend roles. Remote preferred, India WFO considered.
+                Open to SDE-1 full-stack & backend roles. Remote preferred, India WFO considered.
               </p>
             </div>
           </div>
@@ -253,15 +253,13 @@ export default function NowPage() {
               }}
             >
               <div style={{ ...kickerStyleLight }}>// BUILDING</div>
-              <ScrollFloat as="h2" style={{ ...blockHeadingStyle }}>SMARTFORMFLOW.</ScrollFloat>
+              <ScrollFloat as="h2" style={{ ...blockHeadingStyle }}>PR SENTINEL.</ScrollFloat>
               <p style={{ ...blockBodyStyle }}>
-                Building multi-step conditional logic and a real-time split-pane form preview
-                on top of the live Razorpay payment flow. Currently finishing the pre-launch
-                checklist — legal
-                pages, Sentry error tracking, and uptime monitoring — before opening the first 10
-                paying clients. The platform handles event registrations, certificate issuance,
-                and WhatsApp/email messaging for SMB organizers. Built solo on a single VPS,
-                5-container Docker Compose stack.
+                An AI pull-request reviewer that runs as a GitHub App. A verified webhook queues
+                the review on BullMQ; an orchestrator plans it and runs specialised agents in
+                parallel waves with permission-scoped tools, caches immutable git data by commit
+                SHA, and posts line comments back to the PR — with a live Next.js dashboard
+                streaming every run.
               </p>
             </div>
 
@@ -308,9 +306,9 @@ export default function NowPage() {
               <div style={{ ...kickerStyleLight }}>// STATUS</div>
               <ScrollFloat as="h2" style={{ ...blockHeadingStyle }}>OPEN TO ROLES.</ScrollFloat>
               <p style={{ ...blockBodyStyle }}>
-                Completing my MSc in Computer Science (June–July 2026), with 1.5 years of
+                MSc and BSc in Computer Science, with 1.5 years of
                 full-time production experience building backend systems, infrastructure, and
-                async job pipelines. Targeting SDE-2 or senior backend engineer roles at startups
+                async job pipelines. Targeting SDE-1 full-stack and backend roles at startups
                 — teams building real infrastructure where backend reliability matters. Remote
                 preferred; open to WFO in India.
               </p>

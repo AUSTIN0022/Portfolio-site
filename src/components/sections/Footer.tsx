@@ -10,6 +10,7 @@ const linkColumns = [
     links: [
       { label: 'All Projects', href: '/work' },
       { label: 'QuizBuzz', href: '/work/quizbuzz' },
+      { label: 'PR Sentinel', href: '/work/prsentinel' },
       { label: 'SmartFormFlow', href: '/work/smartformflow' },
     ],
   },

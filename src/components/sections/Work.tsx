@@ -35,10 +35,10 @@ export function Work() {
           margin: '0 auto',
           padding: '0 var(--gutter)',
           display: 'grid',
-          // Two columns on desktop (one on phones); a third project still
-          // wraps cleanly onto the next row.
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 420px), 1fr))',
-          gap: '32px',
+          // All three projects in one row on laptop/desktop widths, stepping
+          // down to two and then one column as the viewport narrows.
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+          gap: '24px',
         }}
       >
         {projects.map((project) => (

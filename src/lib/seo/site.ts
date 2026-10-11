@@ -26,10 +26,11 @@ export const person = {
     country: 'India',
     remote: 'Remote preferred; open to WFO in India',
   },
-  availability: 'Open to SDE-2 and senior backend engineer roles',
+  availability: 'Open to SDE-1 full-stack and backend engineer roles',
   education: {
     degree: 'MSc Computer Science',
-    graduating: 'June–July 2026',
+    completed: '2026',
+    school: 'KK Wagh Education Society, SPPU',
   },
   experienceYears: 1.5,
   profiles: {
@@ -66,8 +67,8 @@ export const keywords = [
   'Backend Engineer',
   'Backend Developer',
   'Full Stack Engineer',
-  'SDE-2',
-  'Senior Backend Engineer',
+  'SDE-1',
+  'Software Engineer',
   'Node.js developer',
   'TypeScript developer',
   'Distributed Systems',
@@ -88,6 +89,7 @@ export const routes = [
   { path: '/', priority: 1.0, changeFrequency: 'monthly' as const },
   { path: '/work', priority: 0.9, changeFrequency: 'monthly' as const },
   { path: '/work/quizbuzz', priority: 0.8, changeFrequency: 'yearly' as const },
+  { path: '/work/prsentinel', priority: 0.8, changeFrequency: 'monthly' as const },
   { path: '/work/smartformflow', priority: 0.8, changeFrequency: 'yearly' as const },
   { path: '/now', priority: 0.7, changeFrequency: 'weekly' as const },
 ]

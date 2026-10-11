@@ -31,7 +31,7 @@ export function personSchema() {
     sameAs: [person.profiles.github, person.profiles.linkedin, person.bookingUrl],
     alumniOf: {
       '@type': 'EducationalOrganization',
-      name: `${person.education.degree} (graduating ${person.education.graduating})`,
+      name: person.education.school,
     },
     address: {
       '@type': 'PostalAddress',

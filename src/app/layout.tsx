@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     template: '%s · Austin Makasare',
   },
   description:
-    'Full-Stack Software Engineer building production systems — queues, locks, and distributed infrastructure. 1.5 years of production experience. Open to SDE-2 and senior backend roles.',
+    'Full-Stack Software Engineer building production systems — queues, locks, and distributed infrastructure. 1.5 years of production experience. Open to SDE-1 full-stack and backend roles.',
   applicationName: 'Austin Makasare — Portfolio',
   authors: [{ name: person.name, url: SITE_URL }],
   creator: person.name,
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Austin Makasare — Backend Engineer',
     description:
-      'Backend Engineer building production systems that scale — queues, locks, and distributed infrastructure. Open to SDE-2 and senior backend roles.',
+      'Backend Engineer building production systems that scale — queues, locks, and distributed infrastructure. Open to SDE-1 full-stack and backend roles.',
     url: SITE_URL,
     siteName: 'Austin Makasare',
     locale: 'en_US',

@@ -1,6 +1,6 @@
 /* TEAM */
   Engineer: Austin Makasare
-  Role: Backend Engineer (SDE-2 / Senior)
+  Role: Full-Stack / Backend Engineer (SDE-1)
   Contact: austinmakasare00 [at] gmail.com
   GitHub: https://github.com/AUSTIN0022/
   LinkedIn: https://www.linkedin.com/in/austin-makasare/

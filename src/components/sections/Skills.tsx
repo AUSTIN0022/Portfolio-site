@@ -1,35 +1,31 @@
 'use client'
 
-import Image from 'next/image'
-import { motion } from 'framer-motion'
+import { CustomFigure } from '@/components/ui/CustomFigure'
 
 const columns = [
   {
     label: 'SYSTEMS.',
     desc: 'Distributed job queues, Redis-backed locking, event-driven architecture, and fault-tolerant async pipelines.',
-    imageSrc: '/item-images/queue.webp',
-    alt: 'Distributed Systems Queue Architecture',
+    figure: 'claim',
     tile: 'bento-tile-lg',
     tint: 'neutral' as const,
-    canvasH: 220,
+    canvasH: 260,
   },
   {
     label: 'BACKEND.',
     desc: 'Node.js APIs at scale, PostgreSQL with Prisma ORM, RESTful design, authentication, and real-time WebSocket layers.',
-    imageSrc: '/item-images/app-server.webp',
-    alt: 'Backend API Server Architecture',
+    figure: 'apistack',
     tile: 'bento-tile-sm',
     tint: 'mint' as const,
-    canvasH: 140,
+    canvasH: 180,
   },
   {
     label: 'INFRA.',
     desc: 'AWS auto-scaling, Docker containerization, CI/CD pipelines, monitoring, and zero-downtime deployments.',
-    imageSrc: '/item-images/instance.webp',
-    alt: 'Cloud Infrastructure Node Instance',
+    figure: 'rollout',
     tile: 'bento-tile-sm',
     tint: 'yellow' as const,
-    canvasH: 140,
+    canvasH: 180,
   },
 ]
 
@@ -61,9 +57,9 @@ export function Skills() {
           Skills
         </h2>
         <div className="bento-skills" data-gsap-group>
-          {columns.map((col, i) => (
+          {columns.map((col) => (
             <div
-              key={i}
+              key={col.label}
               className={col.tile}
               data-gsap="card"
               style={{
@@ -72,39 +68,28 @@ export function Skills() {
                 ...tintStyles[col.tint],
               }}
             >
+              {/* The tile is always dark, so the figure is forced onto Hairline's dark
+                  palette, with white outlines (.skills-figure). */}
               <div
+                data-theme="dark"
+                data-accent
+                className="skills-figure"
                 style={{
                   height: `${col.canvasH}px`,
                   marginBottom: '28px',
                   borderRadius: '16px',
                   overflow: 'hidden',
-                  position: 'relative',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  background:
-                    'radial-gradient(135% 120% at 50% 60%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 38%, rgba(255,255,255,0.01) 62%, rgba(255,255,255,0) 82%)',
+                  background: '#141414',
+                  ['--pfig-bg' as string]: '#141414',
                   boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), inset 0 0 0 1px rgba(255,255,255,0.04)',
                 }}
               >
-                <motion.div
-                  style={{
-                    position: 'relative',
-                    width: '80%',
-                    height: '80%',
-                  }}
-                  animate={{ y: [0, -4, 0] }}
-                  transition={{ duration: 4 + i, repeat: Infinity, ease: 'easeInOut' }}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <Image
-                    src={col.imageSrc}
-                    alt={col.alt}
-                    fill
-                    sizes="300px"
-                    style={{ objectFit: 'contain' }}
-                  />
-                </motion.div>
+                <div style={{ width: `${Math.round(col.canvasH * 1.25 * 1.12)}px`, flex: 'none' }}>
+                  <CustomFigure name={col.figure} play />
+                </div>
               </div>
               <h3
                 style={{

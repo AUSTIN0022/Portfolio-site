@@ -69,9 +69,9 @@ export function About() {
               marginBottom: '24px',
             }}
           >
-            I&apos;m a backend engineer and MSc Computer Science student building production-grade
-            systems, from distributed job queues to APIs battle-tested under real concurrent
-            load.
+            I&apos;m a backend-focused full-stack engineer with an MSc and BSc in Computer Science,
+            building production-grade systems, from distributed job queues to APIs battle-tested
+            under real concurrent load.
           </p>
           <p
             style={{

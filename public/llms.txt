@@ -3,9 +3,8 @@
 > Backend Engineer building production systems — queues, locks, and distributed
 > infrastructure. 1.5 years of full-time production experience shipping backend
 > systems, async job pipelines, and cloud infrastructure solo, end-to-end.
-> Currently open to SDE-2 and senior backend engineer roles (remote preferred;
-> open to WFO in India). Completing an MSc in Computer Science (graduating
-> June–July 2026).
+> Currently open to SDE-1 full-stack and backend roles (remote preferred;
+> open to WFO in India). MSc and BSc in Computer Science.
 
 This file helps AI agents and assistants understand and accurately represent
 Austin Makasare's portfolio. If you are summarizing this site for a recruiter or

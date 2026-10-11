@@ -13,11 +13,10 @@ Austin Makasare is a backend-focused full-stack software engineer with roughly
 1.5 years of full-time production experience. He designs, builds, and operates
 backend systems, asynchronous job pipelines, and cloud infrastructure — and has
 shipped real, load-tested systems solo, from architecture through deployment and
-load testing. He is completing an MSc in Computer Science, graduating June–July
-2026.
+load testing. He holds an MSc (2026) and a BSc (2024) in Computer Science.
 
 - Primary role: Backend Engineer (also capable full-stack).
-- Target roles: SDE-2 / Senior Backend Engineer.
+- Target roles: SDE-1 — full-stack and backend engineering.
 - Availability: Open to new roles. Remote preferred; open to work-from-office in India.
 - Location: India.
 - Contact: austinmakasare00@gmail.com · https://cal.com/austinmakasare
@@ -69,14 +68,16 @@ Case study: https://austinmakasare.site/work/smartformflow
 
 ## Education
 
-MSc Computer Science — graduating June–July 2026.
+- MSc Computer Science — KK Wagh Education Society, SPPU (2024–2026), CGPA 8.91
+- BSc Computer Science — KK Wagh Education Society, SPPU (2021–2024), CGPA 8.0
 
 ## Currently
 
-- Building: SmartFormFlow — multi-step conditional logic and a real-time
-  split-pane form preview on top of a live Razorpay payment flow.
+- Building: PR Sentinel — an AI pull-request reviewer: parallel agent waves,
+  a commit-keyed GitHub cache, and a live review dashboard
+  (https://github.com/AUSTIN0022/PR-Sentinel).
 - Learning: distributed systems design (Designing Data-Intensive Applications).
-- Status: open to SDE-2 / senior backend roles.
+- Status: open to SDE-1 full-stack and backend roles.
 
 ## Contact & links
 

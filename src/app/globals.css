@@ -1566,3 +1566,17 @@ body.shoot-mode-active *::selection {
   letter-spacing: -0.2px;
   white-space: nowrap;
 }
+
+/* ── Line figures (Hairline) ─────────────────────────────────
+   Figures use Hairline's own neutral palette (dark lines on light, light
+   lines on dark). --pfig-bg is set inline by each card to the background
+   the figure sits on, so its filled plates match it exactly. */
+[data-accent] {
+  --hairline-plate: var(--pfig-bg);
+  --hairline-stroke: 1.05;
+}
+/* Skills tiles are always black: crisp white outlines. */
+.skills-figure {
+  --hairline-edge: #f2f2f2;
+  --hairline-hi: #ffffff;
+}

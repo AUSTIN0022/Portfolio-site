@@ -19,7 +19,7 @@ export const projects: Project[] = [
     stack: ['Node.js', 'TypeScript', 'Socket.IO', 'BullMQ', 'Redis', 'PostgreSQL', 'AWS', 'Terraform', 'k6'],
     metrics: [
       { value: '7,500', label: 'Peak concurrent in-quiz' },
-      { value: '630×', label: 'Faster test seeding' },
+      { value: '0', label: 'Answers scored twice' },
       { value: '24', label: 'Production bugs documented' },
     ],
     caseStudyUrl: '/work/quizbuzz',

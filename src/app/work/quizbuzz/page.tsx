@@ -212,38 +212,62 @@ export default function QuizBuzzPage() {
                     <DecisionCardTrack>
                     <DecisionCard
                         number={1}
-                        title="630× faster test-data seeding"
+                        title="Pay for 10,000 users only on contest day"
                         shipped={true}
-                        problem="Seeding 10,000 participant rows for load testing took 42 minutes — sequential Prisma upserts over an SSH tunnel at ~100ms latency per round-trip."
-                        approach="Rewrote as bulk INSERT ... VALUES (...), ... ON CONFLICT DO NOTHING via a raw pg.Pool (bypassing Prisma's raw-query layer, which has a parameter-binding bug at large VALUES tables). Batch size 500, 4 concurrent batches, index-deterministic registrationRef keys."
-                        outcome="42 minutes → 4.1 seconds. A 630× improvement. The key insight: for bulk operations, round-trip count dominates over query complexity."
+                        problem="Contests are scheduled, short and spiky. Running a load balancer, an auto-scaling fleet and a Redis cluster all month for a few hours of peak would be paying for idle capacity."
+                        approach="One Terraform variable switches modes. Idle is a single EC2 with Redis in Docker; live adds an ALB, an auto-scaling group and an ElastiCache primary + replica — created by go-live and torn down by go-idle."
+                        outcome="~70% lower infra cost. The peak is known before it arrives, so capacity can be decided in advance instead of chased."
                     />
                     <DecisionCard
                         number={2}
-                        title="Zero job loss across a dual-Redis switch"
+                        title="One question cache, not ten thousand reads"
                         shipped={true}
-                        problem="BullMQ jobs scheduled before a go-live switch were enqueued into the local Docker Redis. After the switch to ElastiCache, workers listened to a different Redis — jobs were stranded, invisible, and contest start events never fired."
-                        approach="Built redis-migrate.js — a DUMP/RESTORE migration tool (preserves types and TTLs) that copies every key between Redis instances in both directions, wired into both go-live.sh and go-idle.sh. Always executes inside the live backend container so it inherits the container's actual REDIS_HOST."
-                        outcome="Zero job loss across mode switches. The lesson: 'always remember to do X' is not a control — move the execution context so the system guarantees correctness."
+                        problem="At the start signal every participant asks for the same questions at once — a thundering herd against Postgres, at the worst possible moment."
+                        approach="The question set is cached once in Redis for the whole contest; each participant stores only their own shuffled order. The answer key is stripped before anything reaches a client."
+                        outcome="~2.7 KB per participant. Share what is identical, store per-user only what actually differs."
                     />
                     <DecisionCard
                         number={3}
-                        title="Closing the auto-submit coverage gap"
+                        title="Scoring moved off the request path"
                         shipped={true}
-                        problem="AUTO_SUBMIT produced only 140 submissions from a contest with 1,323 peak IN_QUIZ participants. The force-submit logic only read from the active Redis SET — participants whose connections were dropped by an OOM crash had their socket disconnect handlers skipped, landing them in the disconnected SET that AUTO_SUBMIT never checked."
-                        approach="Fixed handleTimeExpiry() to union both active and disconnected participant sets before submitting, batched in groups of 50 with Promise.allSettled so one failure can't abort the batch."
-                        outcome="Full submission coverage regardless of crash history. The principle: predict the symmetric bug once you've found the first instance of a failure class."
+                        problem="Scoring answers, ranking a leaderboard and scoring proctoring inline would make every submit as slow as the slowest of them, exactly when everyone submits together."
+                        approach="A submit only enqueues a BullMQ job. Separate workers score answers (concurrency 50), aggregate proctoring (30), and trigger the leaderboard once every submission is evaluated."
+                        outcome="< 100 ms API at peak. The request path records intent; everything heavy happens behind a queue."
                     />
                     <DecisionCard
                         number={4}
-                        title="Debugging the Socket.IO protocol layer"
+                        title="Exactly-once submissions across instances"
                         shipped={true}
-                        problem="Load test k6 client sent plain JSON over raw WebSockets. Socket.IO uses Engine.IO v4 framing on top of the WS transport — the server silently ignored every message. WS success rate: 50%. Admin live monitor showed 0 participants."
-                        approach="Manually verified the infrastructure layer with curl (confirmed clean 101 upgrade and EIO4 open packet). Diagnosed the bug as above-transport: reimplemented the k6 client as an explicit state machine speaking the correct EIO4 handshake, namespace CONNECT with auth, framed event packets, and ping/pong keepalive."
-                        outcome="WS success rate 50% → ~100%. 50/50 VUs appeared in the live monitor simultaneously. Lesson: a successful transport connection tells you nothing about the application protocol above it."
+                        problem="A reconnect, a retry and the contest-end auto-submit can all try to submit the same participant at once — possibly on different instances."
+                        approach="A Redis SET NX lock per participant (10 s TTL) guards submission; only the holder writes and enqueues scoring. A 5 s lock does the same for the question fetch."
+                        outcome="0 answers scored twice. When work can arrive twice, make the second arrival a no-op."
                     />
                     <DecisionCard
                         number={5}
+                        title="Heap exhaustion at 500 sockets an instance"
+                        shipped={true}
+                        problem="Both auto-scaled instances died together at 1,000 and 2,000 users: “JavaScript heap out of memory”. Redis state was only ~18.6 KB a participant — the heap was full of socket objects and closures."
+                        approach="Raised the heap to 1.5 GB and the container limit to 2 GB in the launch template — then found running instances had booted from the old template and never got the fix."
+                        outcome="512 MB → 1.5 GB heap. Measure where memory actually lives before raising a limit, and check the fix reached the machines."
+                    />
+                    <DecisionCard
+                        number={6}
+                        title="A connection pool sized for a quiet day"
+                        shipped={true}
+                        problem="1,000 users arriving in 30 s is ~33 logins a second; a pool of five connections queued instantly and requests timed out."
+                        approach="Pool raised to 20 (minimum 5) with a 10 s query timeout, and the load ramp slowed to a realistic 120 s — eight arrivals a second."
+                        outcome="pool 5 → 20. Arrival rate and pool size are one variable, not two."
+                    />
+                    <DecisionCard
+                        number={7}
+                        title="Redis could silently evict the job queue"
+                        shipped={true}
+                        problem="Workers kept warning about the eviction policy. The no-eviction parameter group was defined in Terraform but never attached, so under pressure Redis could drop BullMQ keys and lose jobs."
+                        approach="Attached the parameter group to the replication group, so every live cluster is created with noeviction."
+                        outcome="volatile-lru → noeviction. A resource defined in code is not a resource applied — read the warning."
+                    />
+                    <DecisionCard
+                        number={8}
                         title="Rethinking autoscaling for WebSocket load"
                         shipped={false}
                         problem="The ASG's scale-out policy triggered on CPU at 60%. WebSocket load is memory/IO-bound — CPU stays near 20% while heap climbs to 95%. The scaler sees 'no scaling needed' right up until an OOM crash causes a brief CPU spike. A new instance still needs ~7 minutes to become healthy — far too slow for a quiz with a hard start time."
@@ -251,7 +275,55 @@ export default function QuizBuzzPage() {
                         outcome="Designed and documented. Pre-warming selected as primary approach, CloudWatch as defense-in-depth. Validated on the next full load-test cycle."
                     />
                     <DecisionCard
-                        number={6}
+                        number={9}
+                        title="Closing the auto-submit coverage gap"
+                        shipped={true}
+                        problem="AUTO_SUBMIT produced only 140 submissions from a contest with 1,323 peak IN_QUIZ participants. The force-submit logic only read from the active Redis SET — participants whose connections were dropped by an OOM crash had their socket disconnect handlers skipped, landing them in the disconnected SET that AUTO_SUBMIT never checked."
+                        approach="Fixed handleTimeExpiry() to union both active and disconnected participant sets before submitting, batched in groups of 50 with Promise.allSettled so one failure can't abort the batch."
+                        outcome="Full submission coverage regardless of crash history. The principle: predict the symmetric bug once you've found the first instance of a failure class."
+                    />
+                    <DecisionCard
+                        number={10}
+                        title="Zero job loss across a dual-Redis switch"
+                        shipped={true}
+                        problem="BullMQ jobs scheduled before a go-live switch were enqueued into the local Docker Redis. After the switch to ElastiCache, workers listened to a different Redis — jobs were stranded, invisible, and contest start events never fired."
+                        approach="Built redis-migrate.js — a DUMP/RESTORE migration tool (preserves types and TTLs) that copies every key between Redis instances in both directions, wired into both go-live.sh and go-idle.sh. Always executes inside the live backend container so it inherits the container's actual REDIS_HOST."
+                        outcome="Zero job loss across mode switches. The lesson: 'always remember to do X' is not a control — move the execution context so the system guarantees correctness."
+                    />
+                    <DecisionCard
+                        number={11}
+                        title="Late joiners stuck in the waiting room"
+                        shipped={true}
+                        problem="Anyone joining after the contest went live was parked in the waiting room for a start signal that had already fired once and was gone."
+                        approach="Joining now checks the contest status; if it is already live, the participant starts the quiz directly instead of waiting."
+                        outcome="START_IMMEDIATELY. One-shot events need a path for whoever arrives after them."
+                    />
+                    <DecisionCard
+                        number={12}
+                        title="Login worked, then every request was a 401"
+                        shipped={true}
+                        problem="Admin login returned 200, then /me and /refresh failed. The auto-scaled instances set cookies for the old domain — and the load balancer was routing admin logins to them."
+                        approach="Fixed the domain in both instance templates, patched the running instances, and traced why the request landed on that fleet at all."
+                        outcome="200 → 401. Know which machine actually served the request before debugging the one you expected."
+                    />
+                    <DecisionCard
+                        number={13}
+                        title="Debugging the Socket.IO protocol layer"
+                        shipped={true}
+                        problem="Load test k6 client sent plain JSON over raw WebSockets. Socket.IO uses Engine.IO v4 framing on top of the WS transport — the server silently ignored every message. WS success rate: 50%. Admin live monitor showed 0 participants."
+                        approach="Manually verified the infrastructure layer with curl (confirmed clean 101 upgrade and EIO4 open packet). Diagnosed the bug as above-transport: reimplemented the k6 client as an explicit state machine speaking the correct EIO4 handshake, namespace CONNECT with auth, framed event packets, and ping/pong keepalive."
+                        outcome="WS success rate 50% → ~100%. 50/50 VUs appeared in the live monitor simultaneously. Lesson: a successful transport connection tells you nothing about the application protocol above it."
+                    />
+                    <DecisionCard
+                        number={14}
+                        title="Recovering drifted Terraform without touching live traffic"
+                        shipped={true}
+                        problem="An interrupted apply left the HTTPS listener and its routing rules out of state — the site timed out — while one DNS record from that run already existed in AWS."
+                        approach="Read the plan first, imported the existing record instead of recreating it, and applied only once the diff showed six additions and nothing destroyed."
+                        outcome="6 add · 0 destroy. Understand the diff before you apply it, especially on infrastructure serving traffic."
+                    />
+                    <DecisionCard
+                        number={15}
                         title="Auditing every rate limiter, not just the broken one"
                         shipped={true}
                         problem="OTP rate limiter middleware was attached to the participant-login route, which doesn't use OTP. Under load testing, all k6 VUs shared a single source IP — 5 req/window instantly exhausted the limiter. A subsequent audit found a second bug: a separate limiter used windowMs: config.rateLimit.window without ×1000 conversion — giving it a 600ms window instead of 600 seconds."
@@ -269,9 +341,8 @@ export default function QuizBuzzPage() {
                     </Lead>
                     <Callout label="SEED TOOLING">
                         Before a single test could run: ts-node not in the build, Prisma v7 requiring a new
-                        driver adapter, SSH tunnel IPv4/IPv6 mismatch, interactive transactions timing out over
-                        a 100ms tunnel, and a seeding script that took 42 minutes for 10,000 rows. Each fixed
-                        individually, root-cause first.
+                        driver adapter, an SSH tunnel IPv4/IPv6 mismatch, and interactive transactions timing
+                        out over a 100ms tunnel. Each fixed individually, root-cause first.
                     </Callout>
                     <Callout label="MEMORY VS CPU">
                         At 500 concurrent WebSocket connections, Node.js hit its default ~512MB heap ceiling —
@@ -291,7 +362,7 @@ export default function QuizBuzzPage() {
                 <CaseStudySection id="results" kicker="// RESULTS" heading="WHAT WAS ACHIEVED.">
                     <MetricGrid>
                         <Metric value="7500" label="PEAK CONCURRENT IN-QUIZ" />
-                        <Metric value="630×" label="SEED SPEED IMPROVEMENT" />
+                        <Metric value="0" label="ANSWERS SCORED TWICE" />
                         <Metric value="24" label="PRODUCTION BUGS DOCUMENTED" />
                     </MetricGrid>
                     <P>
